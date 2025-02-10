@@ -1,0 +1,231 @@
+/* Global font */
+body {
+  font-family: 'Lato', sans-serif;
+}
+
+/* Reset for html and body */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #b2cbed; 
+  overflow: hidden; 
+  box-sizing: border-box;
+}
+
+
+/* Center everything */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #B2CBED;
+  text-align: center;
+}
+
+/* Logo */
+.home-logo {
+  width: 125px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+/* Title */
+.home-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #2E294E;
+  margin-bottom: 10px;
+}
+
+/* Description */
+.home-description {
+  font-size: 17px;
+  font-weight: 300;
+  color: #2E294E;
+  margin-bottom: 30px;
+}
+
+/* Buttons */
+.home-container button {
+  border-radius: 20px;
+  padding: 10px 50px;
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.play-button {
+  background-color: black;
+  color: white;
+  border: 2px solid black;
+}
+
+.play-button:hover {
+  background-color: #333;
+}
+
+.login-button {
+  background-color: transparent;
+  color: black;
+  border: 2px solid black;
+}
+
+.login-button:hover {
+  background-color: black;
+  color: white;
+}
+
+/* Date, No. x, and author text */
+.date, .number, .author {
+  color: #333333;
+  text-align: center;
+  margin: 5px 0;
+}
+
+.date {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.puzzle-number {
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.author {
+  font-size: 14px;
+  font-weight: 300;
+  color: #666666;
+}
+
+/* Full Page Loading Screen */
+.full-page-loading-screen {
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh; 
+  background-color: #b2cbed; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; 
+}
+
+/* Loading Logo */
+.loading-logo {
+  width: 70px;
+  margin-bottom: 20px;
+}
+
+/* Loading Progress Bar */
+.full-page-progress-bar {
+  width: 150px;
+  height: 10px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.full-page-progress-fill {
+  width: 0%;
+  height: 100%;
+  background-color: #000000;
+  animation: fullPageFillProgress 2s linear forwards;
+}
+
+@keyframes fullPageFillProgress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+/* Fade-in Animation */
+.fade-in {
+  animation: fadeIn 1.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark Mode: Home Container */
+body.dark-mode .home-container {
+  background-color: #181818;
+  color: #CFCFCF;
+}
+
+/* Dark Mode: Home Title */
+body.dark-mode .home-title {
+  color: #CFCFCF;
+}
+
+/* Dark Mode: Home Description */
+body.dark-mode .home-description {
+  color: #CFCFCF;
+}
+
+/* Dark Mode: Play Button */
+body.dark-mode .play-button {
+  background-color: #4d73af;
+  color: white;
+  border: 2px solid #4d73af;
+}
+
+body.dark-mode .play-button:hover {
+  background-color: #365a89;
+}
+
+/* Dark Mode: Login Button */
+body.dark-mode .login-button {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+body.dark-mode .login-button:hover {
+  background-color: white;
+  color: black;
+}
+
+/* Dark Mode: Date, Puzzle Number, and Author */
+body.dark-mode .date,
+body.dark-mode .puzzle-number,
+body.dark-mode .author {
+  color: #CFCFCF;
+}
+
+/* Dark Mode: Loading Screen */
+body.dark-mode .full-page-loading-screen {
+  background-color: #181818;
+}
+
+body.dark-mode .loading-logo {
+  filter: brightness(80%);
+}
+
+body.dark-mode .full-page-progress-bar {
+  background-color: #444;
+}
+
+body.dark-mode .full-page-progress-fill {
+  background-color: #4d73af;
+}

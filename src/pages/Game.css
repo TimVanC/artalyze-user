@@ -796,9 +796,19 @@ body.dark-mode .submit-button.disabled {
 
 /* Media Queries */
 @media screen and (max-width: 430px) and (max-height: 940px) {
-  /* Image Pair Adjustments */
+  /* Reduce space below "Tries Left" */
+  .tries-left {
+    margin-bottom: 5px; /* Bring content closer */
+  }
+
+  /* Move image pairs up closer to "Tries Left" */
+  .image-pair-container {
+    margin-top: -15px; /* Reduces gap between tries left and image pairs */
+  }
+
+  /* Image Container */
   .image-container {
-    width: 180px; /* Adjusted from 250px */
+    width: 180px; /* Adjusted size */
     height: 180px;
   }
 
@@ -808,34 +818,27 @@ body.dark-mode .submit-button.disabled {
     object-fit: cover;
   }
 
-  /* Reduce white space above images */
-  .image-pair-container {
-    margin-top: -10px; /* Moves image pairs up */
-  }
-
-  /* Move tries left section closer */
-  .tries-left {
-    margin-bottom: 5px; /* Reduce space below tries left */
-  }
-
   /* Navigation Buttons */
   .navigation-buttons .nav-button {
-    width: 30px; /* Reduced from 35px */
-    height: 30px;
-    font-size: 12px; /* Adjusted font size */
-    margin: 0 3px; /* Reduced margin for compact spacing */
+    width: 40px;  /* Slightly larger */
+    height: 40px;
+    font-size: 14px; /* Adjusted font size */
+    margin: 0 5px; /* Balanced spacing */
+    border-radius: 50%; /* Ensure round shape */
   }
 
   /* Submit & Clear Button */
   .submit-button,
   .clear-button {
-    padding: 6px 12px; /* Reduce padding */
-    font-size: 14px; /* Reduce font size */
-    width: auto; /* Make width dynamic */
-    min-width: 100px; /* Prevent too-small buttons */
-    max-width: 150px; /* Prevent overly long buttons */
+    padding: 10px 20px; /* Make them bigger */
+    font-size: 16px; /* Adjust font size */
+    width: auto; /* Dynamic width */
+    min-width: 120px; /* Keep them from being too narrow */
+    max-width: 160px; /* Keep them from being too long */
+    border-radius: 10px; /* Smooth, rounded edges */
   }
 }
+
 
 /* Dark Mode: Mid-Turn Overlay */
 body.dark-mode .mid-turn-overlay {

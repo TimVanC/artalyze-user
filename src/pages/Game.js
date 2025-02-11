@@ -343,6 +343,7 @@ const Game = () => {
       setLoading(false);
     }
   };
+  
 
   // Restore game state function
   const restoreGameState = () => {

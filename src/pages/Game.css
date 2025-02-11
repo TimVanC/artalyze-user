@@ -795,7 +795,7 @@ body.dark-mode .submit-button.disabled {
 }
 
 /* Media Queries */
-@media screen and (max-width: 390px) and (max-height: 660px) {
+@media screen and (max-width: 430px) and (max-height: 940px) {
   .image-container {
     width: 125px; /* 50% of current 250px */
     height: 125px; /* 50% of current 250px */
@@ -807,6 +807,7 @@ body.dark-mode .submit-button.disabled {
     object-fit: cover;
   }
 }
+
 
 
 /* Dark Mode: Mid-Turn Overlay */

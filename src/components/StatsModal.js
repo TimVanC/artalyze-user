@@ -153,7 +153,7 @@ Perfect Games: ${stats.perfectPuzzles}
   // Helper function for sharing results
   const shareResults = (usedSelections) => {
     const puzzleNumber = calculatePuzzleNumber();
-
+  
     // Generate the visual representation of results
     const resultsVisual = usedSelections
       .map((selection, index) => {
@@ -161,16 +161,15 @@ Perfect Games: ${stats.perfectPuzzles}
         return isCorrect ? '🟢' : '🔴';
       })
       .join(' ');
-
+  
     const paintings = '🖼️ '.repeat(imagePairs.length).trim();
-
-    const shareableText = `
-  Artalyze #${puzzleNumber} ${correctCount}/${imagePairs.length}
+  
+    // Adjust the formatting to remove the extra line break before "Try it at:"
+    const shareableText = `Artalyze #${puzzleNumber} ${correctCount}/${imagePairs.length}
   ${resultsVisual}
   ${paintings}
-  Try it at: artalyze.app
-    `.trim();
-
+  Try it at: artalyze.app`;
+  
     if (navigator.share) {
       navigator
         .share({
@@ -187,6 +186,7 @@ Perfect Games: ${stats.perfectPuzzles}
         .catch((error) => console.error('Failed to copy:', error));
     }
   };
+  
 
 
 

@@ -119,9 +119,9 @@ h1 {
   align-items: center;
   font-weight: normal;
   gap: 10px;
-  margin-top: 10px;  /* Adds space between the header and the tries section */
-  font-size: 16px;  /* Adjust font size */
-  color: black;  /* A subtle color for the text */
+  margin-bottom: 2vh; /* Adjusted to dynamically scale */
+  font-size: 16px;
+  color: black;
 }
 
 .palette-icon {
@@ -137,29 +137,29 @@ h1 {
   align-items: center;
   padding: 8px 0;
   overflow: visible;
+  margin-top: -3vh; /* Reduces gap between tries left and image pairs */
 }
 
 .image-container {
-  position: relative; /* Constrain the placeholder within the image container */
-  width: 250px;
-  height: 250px;
+  position: relative;
+  width: 27.3vh; /* Responsive size */
+  height: 27.3vh;
   margin-top: 8px;
-  background-color: #f5f5f5; /* Light background for consistency */
+  background-color: #f5f5f5;
   border-radius: 8px;
-  overflow: hidden; /* Prevent content from spilling out */
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .image-container img {
-  width: 300%;
+  width: 150%;
   height: 100%;
   object-fit: cover;
   border-radius: 8px;
-  z-index: 1; /* Place image below the placeholder */
+  z-index: 1;
 }
-
 
 .image-container.selected {
   border: 4px solid #4CAF50;
@@ -173,18 +173,18 @@ h1 {
 }
 
 .navigation-buttons .nav-button {
-  background-color: #ccc;  /* Default color */
+  background-color: #ccc;
   color: white;
-  width: 45px;
-  height: 45px;
+  width: 6vh;  /* Responsive size */
+  height: 6vh;
   border-radius: 50%;
   border: none;
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  font-size: 2vh;
   cursor: pointer;
-  margin: 0 8px;
+  margin: 0 1vh;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -194,7 +194,7 @@ body.dark-mode .nav-button {
 
 /* Subtle green hue for selected buttons */
 .navigation-buttons .nav-button.selected {
-  background-color: #A8D5BA;  /* Soft green hue when selected */
+  background-color: #A8D5BA;
   color: white;
 }
 
@@ -204,11 +204,11 @@ body.dark-mode .nav-button.selected {
 
 /* Active button (current index) stays blue */
 .navigation-buttons .nav-button.active {
-  background-color: #4d73af;  /* Blue color when active */
+  background-color: #4d73af;
   color: white;
   font-weight: bold;
 }
-  
+
 body.dark-mode .nav-button.active {
   background-color: #4d73af;
 }
@@ -217,13 +217,14 @@ body.dark-mode .nav-button.active {
 .submit-button {
   background-color: grey;
   color: white;
-  padding: 12px 24px;
-  font-size: 18px;
+  padding: 1.5vh 3vh;
+  font-size: 2.5vh;
   border: none;
   cursor: pointer;
-  border-radius: 12px;
-  margin: 5% 0;
-  width: 35%;
+  border-radius: 1.5vh;
+  width: auto;
+  min-width: 18vw;
+  max-width: 24vw;
   transition: all 0.3s ease;
 }
 
@@ -243,14 +244,17 @@ body.dark-mode .submit-button.disabled {
 /* Clear Button */
 .clear-button {
   background-color: transparent;
-  border: 2px solid #909090; /* Default greyed-out state */
+  border: 2px solid #909090;
   color: grey;
-  padding: 8px 16px;
-  font-size: 18px;
-  border-radius: 12px;
-  cursor: not-allowed; /* Disabled by default */
+  padding: 1.5vh 3vh;
+  font-size: 2.5vh;
+  border-radius: 1.5vh;
+  cursor: not-allowed;
   transition: all 0.3s ease;
   letter-spacing: .1rem;
+  width: auto;
+  min-width: 18vw;
+  max-width: 24vw;
 }
 
 .clear-button.enabled {
@@ -795,50 +799,6 @@ body.dark-mode .submit-button.disabled {
 }
 
 /* Media Queries */
-@media screen and (max-width: 430px) and (max-height: 940px) {
-  /* Reduce space below "Tries Left" */
-  .tries-left {
-    margin-bottom: 5px; /* Bring content closer */
-  }
-
-  /* Move image pairs up closer to "Tries Left" */
-  .image-pair-container {
-    margin-top: -15px; /* Reduces gap between tries left and image pairs */
-  }
-
-  /* Image Container */
-  .image-container {
-    width: 180px; /* Adjusted size */
-    height: 180px;
-  }
-
-  .image-container img {
-    width: 150%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* Navigation Buttons */
-  .navigation-buttons .nav-button {
-    width: 40px;  /* Slightly larger */
-    height: 40px;
-    font-size: 14px; /* Adjusted font size */
-    margin: 0 5px; /* Balanced spacing */
-    border-radius: 50%; /* Ensure round shape */
-  }
-
-  /* Submit & Clear Button */
-  .submit-button,
-  .clear-button {
-    padding: 10px 20px; /* Make them bigger */
-    font-size: 16px; /* Adjust font size */
-    width: auto; /* Dynamic width */
-    min-width: 120px; /* Keep them from being too narrow */
-    max-width: 160px; /* Keep them from being too long */
-    border-radius: 10px; /* Smooth, rounded edges */
-  }
-}
-
 
 /* Dark Mode: Mid-Turn Overlay */
 body.dark-mode .mid-turn-overlay {

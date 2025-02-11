@@ -795,6 +795,18 @@ body.dark-mode .submit-button.disabled {
 }
 
 /* Media Queries */
+@media screen and (max-width: 390px) and (max-height: 660px) {
+  .image-container {
+    width: 125px; /* 50% of current 250px */
+    height: 125px; /* 50% of current 250px */
+  }
+
+  .image-container img {
+    width: 150%; /* Adjusting to maintain visibility */
+    height: 100%;
+    object-fit: cover;
+  }
+}
 
 
 /* Dark Mode: Mid-Turn Overlay */

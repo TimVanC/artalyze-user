@@ -497,24 +497,25 @@ h1 {
 
 .pair-thumbnails-horizontal {
   display: flex;
-  flex-direction: row; /* Keep human and AI images side by side */
-  justify-content: space-between;
-  gap: 10px; /* Space between human and AI images */
-  margin-bottom: 16px; /* Add some spacing between rows */
+  flex-direction: row; /* Keep images side by side */
+  justify-content: center;
+  align-items: center;
+  gap: 1.5vw; /* Space between images */
 }
 
 .thumbnail-container {
-  width: 100px; /* Fixed width */
-  height: 100px; /* Fixed height */
+  width: 10vw !important;  /* 10% of the viewport width */
+  height: 10vw !important; /* Maintain square aspect ratio */
+  max-width: 120px; /* Prevent images from being too large */
+  max-height: 120px;
   border-radius: 5px;
-  margin: 0; /* Reset margins for uniformity */
-  overflow: hidden; /* Crop images to fit the container */
+  overflow: hidden; /* Ensures images do not exceed the container */
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f4f4f4; /* Neutral background for unselected images */
+  background-color: #f4f4f4;
   transition: transform 0.3s ease;
-  animation: none; /* Add subtle hover animation */
+  animation: none;
   position: relative;
 }
 
@@ -523,9 +524,9 @@ h1 {
 }
 
 .thumbnail-container img {
-  width: 100%; /* Stretch image to fit */
+  width: 100%;  /* Make sure images scale with container */
   height: 100%;
-  object-fit: cover; /* Crop image to fill container */
+  object-fit: contain; /* Prevents distortion */
 }
 
 .thumbnail-container:hover {
@@ -533,13 +534,13 @@ h1 {
 }
 
 .thumbnail-container.correct {
-  border: 3px solid #4CAF50; /* Green border for correct selection */
-  box-shadow: 0 0 10px 4px rgba(76, 175, 80, 0.4); /* Add green glow */
+  border: 3px solid #4CAF50;
+  box-shadow: 0 0 10px 4px rgba(76, 175, 80, 0.4);
 }
 
 .thumbnail-container.incorrect {
-  border: 3px solid #FF3D3D; /* Red border for incorrect selection */
-  box-shadow: 0 0 10px 4px rgba(255, 61, 61, 0.4); /* Add red glow */
+  border: 3px solid #FF3D3D;
+  box-shadow: 0 0 10px 4px rgba(255, 61, 61, 0.4);
 }
 
 

@@ -1,11 +1,12 @@
 .login-container {
-  background-color: white; /* Set the background to white */
-  height: 100vh;
+  background-color: white;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Center content vertically */
-  padding-bottom: 60px; /* Add padding to avoid overlap with the footer */
+  justify-content: center;
+  padding-bottom: 60px; /* Space to avoid footer overlap */
+  position: relative;
 }
 
 /* Login Page Top Bar */
@@ -287,5 +288,23 @@ input {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .login-container {
+    height: 100dvh; /* Use dynamic viewport height for better mobile handling */
+  }
+
+  .input-container {
+    position: relative;
+    width: 100%;
+  }
+
+  .next-button {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    max-width: 350px;
   }
 }

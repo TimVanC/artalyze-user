@@ -22,7 +22,21 @@ const Login = () => {
   const [forgotPassword, setForgotPassword] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [subheadingText, setSubheadingText] = useState('Log in or create an account');
-  const [showLoginSubheading, setShowLoginSubheading] = useState(false); // To toggle between the subheadings
+  const [showLoginSubheading, setShowLoginSubheading] = useState(false); 
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerHeight < 500) { // Detect keyboard open state
+        setIsKeyboardVisible(true);
+      } else {
+        setIsKeyboardVisible(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Validate email format
   const isEmailValid = (email) => {
@@ -204,7 +218,7 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-container" style={{ paddingBottom: isKeyboardVisible ? '20px' : '60px' }}>
       <div className="login-top-bar">
         <div className="login-app-title">Artalyze</div>
       </div>
@@ -531,7 +545,10 @@ const Login = () => {
       Forgot Password?
     </button>
     {error && <p className="error-message">{error}</p>}
-    <button type="submit" className="next-button">
+    <button type="submit" className="next-button" style={{
+          position: isKeyboardVisible ? 'absolute' : 'relative',
+          bottom: isKeyboardVisible ? '20px' : 'unset'
+        }}>
       Log In
     </button>
   </form>

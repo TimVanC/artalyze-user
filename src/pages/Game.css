@@ -123,7 +123,7 @@ h1 {
   padding: 8px 0;
   overflow: visible;
   margin-top: -1vh; /* Adjusted to prevent clipping */
-  gap: 1.5vh; /* Adds slight space between images */
+  gap: 5vh; /* Adds slight space between images */
 }
 
 .image-container {

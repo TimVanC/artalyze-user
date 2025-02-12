@@ -123,6 +123,7 @@ h1 {
   padding: 8px 0;
   overflow: visible;
   margin-top: -1vh; /* Adjusted to prevent clipping */
+  gap: 1.5vh; /* Adds slight space between images */
 }
 
 .image-container {
@@ -190,7 +191,7 @@ h1 {
   justify-content: center;
   align-items: center;
   gap: 15px;
-  margin-top: 10px;
+  margin-top: 3vh; /* Increased space below navigation buttons */
 }
 
 .submit-button {
@@ -765,8 +766,8 @@ h1 {
 /* Media Queries */
 @media screen and (max-width: 430px) and (max-height: 940px) {
   .image-container {
-    width: 180px;
-    height: 180px;
+    width: 195px;
+    height: 195px;
   }
 
   .image-container img {

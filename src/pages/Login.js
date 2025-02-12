@@ -32,14 +32,14 @@ const Login = () => {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       });
     });
-  
+
     return () => {
       inputFields.forEach(input => {
-        input.removeEventListener('focus', () => {});
+        input.removeEventListener('focus', () => { });
       });
     };
-  }, []);  
-  
+  }, []);
+
   // Validate email format
   const isEmailValid = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -220,11 +220,10 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container" style={{ paddingBottom: isKeyboardVisible ? '20px' : '60px' }}>
+    <div className="login-container">
       <div className="login-top-bar">
-        <div className="login-app-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-          Artalyze
-        </div>      </div>
+        <div className="login-app-title">Artalyze</div>
+      </div>
       <div className="login-logo-container">
         <img src={logo} alt="Artalyze Logo" className="login-app-logo" />
       </div>
@@ -318,12 +317,16 @@ const Login = () => {
               style={{
                 backgroundColor: isEmailValid(email) ? '#4d73af' : '#333',
                 cursor: isEmailValid(email) ? 'pointer' : 'not-allowed',
+                position: isKeyboardVisible ? 'absolute' : 'relative',
+                bottom: isKeyboardVisible ? '20px' : 'unset',
+                marginTop: isKeyboardVisible ? '10px' : '20px',
               }}
               disabled={!isEmailValid(email)}
-              onClick={isPasswordVisible ? handleLoginSubmit : undefined} // Login if password is visible
+              onClick={isPasswordVisible ? handleLoginSubmit : undefined}
             >
               {isPasswordVisible ? 'Log In' : 'Next'}
             </button>
+
 
             <div className="terms-container">
               <p>
@@ -548,18 +551,9 @@ const Login = () => {
             Forgot Password?
           </button>
           {error && <p className="error-message">{error}</p>}
-          <button
-            type="submit"
-            className="next-button"
-            style={{
-              position: 'relative',
-              bottom: isKeyboardVisible ? '10px' : 'unset',
-              marginTop: isKeyboardVisible ? '10px' : '20px',
-            }}
-          >
+          <button type="submit" className="next-button">
             Log In
           </button>
-
         </form>
       )}
 

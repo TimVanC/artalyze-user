@@ -492,10 +492,8 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px; /* Increased gap for better spacing */
 }
 
-/* ✅ Completion Screen Image Thumbnails */
 .thumbnail-container {
   width: 17vw !important;  /* 17% of the viewport width */
   height: 17vw !important; /* Maintain square aspect ratio */
@@ -511,14 +509,13 @@ h1 {
   position: relative;
 }
 
-/* ✅ Keep Human & AI Thumbnails Side-by-Side */
 .pair-thumbnails-horizontal {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 2vw; /* Increased space between human and AI images */
-  margin-bottom: 4vh; /* Increased vertical spacing between image pairs */
+  gap: 2vw; /* Space between human and AI images */
+  margin-bottom: 1vh; /* Reduce spacing between pairs */
 }
 
 .thumbnail-container.ai {
@@ -526,7 +523,7 @@ h1 {
 }
 
 .thumbnail-container img {
-  width: 100%;  
+  width: 100%;
   height: 100%;
   object-fit: contain; /* Prevents distortion */
 }

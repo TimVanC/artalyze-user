@@ -19,17 +19,16 @@ html, body {
 
 /* Login Page Top Bar */
 .login-top-bar {
-  display: flex;
-  justify-content: center; /* Center the title horizontally */
-  align-items: center; /* Center the title vertically */
-  height: 50px; /* Set height to 50px */
-  width: 100%; /* Make it span the entire width */
-  background-color: white; /* Background color */
-  border-bottom: 2px solid #ccc; /* Separator */
-  position: fixed; /* Fix it at the very top */
-  top: 0; /* Stick it to the very top */
-  z-index: 10; /* Ensure it stays above other elements */
+  height: 50px; /* Ensures enough space for the title bar */
+  width: 100%;
+  background-color: white;
+  border-bottom: 2px solid #ccc;
+  position: fixed;
+  top: 0;
+  z-index: 10;
+  padding-top: 10px; /* Adds breathing room */
 }
+
 
 /* Login App Title */
 .login-app-title {
@@ -39,9 +38,8 @@ html, body {
   color: #333;
 }
 
-/* Login Logo Container */
 .login-logo-container {
-  margin: 20px; /* Add some spacing around the logo */
+  margin-top: 80px; /* Increase spacing to prevent cut-off */
   text-align: center;
 }
 

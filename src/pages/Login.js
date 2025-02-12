@@ -22,7 +22,7 @@ const Login = () => {
   const [forgotPassword, setForgotPassword] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [subheadingText, setSubheadingText] = useState('Log in or create an account');
-  const [showLoginSubheading, setShowLoginSubheading] = useState(false); 
+  const [showLoginSubheading, setShowLoginSubheading] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   useEffect(() => {
@@ -220,8 +220,9 @@ const Login = () => {
   return (
     <div className="login-container" style={{ paddingBottom: isKeyboardVisible ? '20px' : '60px' }}>
       <div className="login-top-bar">
-        <div className="login-app-title">Artalyze</div>
-      </div>
+        <div className="login-app-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+          Artalyze
+        </div>      </div>
       <div className="login-logo-container">
         <img src={logo} alt="Artalyze Logo" className="login-app-logo" />
       </div>
@@ -520,39 +521,39 @@ const Login = () => {
       )}
 
 
-{step === 4 && (
-  <form onSubmit={handleLoginSubmit}>
-    <h2>Log In</h2>
-    {/* Email field for pre-filled email */}
-    {email && (
-      <input
-        type="email"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        readOnly
-        className="prefilled-email" // Optional class for styling pre-filled email
-      />
-    )}
-    <input
-      type="password"
-      placeholder="Enter your password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      required
-    />
-    <button type="button" className="forgot-password-button" onClick={handleForgotPassword}>
-      Forgot Password?
-    </button>
-    {error && <p className="error-message">{error}</p>}
-    <button type="submit" className="next-button" style={{
-          position: isKeyboardVisible ? 'absolute' : 'relative',
-          bottom: isKeyboardVisible ? '20px' : 'unset'
-        }}>
-      Log In
-    </button>
-  </form>
-)}
+      {step === 4 && (
+        <form onSubmit={handleLoginSubmit}>
+          <h2>Log In</h2>
+          {/* Email field for pre-filled email */}
+          {email && (
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              readOnly
+              className="prefilled-email" // Optional class for styling pre-filled email
+            />
+          )}
+          <input
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="button" className="forgot-password-button" onClick={handleForgotPassword}>
+            Forgot Password?
+          </button>
+          {error && <p className="error-message">{error}</p>}
+          <button type="submit" className="next-button" style={{
+            position: isKeyboardVisible ? 'absolute' : 'relative',
+            bottom: isKeyboardVisible ? '20px' : 'unset'
+          }}>
+            Log In
+          </button>
+        </form>
+      )}
 
 
       {step === 5 && (

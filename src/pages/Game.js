@@ -746,7 +746,7 @@ const Game = () => {
 
   const handleSelection = (selectedImage, isHumanSelection) => {
     const updatedSelections = [...selections];
-  
+
     // If the image is already selected, deselect it
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
       updatedSelections[currentIndex] = null; // Remove selection
@@ -756,11 +756,11 @@ const Game = () => {
         isHumanSelection,
       };
     }
-  
+
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
   };
-  
+
 
 
   const handleCompletionShare = () => {
@@ -970,7 +970,9 @@ const Game = () => {
 
       {/* Top Bar */}
       <div className="top-bar">
-        <div className="app-title">Artalyze</div>
+        <div className="app-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+          Artalyze
+        </div>
         <div className="icons-right">
           <FaInfoCircle className="icon" title="Info" onClick={() => setIsInfoOpen(true)} />
           <FaChartBar className="icon" title="Stats" onClick={() => setIsStatsOpen(true)} />

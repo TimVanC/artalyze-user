@@ -820,13 +820,20 @@ h1 {
     height: 30vh;
   }
 
-  /* ✅ Fix: Display image pairs horizontally */
-  .image-pair-container {
+  /* ✅ Fix: Display image pairs in two rows */
+  .completion-screen .horizontal-thumbnail-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4vh;
+  }
+
+  .completion-screen .first-row,
+  .completion-screen .second-row {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
-    gap: 3vh;
+    gap: 4vw;
   }
 
   /* ✅ Make Navigation Buttons Smaller */
@@ -862,13 +869,20 @@ h1 {
     font-size: 30px !important;
   }
 
-  /* ✅ Fix: Ensure image pairs remain side-by-side */
-  body .game-container .image-pair-container {
+  /* ✅ Fix: Ensure completion screen follows two-row structure */
+  body .completion-screen .horizontal-thumbnail-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 5vh !important;
+  }
+
+  body .completion-screen .first-row,
+  body .completion-screen .second-row {
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
-    align-items: center !important;
-    gap: 4vh !important;
+    gap: 5vw !important;
   }
 
   /* ✅ Make Navigation Buttons Even Smaller */
@@ -892,6 +906,7 @@ h1 {
     padding: 5.5px 20px !important;
   }
 }
+
 
 
 

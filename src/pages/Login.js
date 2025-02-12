@@ -208,10 +208,14 @@ const Login = () => {
       <div className="login-top-bar">
         <div className="login-app-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
           Artalyze
-        </div>      </div>
-      <div className="login-logo-container">
-        <img src={logo} alt="Artalyze Logo" className="login-app-logo" />
+        </div>
       </div>
+      {step !== 3 && (
+        <div className="login-logo-container">
+          <img src={logo} alt="Artalyze Logo" className="login-app-logo" />
+        </div>
+      )}
+
       {
         step === 1 && (
           <form
@@ -401,7 +405,6 @@ const Login = () => {
       )}
 
       {step === 3 && (
-        <div className="register-step"> {/* This enables scrolling only for this step */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -505,7 +508,6 @@ const Login = () => {
               Sign Up
             </button>
           </form>
-        </div>
       )}
 
 

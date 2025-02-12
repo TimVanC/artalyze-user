@@ -6,14 +6,9 @@
   align-items: center;
   justify-content: flex-start;
   overflow: hidden; /* Disable scrolling by default */
-  padding-bottom: 60px; /* Keeps footer visible */
+  padding-top: 70px; /* Push content down to avoid overlap with top bar */
+  padding-bottom: 60px; /* Keep footer visible */
 }
-
-/* Enable scrolling only when on the register screen */
-.login-container.register-step {
-  overflow-y: auto; /* Allows scrolling only on step 3 */
-}
-
 
 /* Login Page Top Bar */
 .login-top-bar {
@@ -38,8 +33,13 @@
 }
 
 .login-logo-container {
-  margin-top: 20px 0; /* Increase spacing to prevent cut-off */
+  margin-top: 20px; /* Keep default spacing */
   text-align: center;
+  transition: opacity 0.3s ease, height 0.3s ease; /* Smoothly hides it */
+}
+
+.login-logo-container.hidden {
+  display: none; /* Fully removes the element */
 }
 
 /* Login Logo Styling */

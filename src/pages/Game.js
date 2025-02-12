@@ -439,6 +439,7 @@ const Game = () => {
     };
   }, []);
 
+
   // Persist isGameComplete state across refreshes
   useEffect(() => {
     if (isGameComplete) {
@@ -1052,22 +1053,26 @@ const Game = () => {
                         className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
                         onClick={() => handleSelection(image, image === pair.human)}
                       >
-                        <img
-                          src={image}
-                          alt={`Painting ${idx + 1}`}
-                          onContextMenu={(e) => e.preventDefault()} // Disable right-click menu
-                          onTouchStart={(e) => {
-                            longPressTimer.current = setTimeout(() => {
-                              setEnlargedImage(image);
-                              setEnlargedImageMode("game-screen");
-                            }, 500); // Long-press threshold
-                          }}
-                          onTouchEnd={(e) => {
-                            clearTimeout(longPressTimer.current);
-                          }}
-                          onMouseDown={(e) => e.preventDefault()} // Prevent default drag behavior
-                          onMouseUp={() => handleSelection(image, image === pair.human)} // Ensure click selection works
-                        />
+<img
+  src={image}
+  alt={`Painting ${idx + 1}`}
+  onContextMenu={(e) => e.preventDefault()} // Disable right-click menu
+  onTouchStart={(e) => {
+    longPressTimer.current = setTimeout(() => {
+      setEnlargedImage(image);
+      setEnlargedImageMode("game-screen");
+    }, 500);
+    e.preventDefault(); // Block iOS long-press menu
+  }}
+  onTouchEnd={(e) => {
+    clearTimeout(longPressTimer.current);
+    e.preventDefault(); // Prevent iOS from triggering the default menu
+  }}
+  onMouseDown={(e) => e.preventDefault()} // Prevent dragging
+  onMouseUp={() => handleSelection(image, image === pair.human)} // Clicking selects the image
+  draggable="false" // Prevents drag interaction
+  style={{ pointerEvents: "auto", touchAction: "manipulation" }}
+/>
                       </div>
                     ))}
                   </div>
@@ -1098,14 +1103,15 @@ const Game = () => {
                         <div className="enlarged-image-container">
                           {/* Display only one image per slide (human or AI) */}
                           <img
-                            src={enlargedImage}
-                            alt="Enlarged view"
-                            className="enlarged-image"
-                            onClick={(e) => e.stopPropagation()}
-                            onContextMenu={(e) => e.preventDefault()}
-                            onTouchStart={(e) => e.preventDefault()}
-                            onMouseDown={(e) => e.preventDefault()}
-                          />
+  src={enlargedImage}
+  alt="Enlarged view"
+  className="enlarged-image"
+  onClick={(e) => e.stopPropagation()} // Prevents modal from closing on accidental clicks
+  onContextMenu={(e) => e.preventDefault()} // Disable right-click
+  onTouchStart={(e) => e.preventDefault()} // Blocks iOS long-press menu
+  onMouseDown={(e) => e.preventDefault()} // Blocks drag interaction
+  draggable="false"
+/>
                         </div>
                       </SwiperSlide>
                     ))}
@@ -1229,41 +1235,29 @@ const Game = () => {
                       className={`thumbnail-container human ${selection?.selected === pair.human ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
                       onClick={() => handleImageClick(pair.human)}
                     >
-                      <img
-                        src={pair.human}
-                        alt={`Human Painting for pair ${index + 1}`}
-                        onContextMenu={(e) => e.preventDefault()}
-                        onTouchStart={(e) => {
-                          longPressTimer.current = setTimeout(() => {
-                            setEnlargedImage(pair.human);
-                            setEnlargedImageMode("completion-screen");
-                          }, 500);
-                        }}
-                        onTouchEnd={(e) => clearTimeout(longPressTimer.current)}
-                        onMouseUp={() => handleImageClick(pair.human)}
-                        onMouseDown={(e) => e.preventDefault()}
-                        draggable="false"
-                      />
+<img
+  src={pair.human}
+  alt={`Human Painting for pair ${index + 1}`}
+  onContextMenu={(e) => e.preventDefault()} // Disable right-click menu
+  onClick={() => setEnlargedImage(pair.human)} // Clicking enlarges the image
+  onTouchStart={(e) => e.preventDefault()} // Blocks iOS long-press menu
+  onMouseDown={(e) => e.preventDefault()} // Blocks dragging
+  draggable="false"
+/>
                     </div>
                     <div
                       className={`thumbnail-container ai ${selection?.selected === pair.ai ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
                       onClick={() => handleImageClick(pair.ai)}
                     >
-                      <img
-                        src={pair.ai}
-                        alt={`AI Painting for pair ${index + 1}`}
-                        onContextMenu={(e) => e.preventDefault()}
-                        onTouchStart={(e) => {
-                          longPressTimer.current = setTimeout(() => {
-                            setEnlargedImage(pair.ai);
-                            setEnlargedImageMode("completion-screen");
-                          }, 500);
-                        }}
-                        onTouchEnd={(e) => clearTimeout(longPressTimer.current)}
-                        onMouseUp={() => handleImageClick(pair.ai)}
-                        onMouseDown={(e) => e.preventDefault()}
-                        draggable="false"
-                      />
+<img
+  src={pair.ai}
+  alt={`AI Painting for pair ${index + 1}`}
+  onContextMenu={(e) => e.preventDefault()} // Disable right-click menu
+  onClick={() => setEnlargedImage(pair.ai)} // Clicking enlarges the image
+  onTouchStart={(e) => e.preventDefault()} // Blocks iOS long-press menu
+  onMouseDown={(e) => e.preventDefault()} // Blocks dragging
+  draggable="false"
+/>
                     </div>
                   </div>
                 );

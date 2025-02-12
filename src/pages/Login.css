@@ -1,12 +1,14 @@
 .login-container {
   background-color: white;
   min-height: 100vh;
+  height: auto !important;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding-bottom: 60px; /* Space to avoid footer overlap */
+  justify-content: flex-start; /* Prevent forced centering */
+  padding-bottom: 60px;
   position: relative;
+  overflow-y: auto; /* Allows scrolling */
 }
 
 /* Login Page Top Bar */
@@ -293,7 +295,9 @@ input {
 
 @media screen and (max-width: 768px) {
   .login-container {
-    height: 100dvh; /* Use dynamic viewport height for better mobile handling */
+    height: auto !important;
+    min-height: 100dvh; /* Ensures proper mobile viewport height */
+    overflow-y: scroll; /* Enables scrolling */
   }
 
   .input-container {

@@ -430,7 +430,13 @@ const Login = () => {
             e.preventDefault();
             handleLoginOrRegisterSubmit(e);
           }}
+          style={{
+            overflowY: 'auto',
+            maxHeight: 'calc(100vh - 120px)', // Allows scrolling but prevents cutoff
+            paddingBottom: '20px',
+          }}
         >
+
           <h2>Create Your Account</h2>
           <p className="subheading-signup">Complete the form below to start your journey with Artalyze.</p>
           <input

@@ -5,30 +5,29 @@ html, body {
 
 .login-container {
   background-color: white;
-  min-height: 100vh; /* Ensure it can expand beyond viewport */
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Prevents forced centering */
-  overflow-y: auto; /* Enables scrolling */
-  padding: 20px 0; /* Prevents footer from blocking content */
-  max-height: 100vh; /* Ensures content doesn’t get cut off */
+  justify-content: flex-start;
+  overflow-y: auto; /* Ensures scrolling */
+  padding-top: 80px; /* Pushes content below the top bar */
+  padding-bottom: 60px; /* Keeps footer visible */
 }
-
-
 
 /* Login Page Top Bar */
 .login-top-bar {
-  height: 50px; /* Ensures enough space for the title bar */
-  width: 100%;
-  background-color: white;
-  border-bottom: 2px solid #ccc;
-  position: fixed;
-  top: 0;
-  z-index: 10;
-  padding-top: 10px; /* Adds breathing room */
+  display: flex;
+  justify-content: center; /* Center the title horizontally */
+  align-items: center; /* Center the title vertically */
+  height: 50px; /* Set height to 50px */
+  width: 100%; /* Make it span the entire width */
+  background-color: white; /* Background color */
+  border-bottom: 2px solid #ccc; /* Separator */
+  position: fixed; /* Fix it at the very top */
+  top: 0; /* Stick it to the very top */
+  z-index: 10; /* Ensure it stays above other elements */
 }
-
 
 /* Login App Title */
 .login-app-title {

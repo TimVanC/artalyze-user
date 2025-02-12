@@ -1060,8 +1060,16 @@ const Game = () => {
                             }
                             lastTapTime.current = currentTime;
                           }}
+                          onContextMenu={(e) => e.preventDefault()} // ❌ Block right-click & save menu
+                          onTouchStart={(e) => {
+                            e.preventDefault(); // ❌ Block iOS long-press menu
+                            e.stopPropagation();
+                          }}
+                          onMouseDown={(e) => e.preventDefault()} // ❌ Prevents dragging behavior
+                          style={{ touchAction: "none", pointerEvents: "auto", userSelect: "none" }} // ❌ Fully disables long-press
                           draggable="false"
                         />
+
                       </div>
                     ))}
                   </div>

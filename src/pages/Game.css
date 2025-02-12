@@ -158,34 +158,33 @@ h1 {
 /* Navigation Buttons */
 .navigation-buttons {
   margin: 10px 0;
+  display: flex;
+  justify-content: center;
+  gap: 1.5vh; /* Space between circles */
 }
 
 .navigation-buttons .nav-button {
   background-color: #ccc;
   color: white;
-  width: 5vh;  /* Slightly smaller */
-  height: 5vh;
+  width: 2.5vh;  /* Small circles */
+  height: 2.5vh;
   border-radius: 50%;
   border: none;
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.8vh;
+  font-size: 0; /* Hide text */
   cursor: pointer;
-  margin: 0 1.5vh; /* More spacing */
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 /* Selected and Active Nav Buttons */
 .navigation-buttons .nav-button.selected {
   background-color: #A8D5BA;
-  color: white;
 }
 
 .navigation-buttons .nav-button.active {
   background-color: #4d73af;
-  color: white;
-  font-weight: bold;
 }
 
 /* Submit & Clear Buttons */

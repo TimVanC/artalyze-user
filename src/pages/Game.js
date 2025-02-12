@@ -1102,11 +1102,13 @@ const Game = () => {
                   setCurrentIndex(index);
                   swiperRef.current.slideToLoop(index);
                 }}
+                aria-label={`Go to image pair ${index + 1}`} /* Accessibility */
               >
-                {index + 1}
+                • {/* Replace number with a small dot */}
               </button>
             ))}
           </div>
+
 
           <div className="button-container">
             <button

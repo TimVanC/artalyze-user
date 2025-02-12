@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import logo from '../assets/images/artalyze-logo.png';
@@ -22,23 +22,7 @@ const Login = () => {
   const [forgotPassword, setForgotPassword] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [subheadingText, setSubheadingText] = useState('Log in or create an account');
-  const [showLoginSubheading, setShowLoginSubheading] = useState(false);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-
-  useEffect(() => {
-    const inputFields = document.querySelectorAll('input');
-    inputFields.forEach(input => {
-      input.addEventListener('focus', () => {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-      });
-    });
-
-    return () => {
-      inputFields.forEach(input => {
-        input.removeEventListener('focus', () => { });
-      });
-    };
-  }, []);
+  const [showLoginSubheading, setShowLoginSubheading] = useState(false); // To toggle between the subheadings
 
   // Validate email format
   const isEmailValid = (email) => {
@@ -222,14 +206,11 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-top-bar">
-        <div className="login-app-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-          Artalyze
-        </div>
+        <div className="login-app-title">Artalyze</div>
       </div>
       <div className="login-logo-container">
         <img src={logo} alt="Artalyze Logo" className="login-app-logo" />
       </div>
-
       {
         step === 1 && (
           <form
@@ -320,16 +301,12 @@ const Login = () => {
               style={{
                 backgroundColor: isEmailValid(email) ? '#4d73af' : '#333',
                 cursor: isEmailValid(email) ? 'pointer' : 'not-allowed',
-                position: isKeyboardVisible ? 'absolute' : 'relative',
-                bottom: isKeyboardVisible ? '20px' : 'unset',
-                marginTop: isKeyboardVisible ? '10px' : '20px',
               }}
               disabled={!isEmailValid(email)}
-              onClick={isPasswordVisible ? handleLoginSubmit : undefined}
+              onClick={isPasswordVisible ? handleLoginSubmit : undefined} // Login if password is visible
             >
               {isPasswordVisible ? 'Log In' : 'Next'}
             </button>
-
 
             <div className="terms-container">
               <p>
@@ -391,16 +368,11 @@ const Login = () => {
               style={{
                 backgroundColor: otp.length === 6 && /^\d{6}$/.test(otp) ? '#4d73af' : '#333',
                 cursor: otp.length === 6 && /^\d{6}$/.test(otp) ? 'pointer' : 'not-allowed',
-                position: isKeyboardVisible ? 'absolute' : 'relative',
-                bottom: isKeyboardVisible ? '20px' : 'unset',
-                marginTop: isKeyboardVisible ? '10px' : '20px',
-                display: 'block',
               }}
               disabled={otp.length !== 6 || !/^\d{6}$/.test(otp)}
             >
               Submit
             </button>
-
             <p className="terms-container">
               Didn’t receive a code? Check your spam folder or{' '}
               <a
@@ -433,13 +405,7 @@ const Login = () => {
             e.preventDefault();
             handleLoginOrRegisterSubmit(e);
           }}
-          style={{
-            overflowY: 'auto',
-            maxHeight: 'calc(100vh - 120px)', // Allows scrolling but prevents cutoff
-            paddingBottom: '20px',
-          }}
         >
-
           <h2>Create Your Account</h2>
           <p className="subheading-signup">Complete the form below to start your journey with Artalyze.</p>
           <input
@@ -513,58 +479,63 @@ const Login = () => {
             className="next-button"
             style={{
               backgroundColor:
-                firstName && lastName && validatePassword(password) && password === confirmPassword
+                firstName &&
+                  lastName &&
+                  validatePassword(password) &&
+                  password === confirmPassword
                   ? '#4d73af'
-                  : '#aaa', // Keep it visible but disabled if fields are empty
+                  : '#333',
               cursor:
-                firstName && lastName && validatePassword(password) && password === confirmPassword
+                firstName &&
+                  lastName &&
+                  validatePassword(password) &&
+                  password === confirmPassword
                   ? 'pointer'
                   : 'not-allowed',
-              display: 'block',  // Ensures it's always visible
-              width: '100%',
-              marginTop: '20px'
             }}
             disabled={
-              !firstName || !lastName || !validatePassword(password) || password !== confirmPassword
+              !firstName ||
+              !lastName ||
+              !validatePassword(password) ||
+              password !== confirmPassword
             }
           >
             Sign Up
           </button>
-
         </form>
       )}
 
 
-      {step === 4 && (
-        <form onSubmit={handleLoginSubmit}>
-          <h2>Log In</h2>
-          {/* Email field for pre-filled email */}
-          {email && (
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              readOnly
-              className="prefilled-email" // Optional class for styling pre-filled email
-            />
-          )}
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="button" className="forgot-password-button" onClick={handleForgotPassword}>
-            Forgot Password?
-          </button>
-          {error && <p className="error-message">{error}</p>}
-          <button type="submit" className="next-button">
-            Log In
-          </button>
-        </form>
-      )}
+{step === 4 && (
+  <form onSubmit={handleLoginSubmit}>
+    <h2>Log In</h2>
+    {/* Email field for pre-filled email */}
+    {email && (
+      <input
+        type="email"
+        placeholder="Enter your email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        readOnly
+        className="prefilled-email" // Optional class for styling pre-filled email
+      />
+    )}
+    <input
+      type="password"
+      placeholder="Enter your password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      required
+    />
+    <button type="button" className="forgot-password-button" onClick={handleForgotPassword}>
+      Forgot Password?
+    </button>
+    {error && <p className="error-message">{error}</p>}
+    <button type="submit" className="next-button">
+      Log In
+    </button>
+  </form>
+)}
 
 
       {step === 5 && (

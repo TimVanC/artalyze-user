@@ -47,6 +47,7 @@ const Game = () => {
   const [showMobileWarning, setShowMobileWarning] = useState(false);
   const [error, setError] = useState('');
   const swiperRef = useRef(null);
+  const lastTapRef = useRef(0);
 
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
   const { selections = [], updateSelections, isLoading, error: selectionsError } = useSelections(userId, isLoggedIn);
@@ -742,29 +743,16 @@ const Game = () => {
   };
 
   const handleSelection = (selectedImage, isHumanSelection) => {
-    console.log("Image clicked:", selectedImage, "Is human:", isHumanSelection);
-
     const updatedSelections = [...selections];
     updatedSelections[currentIndex] = {
       selected: selectedImage,
       isHumanSelection,
     };
-
-    console.log("Updated selections:", updatedSelections);
-
-    // Update selections in both the database and local storage
+  
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
-
-    // Move to the next pair
-    setTimeout(() => {
-      if (swiperRef.current) {
-        const nextIndex = currentIndex + 1 < imagePairs.length ? currentIndex + 1 : 0;
-        setCurrentIndex(nextIndex);
-        swiperRef.current.slideToLoop(nextIndex);
-      }
-    }, 200);
-  };
+    };
+  
 
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available
@@ -1053,21 +1041,25 @@ const Game = () => {
                         className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
                         onClick={() => handleSelection(image, image === pair.human)}
                       >
-                        <img
-                          src={image}
-                          alt={`Painting ${idx + 1}`}
-                          onContextMenu={(e) => e.preventDefault()} // Disable right-click
-                          onClick={() => handleSelection(image, image === pair.human)} // ✅ Clicking selects the image
-                          onTouchStart={(e) => {
-                            longPressTimer.current = setTimeout(() => {
-                              setEnlargedImage(image);
-                              setEnlargedImageMode("game-screen");
-                            }, 500);
-                          }}
-                          onTouchEnd={() => clearTimeout(longPressTimer.current)}
-                          draggable="false"
-                        />
+<img
+  src={image}
+  alt={`Painting ${idx + 1}`}
+  onContextMenu={(e) => e.preventDefault()} // Disable right-click
+  onClick={(e) => {
+    const currentTime = new Date().getTime();
+    const timeSinceLastTap = currentTime - lastTapRef.current;
 
+    if (timeSinceLastTap < 300) { // Double-tap detected (within 300ms)
+      setEnlargedImage(image);
+      setEnlargedImageMode("game-screen");
+    } else {
+      handleSelection(image, image === pair.human); // Normal selection
+    }
+
+    lastTapRef.current = currentTime;
+  }}
+  draggable="false"
+/>
                       </div>
                     ))}
                   </div>

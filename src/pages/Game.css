@@ -812,14 +812,15 @@ h1 {
     font-size: 22px;
   }
 
-  /* Increase image pair size (Using vh instead of fixed px) */
+  /* Increase image pair size */
   .image-container {
     width: 30vh;
     height: 30vh;
   }
 
-  /* Change image pairs to display horizontally */
+  /* ✅ Fix: Display image pairs horizontally */
   .image-pair-container {
+    display: flex; /* Enables horizontal layout */
     flex-direction: row;
     justify-content: center;
     align-items: center;
@@ -849,46 +850,6 @@ h1 {
     font-size: 2vh;
     padding: 1vh 3vh;
   }
-
-  /* Increase completion message font size */
-  .completion-header {
-    font-size: 28px;
-    margin-top: 15px;
-  }
-
-  /* Increase completion image pair selection highlight border */
-  .thumbnail-container.correct {
-    border: 5px solid #4CAF50;
-    box-shadow: 0 0 12px 5px rgba(76, 175, 80, 0.5);
-  }
-
-  .thumbnail-container.incorrect {
-    border: 5px solid #FF3D3D;
-    box-shadow: 0 0 12px 5px rgba(255, 61, 61, 0.5);
-  }
-
-  /* Increase completion image thumbnail size */
-  .thumbnail-container {
-    width: 12vh !important;
-    height: 12vh !important;
-  }
-
-  /* Adjust thumbnail grid spacing */
-  .horizontal-thumbnail-grid {
-    gap: 1.2vh !important;
-  }
-
-  /* Increase See Stats and Share button sizes */
-  .completion-buttons {
-    margin-top: 1.5vh !important;
-  }
-
-  .stats-button, 
-  .share-button {
-    width: 18vw !important;
-    height: 5vh !important;
-    font-size: 1.3rem !important;
-  }
 }
 
 /* ✅ Desktops & Large Screens */
@@ -902,7 +863,9 @@ h1 {
     font-size: 30px !important;
   }
 
+  /* ✅ Fix: Ensure image pairs remain side-by-side */
   body .game-container .image-pair-container {
+    display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
     align-items: center !important;
@@ -931,8 +894,8 @@ h1 {
   }
 }
 
-/* Dark Mode */
 
+/* Dark Mode */
 body.dark-mode .top-bar {
   background-color: #181818; /* Match dark mode background */
   border-bottom: 2px solid #222; /* Slightly darker for contrast */

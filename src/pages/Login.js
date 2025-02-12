@@ -388,11 +388,16 @@ const Login = () => {
               style={{
                 backgroundColor: otp.length === 6 && /^\d{6}$/.test(otp) ? '#4d73af' : '#333',
                 cursor: otp.length === 6 && /^\d{6}$/.test(otp) ? 'pointer' : 'not-allowed',
+                position: isKeyboardVisible ? 'absolute' : 'relative',
+                bottom: isKeyboardVisible ? '20px' : 'unset',
+                marginTop: isKeyboardVisible ? '10px' : '20px',
+                display: 'block',
               }}
               disabled={otp.length !== 6 || !/^\d{6}$/.test(otp)}
             >
               Submit
             </button>
+
             <p className="terms-container">
               Didn’t receive a code? Check your spam folder or{' '}
               <a

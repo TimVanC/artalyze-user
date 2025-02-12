@@ -11,6 +11,10 @@ html, body {
   background-color: #ffffff; /* Set the game screen background to white */
 }
 
+img {
+  -webkit-touch-callout: none; 
+}
+
 /* Top Bar */
 .top-bar {
   display: flex;

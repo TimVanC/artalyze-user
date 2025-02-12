@@ -1,12 +1,14 @@
 .login-container {
   background-color: white; /* Set the background to white */
-  height: 100vh;
+  min-height: 100vh; /* Change height to min-height */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Center content vertically */
-  padding-bottom: 60px; /* Add padding to avoid overlap with the footer */
+  justify-content: flex-start; /* Align content to the top */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding-bottom: 60px; /* Keep padding to avoid overlap with footer */
 }
+
 
 /* Login Page Top Bar */
 .login-top-bar {

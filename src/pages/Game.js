@@ -47,8 +47,9 @@ const Game = () => {
   const [showMobileWarning, setShowMobileWarning] = useState(false);
   const [error, setError] = useState('');
   const swiperRef = useRef(null);
-  const lastTapRef = useRef(0);
-  const tapTimeoutRef = useRef(null);
+  const lastTapTime = useRef(0);
+  const singleTapTimeout = useRef(null);
+
 
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
   const { selections = [], updateSelections, isLoading, error: selectionsError } = useSelections(userId, isLoggedIn);
@@ -1040,30 +1041,25 @@ const Game = () => {
                       <div
                         key={idx}
                         className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
-                        onClick={() => handleSelection(image, image === pair.human)}
                       >
                         <img
                           src={image}
                           alt={`Painting ${idx + 1}`}
-                          onContextMenu={(e) => e.preventDefault()} // Disable right-click & long-press menu
-                          onTouchStart={(e) => {
-                            e.preventDefault(); // ✅ Blocks iOS long-press menu
-                          }}
                           onClick={(e) => {
                             const currentTime = new Date().getTime();
-                            const timeSinceLastTap = currentTime - lastTapRef.current;
+                            const timeSinceLastTap = currentTime - lastTapTime.current;
 
-                            if (timeSinceLastTap < 300) { // ✅ Strict double-tap window
-                              clearTimeout(tapTimeoutRef.current); // ✅ Cancel selection event
+                            if (timeSinceLastTap < 300) { // ✅ Double-tap detected
+                              clearTimeout(singleTapTimeout.current); // ✅ Cancel selection
                               setEnlargedImage(image);
                               setEnlargedImageMode("game-screen");
                             } else {
-                              tapTimeoutRef.current = setTimeout(() => {
-                                handleSelection(image, image === pair.human); // ✅ Delayed selection
+                              singleTapTimeout.current = setTimeout(() => {
+                                handleSelection(image, image === pair.human); // ✅ Select image only if no double-tap
                               }, 300);
                             }
 
-                            lastTapRef.current = currentTime;
+                            lastTapTime.current = currentTime;
                           }}
                           draggable="false"
                         />

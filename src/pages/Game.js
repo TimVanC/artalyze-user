@@ -1056,7 +1056,7 @@ const Game = () => {
                             } else {
                               singleTapTimeout.current = setTimeout(() => {
                                 handleSelection(image, image === pair.human); // ✅ Select image only if no double-tap
-                              }, 300);
+                              }, 200);
                             }
 
                             lastTapTime.current = currentTime;

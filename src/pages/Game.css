@@ -193,20 +193,20 @@ h1 {
   justify-content: center;
   align-items: center;
   gap: 15px;
-  margin-top: 2vh; /* Bring buttons closer to navigation */
+  margin-top: 2vh; /* Keeps them close to nav buttons */
 }
 
 .submit-button {
   background-color: grey;
   color: white;
-  padding: 1.5vh 3vh;
+  padding: 1.5vh 3.5vh; /* Slightly wider */
   font-size: 2.5vh;
   border: none;
   cursor: pointer;
   border-radius: 1.5vh;
   width: auto;
-  min-width: 18vw; /* Keep Submit larger */
-  max-width: 22vw;
+  min-width: 20vw; /* Increased width */
+  max-width: 25vw;
   transition: all 0.3s ease;
   display: flex;
   justify-content: center;
@@ -236,15 +236,15 @@ h1 {
   background-color: transparent;
   border: 2px solid #909090;
   color: grey;
-  padding: 1vh 2vh; /* Reduced size */
-  font-size: 2vh; /* Keep text readable */
+  padding: 1vh 2.5vh; /* Slightly wider */
+  font-size: 2vh;
   border-radius: 1.5vh;
   cursor: not-allowed;
   transition: all 0.3s ease;
   letter-spacing: .1rem;
   width: auto;
-  min-width: 12vw; /* Make it smaller than Submit */
-  max-width: 16vw;
+  min-width: 14vw; /* Increased width */
+  max-width: 18vw;
   display: flex;
   justify-content: center;
   align-items: center;

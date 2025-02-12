@@ -786,7 +786,7 @@ h1 {
 /* Media Queries */
 
 /* ✅ Large Tablets - iPad Pro 12.9", Surface Pro, Galaxy Tab S8 Ultra (1024px x 1366px) */
-@media (min-width: 769px) and (max-width: 1279px) and (max-height: 1366px) {
+@media (min-width: 1100px) and (max-width: 1279px) and (max-height: 1366px) {
   /* Increase top bar text size */
   .app-title {
     font-size: 26px;

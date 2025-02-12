@@ -429,6 +429,25 @@ const Game = () => {
     }
   }, [userId, isGameComplete, imagePairs.length]);
 
+  useEffect(() => {
+    const disableContextMenu = (event) => event.preventDefault();
+    const disableLongPress = (event) => {
+      if (event.target.tagName === 'IMG') {
+        event.preventDefault();
+      }
+    };
+
+    document.addEventListener('contextmenu', disableContextMenu);
+    document.addEventListener('touchstart', disableLongPress, { passive: false });
+    document.addEventListener('touchend', disableLongPress, { passive: false });
+
+    return () => {
+      document.removeEventListener('contextmenu', disableContextMenu);
+      document.removeEventListener('touchstart', disableLongPress);
+      document.removeEventListener('touchend', disableLongPress);
+    };
+  }, []);
+
   // Persist isGameComplete state across refreshes
   useEffect(() => {
     if (isGameComplete) {
@@ -1043,7 +1062,13 @@ const Game = () => {
                         className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
                         onClick={() => handleSelection(image, image === pair.human)}
                       >
-                        <img src={image} alt={`Painting ${idx + 1}`} />
+                        <img
+                          src={image}
+                          alt={`Painting ${idx + 1}`}
+                          onContextMenu={(e) => e.preventDefault()}
+                          onTouchStart={(e) => e.preventDefault()}
+                        />
+
                       </div>
                     ))}
                   </div>
@@ -1204,13 +1229,23 @@ const Game = () => {
                       className={`thumbnail-container human ${selection?.selected === pair.human ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
                       onClick={() => setEnlargedImage(pair.human)}
                     >
-                      <img src={pair.human} alt={`Human Painting for pair ${index + 1}`} />
+                      <img
+                        src={pair.human}
+                        alt={`Human Painting for pair ${index + 1}`}
+                        onContextMenu={(e) => e.preventDefault()}
+                        onTouchStart={(e) => e.preventDefault()}
+                      />
                     </div>
                     <div
                       className={`thumbnail-container ai ${selection?.selected === pair.ai ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
-                      <img src={pair.ai} alt={`AI Painting for pair ${index + 1}`} />
+                      <img
+                        src={pair.ai}
+                        alt={`AI Painting for pair ${index + 1}`}
+                        onContextMenu={(e) => e.preventDefault()}
+                        onTouchStart={(e) => e.preventDefault()}
+                      />
                     </div>
                   </div>
                 );
@@ -1267,7 +1302,15 @@ const Game = () => {
       {enlargedImage && (
         <div className={`enlarge-modal ${enlargedImageMode}`} onClick={closeEnlargedImage}>
           <div className="enlarged-image-container">
-            <img src={enlargedImage} alt="Enlarged view" className="enlarged-image" onClick={(e) => e.stopPropagation()} />
+            <img
+              src={enlargedImage}
+              alt="Enlarged view"
+              className="enlarged-image"
+              onClick={(e) => e.stopPropagation()}
+              onContextMenu={(e) => e.preventDefault()}
+              onTouchStart={(e) => e.preventDefault()}
+            />
+
           </div>
         </div>
       )}

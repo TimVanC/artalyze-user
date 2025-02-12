@@ -33,17 +33,19 @@
   color: #333;
 }
 
-/* Login Logo Container */
 .login-logo-container {
-  margin: 20px 0; /* Add some spacing around the logo */
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  height: auto;  /* Allow it to adjust dynamically */
+  padding: 20px 0;
+  overflow: visible;  /* Prevent clipping */
 }
 
-/* Login Logo Styling */
 .login-app-logo {
-  width: 125px; /* Set the logo width */
-  max-width: 90%; /* Ensure it resizes properly on smaller screens */
-  height: auto; /* Maintain the aspect ratio */
+  max-width: 150px;  /* Adjust size to fit */
+  height: auto;
 }
 
 h2 {

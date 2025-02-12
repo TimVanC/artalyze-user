@@ -222,11 +222,14 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-top-bar">
-        <div className="login-app-title">Artalyze</div>
+        <div className="login-app-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+          Artalyze
+        </div>
       </div>
       <div className="login-logo-container">
         <img src={logo} alt="Artalyze Logo" className="login-app-logo" />
       </div>
+
       {
         step === 1 && (
           <form
@@ -510,34 +513,23 @@ const Login = () => {
             className="next-button"
             style={{
               backgroundColor:
-                firstName &&
-                  lastName &&
-                  validatePassword(password) &&
-                  password === confirmPassword
+                firstName && lastName && validatePassword(password) && password === confirmPassword
                   ? '#4d73af'
-                  : '#333',
+                  : '#aaa',
               cursor:
-                firstName &&
-                  lastName &&
-                  validatePassword(password) &&
-                  password === confirmPassword
+                firstName && lastName && validatePassword(password) && password === confirmPassword
                   ? 'pointer'
                   : 'not-allowed',
-              position: isKeyboardVisible ? 'absolute' : 'relative',
-              bottom: isKeyboardVisible ? '20px' : 'unset',
-              marginTop: isKeyboardVisible ? '10px' : '20px',
-              display: 'block', // Ensure it is always visible
+              display: 'block',  // Ensure it’s always visible
+              width: '100%',  // Make it fit better
+              marginTop: '20px'
             }}
             disabled={
-              !firstName ||
-              !lastName ||
-              !validatePassword(password) ||
-              password !== confirmPassword
+              !firstName || !lastName || !validatePassword(password) || password !== confirmPassword
             }
           >
             Sign Up
           </button>
-
         </form>
       )}
 

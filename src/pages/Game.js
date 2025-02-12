@@ -343,7 +343,7 @@ const Game = () => {
       setLoading(false);
     }
   };
-  
+
 
   // Restore game state function
   const restoreGameState = () => {
@@ -1037,25 +1037,20 @@ const Game = () => {
               {imagePairs.map((pair, index) => (
                 <SwiperSlide key={index}>
                   <div className="image-pair-container">
-                    {pair.images && pair.images.length > 0 ? (
-                      pair.images.map((image, idx) => (
+                    <div className="image-wrapper"> {/* Wrapper to prevent clipping */}
+                      {pair.images.map((image, idx) => (
                         <div
                           key={idx}
                           className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
                           onClick={() => handleSelection(image, image === pair.human)}
-                          onTouchStart={() => handleLongPress(image)} // Start long press
-                          onTouchEnd={handleRelease} // Release long press
-                          onMouseDown={() => handleLongPress(image)} // For desktop users
-                          onMouseUp={handleRelease} // Release long press on desktop
                         >
                           <img src={image} alt={`Painting ${idx + 1}`} />
                         </div>
-                      ))
-                    ) : (
-                      <p>No images available for this pair.</p>
-                    )}
+                      ))}
+                    </div>
                   </div>
                 </SwiperSlide>
+
               ))}
             </Swiper>
           ) : (

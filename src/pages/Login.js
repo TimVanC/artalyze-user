@@ -26,18 +26,20 @@ const Login = () => {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerHeight < 500) { // Detect keyboard open state
-        setIsKeyboardVisible(true);
-      } else {
-        setIsKeyboardVisible(false);
-      }
+    const inputFields = document.querySelectorAll('input');
+    inputFields.forEach(input => {
+      input.addEventListener('focus', () => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      });
+    });
+  
+    return () => {
+      inputFields.forEach(input => {
+        input.removeEventListener('focus', () => {});
+      });
     };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
+  }, []);  
+  
   // Validate email format
   const isEmailValid = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -546,12 +548,18 @@ const Login = () => {
             Forgot Password?
           </button>
           {error && <p className="error-message">{error}</p>}
-          <button type="submit" className="next-button" style={{
-            position: isKeyboardVisible ? 'absolute' : 'relative',
-            bottom: isKeyboardVisible ? '20px' : 'unset'
-          }}>
+          <button
+            type="submit"
+            className="next-button"
+            style={{
+              position: 'relative',
+              bottom: isKeyboardVisible ? '10px' : 'unset',
+              marginTop: isKeyboardVisible ? '10px' : '20px',
+            }}
+          >
             Log In
           </button>
+
         </form>
       )}
 

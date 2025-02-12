@@ -431,29 +431,13 @@ const Game = () => {
 
   useEffect(() => {
     const disableContextMenu = (event) => event.preventDefault();
-    const disableLongPress = (event) => {
-      if (event.target.tagName === 'IMG') {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    };
 
-    document.addEventListener('contextmenu', disableContextMenu);
-    document.addEventListener('touchstart', disableLongPress, { passive: false });
-    document.addEventListener('touchend', disableLongPress, { passive: false });
-    document.addEventListener('mousedown', disableLongPress);
-    document.addEventListener('mouseup', disableLongPress);
+    document.addEventListener("contextmenu", disableContextMenu);
 
     return () => {
-      document.removeEventListener('contextmenu', disableContextMenu);
-      document.removeEventListener('touchstart', disableLongPress);
-      document.removeEventListener('touchend', disableLongPress);
-      document.removeEventListener('mousedown', disableLongPress);
-      document.removeEventListener('mouseup', disableLongPress);
+      document.removeEventListener("contextmenu", disableContextMenu);
     };
   }, []);
-
-
 
   // Persist isGameComplete state across refreshes
   useEffect(() => {

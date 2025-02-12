@@ -836,17 +836,17 @@ h1 {
     margin: 0.8vh;
   }
 
-  /* ✅ Hardcoded Button Sizes */
-  .submit-button {
-    width: 160px;
-    height: 40px;
-    padding: 8px 26px;
+  /* ✅ Force Button Sizes with Higher Specificity */
+  .game-container .button-container .submit-button {
+    width: 160px !important;
+    height: 40px !important;
+    padding: 8px 26px !important;
   }
 
-  .clear-button {
-    width: 120px;
-    height: 35px;
-    padding: 5.5px 20px;
+  .game-container .button-container .clear-button {
+    width: 120px !important;
+    height: 35px !important;
+    padding: 5.5px 20px !important;
   }
 }
 
@@ -878,14 +878,14 @@ h1 {
     margin-top: 0.6vh;
   }
 
-  /* ✅ Hardcoded Button Sizes */
-  body .game-container .submit-button {
+  /* ✅ Force Button Sizes with Higher Specificity */
+  body .game-container .button-container .submit-button {
     width: 160px !important;
     height: 40px !important;
     padding: 8px 26px !important;
   }
 
-  body .game-container .clear-button {
+  body .game-container .button-container .clear-button {
     width: 120px !important;
     height: 35px !important;
     padding: 5.5px 20px !important;

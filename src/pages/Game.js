@@ -433,14 +433,22 @@ const Game = () => {
   }, [userId, isGameComplete, imagePairs.length]);
 
   useEffect(() => {
-    const disableContextMenu = (event) => event.preventDefault();
-
-    document.addEventListener("contextmenu", disableContextMenu);
-
+    const disableLongPress = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+  
+    document.addEventListener("contextmenu", disableLongPress); // ✅ Block right-click
+    document.addEventListener("touchstart", disableLongPress, { passive: false }); // ✅ Block long-press
+    document.addEventListener("mousedown", disableLongPress); // ✅ Block mouse long-click
+  
     return () => {
-      document.removeEventListener("contextmenu", disableContextMenu);
+      document.removeEventListener("contextmenu", disableLongPress);
+      document.removeEventListener("touchstart", disableLongPress);
+      document.removeEventListener("mousedown", disableLongPress);
     };
   }, []);
+  
 
 
   // Persist isGameComplete state across refreshes

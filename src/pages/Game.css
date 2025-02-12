@@ -547,31 +547,30 @@ h1 {
 /* Completion Buttons */
 .completion-buttons {
   display: flex;
-  justify-content: center; /* Centers the buttons horizontally */
-  align-items: center; /* Aligns buttons vertically */
-  gap: 20px; /* Equal spacing between buttons */
-  margin-top: 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 2vw; /* Adjusts spacing between buttons */
+  margin-top: 3vh;
 }
 
+/* ✅ Standardized Button Styles */
 .stats-button,
 .share-button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 0.5em 1.5em; /* Match the padding of the completion badge */
-  border: none;
-  border-radius: 8px; /* Rounded edges for both buttons */
-  font-size: 1.2rem; /* Adjust font size */
-  font-weight: bold;
-  cursor: pointer;
   display: flex;
-  justify-content: center; /* Centers content horizontally within the button */
-  align-items: center; /* Centers content vertically within the button */
-  gap: 8px; /* Space between icon and text */
-  width: 200px; /* Fixed width for both buttons */
-  height: 50px; /* Fixed height for both buttons */
-  margin-top: 0 !important; /* Override any inherited margin-top */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow for depth */
-  transition: all 0.3s ease; /* Smooth transition for hover */
+  justify-content: center;
+  align-items: center;
+  gap: 0.8vh; /* Space between icon and text */
+  font-size: 2vh; /* Adjust font size slightly smaller */
+  font-weight: bold;
+  border-radius: 1vh;
+  border: none;
+  cursor: pointer;
+  padding: 1.5vh 4vh;
+  width: 20vw;
+  max-width: 200px;
+  height: 5.5vh; /* Adjust button height */
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
 .stats-button:hover,
@@ -580,19 +579,21 @@ h1 {
 }
 
 .stats-button {
-  background-color: #4d73af; /* Blue for stats */
+  background-color: #4d73af; /* Blue for Stats */
+  color: white;
 }
 
 .stats-button:hover {
-  background-color: #355a86; /* Darker blue on hover */
+  background-color: #355a86; /* Darker Blue on Hover */
 }
 
 .share-button {
-  background-color: #7bbf70; /* Green for share */
+  background-color: #5c9b62; /* Green for Share */
+  color: white;
 }
 
 .share-button:hover {
-  background-color: #4e8a53; /* Darker green on hover */
+  background-color: #4e8a53; /* Darker Green on Hover */
 }
 
 /* Accessibility */
@@ -784,6 +785,34 @@ h1 {
 
 /* Media Queries */
 
+/* ✅ Adjust for Larger Screens */
+@media (min-width: 1024px) {
+  .completion-buttons {
+    gap: 2.5vw;
+  }
+
+  .stats-button,
+  .share-button {
+    font-size: 1.8vh; /* Slightly smaller font */
+    width: 18vw;
+    max-width: 180px;
+    height: 5vh;
+    padding: 1.2vh 3.5vh;
+  }
+}
+
+/* ✅ Adjust for Smaller Screens */
+@media (max-width: 768px) {
+  .stats-button,
+  .share-button {
+    font-size: 1.6vh;
+    width: 22vw;
+    max-width: 160px;
+    height: 4.5vh;
+    padding: 1vh 3vh;
+  }
+}
+
 /* ✅ Large Tablets - iPad Pro 12.9", Surface Pro, Galaxy Tab S8 Ultra (1024px x 1366px) */
 @media (min-width: 769px) and (max-width: 1279px) and (max-height: 1366px) {
   /* Increase top bar text size */
@@ -906,10 +935,6 @@ h1 {
     padding: 5.5px 20px !important;
   }
 }
-
-
-
-
 
 /* Dark Mode */
 body.dark-mode .top-bar {

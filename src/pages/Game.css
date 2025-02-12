@@ -127,8 +127,8 @@ h1 {
 
 .image-container {
   position: relative;
-  width: 27.3vh; /* Responsive size */
-  height: 27.3vh;
+  width: 25vh; /* Responsive size */
+  height: 25vh;
   background-color: #f5f5f5;
   border-radius: 8px;
   overflow: hidden;

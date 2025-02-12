@@ -1037,19 +1037,18 @@ const Game = () => {
               {imagePairs.map((pair, index) => (
                 <SwiperSlide key={index}>
                   <div className="image-pair-container">
-                    <div className="image-wrapper"> {/* Wrapper to prevent clipping */}
-                      {pair.images.map((image, idx) => (
-                        <div
-                          key={idx}
-                          className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
-                          onClick={() => handleSelection(image, image === pair.human)}
-                        >
-                          <img src={image} alt={`Painting ${idx + 1}`} />
-                        </div>
-                      ))}
-                    </div>
+                    {pair.images.map((image, idx) => (
+                      <div
+                        key={idx}
+                        className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
+                        onClick={() => handleSelection(image, image === pair.human)}
+                      >
+                        <img src={image} alt={`Painting ${idx + 1}`} />
+                      </div>
+                    ))}
                   </div>
                 </SwiperSlide>
+
 
               ))}
             </Swiper>

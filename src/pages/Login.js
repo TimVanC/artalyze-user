@@ -523,6 +523,10 @@ const Login = () => {
                   password === confirmPassword
                   ? 'pointer'
                   : 'not-allowed',
+              position: isKeyboardVisible ? 'absolute' : 'relative',
+              bottom: isKeyboardVisible ? '20px' : 'unset',
+              marginTop: isKeyboardVisible ? '10px' : '20px',
+              display: 'block', // Ensure it is always visible
             }}
             disabled={
               !firstName ||
@@ -533,6 +537,7 @@ const Login = () => {
           >
             Sign Up
           </button>
+
         </form>
       )}
 

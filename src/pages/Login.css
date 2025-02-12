@@ -38,8 +38,8 @@
   transition: opacity 0.3s ease, height 0.3s ease; /* Smoothly hides it */
 }
 
-.login-logo-container.hidden {
-  display: none; /* Fully removes the element */
+.small-logo {
+  width: 47px;
 }
 
 /* Login Logo Styling */
@@ -47,6 +47,7 @@
   width: 125px; /* Set the logo width */
   max-width: 90%; /* Ensure it resizes properly on smaller screens */
   height: auto; /* Maintain the aspect ratio */
+  transition: width 0.3s ease-in-out;
 }
 
 h2 {

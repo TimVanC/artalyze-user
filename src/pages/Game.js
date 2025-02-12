@@ -434,19 +434,26 @@ const Game = () => {
     const disableLongPress = (event) => {
       if (event.target.tagName === 'IMG') {
         event.preventDefault();
+        event.stopPropagation();
       }
     };
 
     document.addEventListener('contextmenu', disableContextMenu);
     document.addEventListener('touchstart', disableLongPress, { passive: false });
     document.addEventListener('touchend', disableLongPress, { passive: false });
+    document.addEventListener('mousedown', disableLongPress);
+    document.addEventListener('mouseup', disableLongPress);
 
     return () => {
       document.removeEventListener('contextmenu', disableContextMenu);
       document.removeEventListener('touchstart', disableLongPress);
       document.removeEventListener('touchend', disableLongPress);
+      document.removeEventListener('mousedown', disableLongPress);
+      document.removeEventListener('mouseup', disableLongPress);
     };
   }, []);
+
+
 
   // Persist isGameComplete state across refreshes
   useEffect(() => {
@@ -1067,7 +1074,9 @@ const Game = () => {
                           alt={`Painting ${idx + 1}`}
                           onContextMenu={(e) => e.preventDefault()}
                           onTouchStart={(e) => e.preventDefault()}
+                          onMouseDown={(e) => e.preventDefault()}
                         />
+
 
                       </div>
                     ))}
@@ -1101,12 +1110,15 @@ const Game = () => {
                         <div className="enlarged-image-container">
                           {/* Display only one image per slide (human or AI) */}
                           <img
-                            src={
-                              enlargedImageIndex % 2 === 0 ? pair.human : pair.ai
-                            }
-                            alt={`Enlarged Painting ${index + 1}`}
+                            src={enlargedImage}
+                            alt="Enlarged view"
                             className="enlarged-image"
+                            onClick={(e) => e.stopPropagation()}
+                            onContextMenu={(e) => e.preventDefault()}
+                            onTouchStart={(e) => e.preventDefault()}
+                            onMouseDown={(e) => e.preventDefault()}
                           />
+
                         </div>
                       </SwiperSlide>
                     ))}
@@ -1233,8 +1245,11 @@ const Game = () => {
                         src={pair.human}
                         alt={`Human Painting for pair ${index + 1}`}
                         onContextMenu={(e) => e.preventDefault()}
-                        onTouchStart={(e) => e.preventDefault()}
+                        onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                        onMouseDown={(e) => e.preventDefault()}
+                        draggable="false"
                       />
+
                     </div>
                     <div
                       className={`thumbnail-container ai ${selection?.selected === pair.ai ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
@@ -1309,7 +1324,9 @@ const Game = () => {
               onClick={(e) => e.stopPropagation()}
               onContextMenu={(e) => e.preventDefault()}
               onTouchStart={(e) => e.preventDefault()}
+              onMouseDown={(e) => e.preventDefault()}
             />
+
 
           </div>
         </div>

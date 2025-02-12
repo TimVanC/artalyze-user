@@ -1,8 +1,3 @@
-html, body {
-  height: 100%;
-  overflow-y: auto; /* Ensures scrolling is allowed */
-}
-
 .login-container {
   background-color: white;
   min-height: 100vh;
@@ -10,10 +5,15 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  overflow-y: auto; /* Ensures scrolling */
-  padding-top: 80px; /* Pushes content below the top bar */
+  overflow: hidden; /* Disable scrolling by default */
   padding-bottom: 60px; /* Keeps footer visible */
 }
+
+/* Enable scrolling only when on the register screen */
+.login-container.register-step {
+  overflow-y: auto; /* Allows scrolling only on step 3 */
+}
+
 
 /* Login Page Top Bar */
 .login-top-bar {
@@ -38,7 +38,7 @@ html, body {
 }
 
 .login-logo-container {
-  margin-top: 80px; /* Increase spacing to prevent cut-off */
+  margin-top: 20px 0; /* Increase spacing to prevent cut-off */
   text-align: center;
 }
 

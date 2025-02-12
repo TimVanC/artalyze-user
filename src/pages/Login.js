@@ -401,109 +401,111 @@ const Login = () => {
       )}
 
       {step === 3 && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleLoginOrRegisterSubmit(e);
-          }}
-        >
-          <h2>Create Your Account</h2>
-          <p className="subheading-signup">Complete the form below to start your journey with Artalyze.</p>
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            readOnly
-            disabled
-          />
-          <input
-            type="password"
-            placeholder="Create a password"
-            value={password}
-            onChange={(e) => {
-              const value = e.target.value;
-              setPassword(value);
-
-              // Validate password dynamically
-              if (!validatePassword(value)) {
-                setError(
-                  'Password must be 8+ characters and include uppercase, lowercase, number, and special character.'
-                );
-              } else if (confirmPassword && value !== confirmPassword) {
-                setError('Passwords do not match.');
-              } else {
-                setError('');
-              }
+        <div className="register-step"> {/* This enables scrolling only for this step */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLoginOrRegisterSubmit(e);
             }}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Confirm password"
-            value={confirmPassword}
-            onChange={(e) => {
-              const value = e.target.value;
-              setConfirmPassword(value);
-
-              // Check if passwords match
-              if (password !== value) {
-                setError('Passwords do not match.');
-              } else if (!validatePassword(password)) {
-                setError(
-                  'Password must be 8+ characters and include uppercase, lowercase, number, and special character.'
-                );
-              } else {
-                setError('');
-              }
-            }}
-            required
-          />
-          {error && (
-            <p className="error-message">{error}</p>
-          )}
-          <button
-            type="submit"
-            className="next-button"
-            style={{
-              backgroundColor:
-                firstName &&
-                  lastName &&
-                  validatePassword(password) &&
-                  password === confirmPassword
-                  ? '#4d73af'
-                  : '#333',
-              cursor:
-                firstName &&
-                  lastName &&
-                  validatePassword(password) &&
-                  password === confirmPassword
-                  ? 'pointer'
-                  : 'not-allowed',
-            }}
-            disabled={
-              !firstName ||
-              !lastName ||
-              !validatePassword(password) ||
-              password !== confirmPassword
-            }
           >
-            Sign Up
-          </button>
-        </form>
+            <h2>Create Your Account</h2>
+            <p className="subheading-signup">Complete the form below to start your journey with Artalyze.</p>
+            <input
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              readOnly
+              disabled
+            />
+            <input
+              type="password"
+              placeholder="Create a password"
+              value={password}
+              onChange={(e) => {
+                const value = e.target.value;
+                setPassword(value);
+
+                // Validate password dynamically
+                if (!validatePassword(value)) {
+                  setError(
+                    'Password must be 8+ characters and include uppercase, lowercase, number, and special character.'
+                  );
+                } else if (confirmPassword && value !== confirmPassword) {
+                  setError('Passwords do not match.');
+                } else {
+                  setError('');
+                }
+              }}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={(e) => {
+                const value = e.target.value;
+                setConfirmPassword(value);
+
+                // Check if passwords match
+                if (password !== value) {
+                  setError('Passwords do not match.');
+                } else if (!validatePassword(password)) {
+                  setError(
+                    'Password must be 8+ characters and include uppercase, lowercase, number, and special character.'
+                  );
+                } else {
+                  setError('');
+                }
+              }}
+              required
+            />
+            {error && (
+              <p className="error-message">{error}</p>
+            )}
+            <button
+              type="submit"
+              className="next-button"
+              style={{
+                backgroundColor:
+                  firstName &&
+                    lastName &&
+                    validatePassword(password) &&
+                    password === confirmPassword
+                    ? '#4d73af'
+                    : '#333',
+                cursor:
+                  firstName &&
+                    lastName &&
+                    validatePassword(password) &&
+                    password === confirmPassword
+                    ? 'pointer'
+                    : 'not-allowed',
+              }}
+              disabled={
+                !firstName ||
+                !lastName ||
+                !validatePassword(password) ||
+                password !== confirmPassword
+              }
+            >
+              Sign Up
+            </button>
+          </form>
+        </div>
       )}
 
 

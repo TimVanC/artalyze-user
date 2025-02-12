@@ -1071,17 +1071,23 @@ const Game = () => {
                         <img
                           src={image}
                           alt={`Painting ${idx + 1}`}
-                          onContextMenu={(e) => e.preventDefault()}
-                          onTouchStart={(e) => handleLongPress(image)}
-                          onTouchEnd={handleRelease}
-                          onMouseDown={(e) => e.preventDefault()}
+                          onContextMenu={(e) => e.preventDefault()} // Disable right-click menu
+                          onTouchStart={(e) => {
+                            longPressTimer.current = setTimeout(() => {
+                              setEnlargedImage(image);
+                              setEnlargedImageMode("game-screen");
+                            }, 500); // Long-press threshold
+                          }}
+                          onTouchEnd={(e) => {
+                            clearTimeout(longPressTimer.current);
+                          }}
+                          onMouseDown={(e) => e.preventDefault()} // Prevent default drag behavior
+                          onMouseUp={() => handleSelection(image, image === pair.human)} // Ensure click selection works
                         />
                       </div>
                     ))}
                   </div>
                 </SwiperSlide>
-
-
               ))}
             </Swiper>
           ) : (
@@ -1116,7 +1122,6 @@ const Game = () => {
                             onTouchStart={(e) => e.preventDefault()}
                             onMouseDown={(e) => e.preventDefault()}
                           />
-
                         </div>
                       </SwiperSlide>
                     ))}
@@ -1126,6 +1131,7 @@ const Game = () => {
               <div className="swiper-button-next">&#8594;</div>
             </div>
           )}
+
 
           <div className="navigation-buttons">
             {imagePairs.map((_, index) => (
@@ -1237,36 +1243,43 @@ const Game = () => {
                   <div key={index} className="pair-thumbnails-horizontal">
                     <div
                       className={`thumbnail-container human ${selection?.selected === pair.human ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
-                      onClick={() => setEnlargedImage(pair.human)}
+                      onClick={() => handleImageClick(pair.human)}
                     >
                       <img
                         src={pair.human}
                         alt={`Human Painting for pair ${index + 1}`}
                         onContextMenu={(e) => e.preventDefault()}
-                        onTouchStart={(e) => { handleLongPress(pair.human); e.preventDefault(); e.stopPropagation(); }}
-                        onTouchEnd={handleRelease}
-                        onClick={() => handleImageClick(pair.human)}
+                        onTouchStart={(e) => {
+                          longPressTimer.current = setTimeout(() => {
+                            setEnlargedImage(pair.human);
+                            setEnlargedImageMode("completion-screen");
+                          }, 500);
+                        }}
+                        onTouchEnd={(e) => clearTimeout(longPressTimer.current)}
+                        onMouseUp={() => handleImageClick(pair.human)}
                         onMouseDown={(e) => e.preventDefault()}
                         draggable="false"
                       />
-
                     </div>
                     <div
                       className={`thumbnail-container ai ${selection?.selected === pair.ai ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
-                      onClick={() => setEnlargedImage(pair.ai)}
+                      onClick={() => handleImageClick(pair.ai)}
                     >
                       <img
                         src={pair.ai}
                         alt={`AI Painting for pair ${index + 1}`}
                         onContextMenu={(e) => e.preventDefault()}
-                        onTouchStart={(e) => { handleLongPress(pair.ai); e.preventDefault(); e.stopPropagation(); }}
-                        onTouchEnd={handleRelease}
-                        onClick={() => handleImageClick(pair.ai)}
+                        onTouchStart={(e) => {
+                          longPressTimer.current = setTimeout(() => {
+                            setEnlargedImage(pair.ai);
+                            setEnlargedImageMode("completion-screen");
+                          }, 500);
+                        }}
+                        onTouchEnd={(e) => clearTimeout(longPressTimer.current)}
+                        onMouseUp={() => handleImageClick(pair.ai)}
                         onMouseDown={(e) => e.preventDefault()}
                         draggable="false"
                       />
-
-
                     </div>
                   </div>
                 );
@@ -1282,32 +1295,40 @@ const Game = () => {
                   <div key={index + 3} className="pair-thumbnails-horizontal">
                     <div
                       className={`thumbnail-container human ${selection?.selected === pair.human ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
-                      onClick={() => setEnlargedImage(pair.human)}
+                      onClick={() => handleImageClick(pair.human)}
                     >
                       <img
                         src={pair.human}
                         alt={`Human Painting for pair ${index + 4}`}
                         onContextMenu={(e) => e.preventDefault()}
-                        onTouchStart={(e) => { handleLongPress(pair.human); e.preventDefault(); e.stopPropagation(); }}
-                        onTouchEnd={handleRelease}
-                        onClick={() => handleImageClick(pair.human)}
+                        onTouchStart={(e) => {
+                          longPressTimer.current = setTimeout(() => {
+                            setEnlargedImage(pair.human);
+                            setEnlargedImageMode("completion-screen");
+                          }, 500);
+                        }}
+                        onTouchEnd={(e) => clearTimeout(longPressTimer.current)}
+                        onMouseUp={() => handleImageClick(pair.human)}
                         onMouseDown={(e) => e.preventDefault()}
                         draggable="false"
                       />
-
-
                     </div>
                     <div
                       className={`thumbnail-container ai ${selection?.selected === pair.ai ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
-                      onClick={() => setEnlargedImage(pair.ai)}
+                      onClick={() => handleImageClick(pair.ai)}
                     >
                       <img
                         src={pair.ai}
                         alt={`AI Painting for pair ${index + 4}`}
                         onContextMenu={(e) => e.preventDefault()}
-                        onTouchStart={(e) => { handleLongPress(pair.ai); e.preventDefault(); e.stopPropagation(); }}
-                        onTouchEnd={handleRelease}
-                        onClick={() => handleImageClick(pair.ai)}
+                        onTouchStart={(e) => {
+                          longPressTimer.current = setTimeout(() => {
+                            setEnlargedImage(pair.ai);
+                            setEnlargedImageMode("completion-screen");
+                          }, 500);
+                        }}
+                        onTouchEnd={(e) => clearTimeout(longPressTimer.current)}
+                        onMouseUp={() => handleImageClick(pair.ai)}
                         onMouseDown={(e) => e.preventDefault()}
                         draggable="false"
                       />
@@ -1317,9 +1338,6 @@ const Game = () => {
               })}
             </div>
           </div>
-
-
-
 
           <div className="completion-buttons">
             <button className="stats-button" onClick={() => setIsStatsOpen(true)}>
@@ -1349,16 +1367,13 @@ const Game = () => {
               className="enlarged-image"
               onClick={(e) => e.stopPropagation()}
               onContextMenu={(e) => e.preventDefault()}
-              onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
-              onTouchEnd={handleRelease}
+              onTouchStart={(e) => e.preventDefault()}
               onMouseDown={(e) => e.preventDefault()}
             />
-
-
-
           </div>
         </div>
       )}
+
 
     </div>
   );

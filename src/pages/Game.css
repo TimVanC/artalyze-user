@@ -160,7 +160,7 @@ h1 {
   margin: 10px 0;
   display: flex;
   justify-content: center;
-  gap: 1.5vh; /* Space between circles */
+  gap: 2vh; /* Increased spacing slightly */
 }
 
 .navigation-buttons .nav-button {
@@ -193,7 +193,7 @@ h1 {
   justify-content: center;
   align-items: center;
   gap: 15px;
-  margin-top: 3vh; /* Increased space below navigation buttons */
+  margin-top: 2vh; /* Bring buttons closer to navigation */
 }
 
 .submit-button {

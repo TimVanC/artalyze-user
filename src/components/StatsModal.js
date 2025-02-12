@@ -373,7 +373,7 @@ Perfect Games: ${stats.perfectPuzzles}
             <button
               className="guest-cta-button"
               onClick={() => {
-                window.location.href = "/register";
+                window.location.href = "/login";
               }}
             >
               Create a Free Account

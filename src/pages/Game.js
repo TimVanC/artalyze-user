@@ -853,24 +853,23 @@ const Game = () => {
     clearTimeout(longPressTimer.current);
     longPressTimer.current = setTimeout(() => {
       setEnlargedImage(imageUrl);
-      setEnlargedImageMode("game-screen"); // Set mode for game screen enlargement
+      setEnlargedImageMode("game-screen");
     }, 500); // Long press threshold (500ms)
   };
 
   const handleImageClick = (imageUrl) => {
     setEnlargedImage(imageUrl);
-    setEnlargedImageMode("completion-screen"); // Set mode for completion screen enlargement
+    setEnlargedImageMode("completion-screen");
   };
-
 
   const closeEnlargedImage = () => {
     setEnlargedImage(null);
   };
 
-
   const handleRelease = () => {
     clearTimeout(longPressTimer.current);
   };
+
 
   const handleSubmit = async () => {
     console.log("📡 Submit button pressed!");
@@ -1073,11 +1072,10 @@ const Game = () => {
                           src={image}
                           alt={`Painting ${idx + 1}`}
                           onContextMenu={(e) => e.preventDefault()}
-                          onTouchStart={(e) => e.preventDefault()}
+                          onTouchStart={(e) => handleLongPress(image)}
+                          onTouchEnd={handleRelease}
                           onMouseDown={(e) => e.preventDefault()}
                         />
-
-
                       </div>
                     ))}
                   </div>
@@ -1245,7 +1243,9 @@ const Game = () => {
                         src={pair.human}
                         alt={`Human Painting for pair ${index + 1}`}
                         onContextMenu={(e) => e.preventDefault()}
-                        onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                        onTouchStart={(e) => { handleLongPress(pair.human); e.preventDefault(); e.stopPropagation(); }}
+                        onTouchEnd={handleRelease}
+                        onClick={() => handleImageClick(pair.human)}
                         onMouseDown={(e) => e.preventDefault()}
                         draggable="false"
                       />
@@ -1259,8 +1259,14 @@ const Game = () => {
                         src={pair.ai}
                         alt={`AI Painting for pair ${index + 1}`}
                         onContextMenu={(e) => e.preventDefault()}
-                        onTouchStart={(e) => e.preventDefault()}
+                        onTouchStart={(e) => { handleLongPress(pair.ai); e.preventDefault(); e.stopPropagation(); }}
+                        onTouchEnd={handleRelease}
+                        onClick={() => handleImageClick(pair.ai)}
+                        onMouseDown={(e) => e.preventDefault()}
+                        draggable="false"
                       />
+
+
                     </div>
                   </div>
                 );
@@ -1278,13 +1284,33 @@ const Game = () => {
                       className={`thumbnail-container human ${selection?.selected === pair.human ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
                       onClick={() => setEnlargedImage(pair.human)}
                     >
-                      <img src={pair.human} alt={`Human Painting for pair ${index + 4}`} />
+                      <img
+                        src={pair.human}
+                        alt={`Human Painting for pair ${index + 4}`}
+                        onContextMenu={(e) => e.preventDefault()}
+                        onTouchStart={(e) => { handleLongPress(pair.human); e.preventDefault(); e.stopPropagation(); }}
+                        onTouchEnd={handleRelease}
+                        onClick={() => handleImageClick(pair.human)}
+                        onMouseDown={(e) => e.preventDefault()}
+                        draggable="false"
+                      />
+
+
                     </div>
                     <div
                       className={`thumbnail-container ai ${selection?.selected === pair.ai ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
-                      <img src={pair.ai} alt={`AI Painting for pair ${index + 4}`} />
+                      <img
+                        src={pair.ai}
+                        alt={`AI Painting for pair ${index + 4}`}
+                        onContextMenu={(e) => e.preventDefault()}
+                        onTouchStart={(e) => { handleLongPress(pair.ai); e.preventDefault(); e.stopPropagation(); }}
+                        onTouchEnd={handleRelease}
+                        onClick={() => handleImageClick(pair.ai)}
+                        onMouseDown={(e) => e.preventDefault()}
+                        draggable="false"
+                      />
                     </div>
                   </div>
                 );
@@ -1323,9 +1349,11 @@ const Game = () => {
               className="enlarged-image"
               onClick={(e) => e.stopPropagation()}
               onContextMenu={(e) => e.preventDefault()}
-              onTouchStart={(e) => e.preventDefault()}
+              onTouchStart={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              onTouchEnd={handleRelease}
               onMouseDown={(e) => e.preventDefault()}
             />
+
 
 
           </div>

@@ -48,6 +48,7 @@ const Game = () => {
   const [error, setError] = useState('');
   const swiperRef = useRef(null);
   const lastTapRef = useRef(0);
+  const tapTimeoutRef = useRef(null);
 
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
   const { selections = [], updateSelections, isLoading, error: selectionsError } = useSelections(userId, isLoggedIn);
@@ -748,11 +749,11 @@ const Game = () => {
       selected: selectedImage,
       isHumanSelection,
     };
-  
+
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
-    };
-  
+  };
+
 
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available
@@ -1041,25 +1042,31 @@ const Game = () => {
                         className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
                         onClick={() => handleSelection(image, image === pair.human)}
                       >
-<img
-  src={image}
-  alt={`Painting ${idx + 1}`}
-  onContextMenu={(e) => e.preventDefault()} // Disable right-click
-  onClick={(e) => {
-    const currentTime = new Date().getTime();
-    const timeSinceLastTap = currentTime - lastTapRef.current;
+                        <img
+                          src={image}
+                          alt={`Painting ${idx + 1}`}
+                          onContextMenu={(e) => e.preventDefault()} // Disable right-click & long-press menu
+                          onTouchStart={(e) => {
+                            e.preventDefault(); // ✅ Blocks iOS long-press menu
+                          }}
+                          onClick={(e) => {
+                            const currentTime = new Date().getTime();
+                            const timeSinceLastTap = currentTime - lastTapRef.current;
 
-    if (timeSinceLastTap < 300) { // Double-tap detected (within 300ms)
-      setEnlargedImage(image);
-      setEnlargedImageMode("game-screen");
-    } else {
-      handleSelection(image, image === pair.human); // Normal selection
-    }
+                            if (timeSinceLastTap < 300) { // ✅ Strict double-tap window
+                              clearTimeout(tapTimeoutRef.current); // ✅ Cancel selection event
+                              setEnlargedImage(image);
+                              setEnlargedImageMode("game-screen");
+                            } else {
+                              tapTimeoutRef.current = setTimeout(() => {
+                                handleSelection(image, image === pair.human); // ✅ Delayed selection
+                              }, 300);
+                            }
 
-    lastTapRef.current = currentTime;
-  }}
-  draggable="false"
-/>
+                            lastTapRef.current = currentTime;
+                          }}
+                          draggable="false"
+                        />
                       </div>
                     ))}
                   </div>

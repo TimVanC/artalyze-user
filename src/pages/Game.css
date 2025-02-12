@@ -495,28 +495,30 @@ h1 {
   gap: 15px; /* Increased gap for better spacing */
 }
 
-.pair-thumbnails-horizontal {
-  display: flex;
-  flex-direction: row; /* Keep images side by side */
-  justify-content: center;
-  align-items: center;
-  gap: 1.5vw; /* Space between images */
-}
-
+/* ✅ Completion Screen Image Thumbnails */
 .thumbnail-container {
-  width: 10vw !important;  /* 10% of the viewport width */
-  height: 10vw !important; /* Maintain square aspect ratio */
-  max-width: 120px; /* Prevent images from being too large */
-  max-height: 120px;
+  width: 17vw !important;  /* 17% of the viewport width */
+  height: 17vw !important; /* Maintain square aspect ratio */
+  max-width: 150px; /* Prevent images from being too large */
+  max-height: 150px;
   border-radius: 5px;
-  overflow: hidden; /* Ensures images do not exceed the container */
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #f4f4f4;
   transition: transform 0.3s ease;
-  animation: none;
   position: relative;
+}
+
+/* ✅ Keep Human & AI Thumbnails Side-by-Side */
+.pair-thumbnails-horizontal {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 2vw; /* Increased space between human and AI images */
+  margin-bottom: 4vh; /* Increased vertical spacing between image pairs */
 }
 
 .thumbnail-container.ai {
@@ -524,7 +526,7 @@ h1 {
 }
 
 .thumbnail-container img {
-  width: 100%;  /* Make sure images scale with container */
+  width: 100%;  
   height: 100%;
   object-fit: contain; /* Prevents distortion */
 }
@@ -533,6 +535,7 @@ h1 {
   transform: scale(1.05); /* Slightly enlarge on hover */
 }
 
+/* ✅ Highlight Correct & Incorrect Selections */
 .thumbnail-container.correct {
   border: 3px solid #4CAF50;
   box-shadow: 0 0 10px 4px rgba(76, 175, 80, 0.4);

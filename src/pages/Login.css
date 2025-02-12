@@ -1,14 +1,11 @@
 .login-container {
-  background-color: white;
-  min-height: 100vh;
-  height: auto !important;
+  background-color: white; /* Set the background to white */
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Prevent forced centering */
-  padding-bottom: 60px;
-  position: relative;
-  overflow-y: auto; /* Allows scrolling */
+  justify-content: center; /* Center content vertically */
+  padding-bottom: 60px; /* Add padding to avoid overlap with the footer */
 }
 
 /* Login Page Top Bar */
@@ -33,19 +30,17 @@
   color: #333;
 }
 
+/* Login Logo Container */
 .login-logo-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-width: 100%;
-  height: auto;  /* Allow it to adjust dynamically */
-  padding: 20px 0;
-  overflow: visible;  /* Prevent clipping */
+  margin: 20px 0; /* Add some spacing around the logo */
+  text-align: center;
 }
 
+/* Login Logo Styling */
 .login-app-logo {
-  max-width: 150px;  /* Adjust size to fit */
-  height: auto;
+  width: 125px; /* Set the logo width */
+  max-width: 90%; /* Ensure it resizes properly on smaller screens */
+  height: auto; /* Maintain the aspect ratio */
 }
 
 h2 {
@@ -292,25 +287,5 @@ input {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .login-container {
-    height: auto !important;
-    min-height: 100dvh; /* Ensures proper mobile viewport height */
-    overflow-y: scroll; /* Enables scrolling */
-  }
-
-  .input-container {
-    position: relative;
-    width: 100%;
-  }
-
-  .next-button {
-    position: absolute;
-    bottom: 10px;
-    width: 100%;
-    max-width: 350px;
   }
 }

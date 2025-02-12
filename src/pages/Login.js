@@ -515,13 +515,13 @@ const Login = () => {
               backgroundColor:
                 firstName && lastName && validatePassword(password) && password === confirmPassword
                   ? '#4d73af'
-                  : '#aaa',
+                  : '#aaa', // Keep it visible but disabled if fields are empty
               cursor:
                 firstName && lastName && validatePassword(password) && password === confirmPassword
                   ? 'pointer'
                   : 'not-allowed',
-              display: 'block',  // Ensure it’s always visible
-              width: '100%',  // Make it fit better
+              display: 'block',  // Ensures it's always visible
+              width: '100%',
               marginTop: '20px'
             }}
             disabled={
@@ -530,6 +530,7 @@ const Login = () => {
           >
             Sign Up
           </button>
+
         </form>
       )}
 

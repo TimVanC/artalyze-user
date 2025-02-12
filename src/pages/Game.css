@@ -836,12 +836,16 @@ h1 {
     margin: 0.8vh;
   }
 
-  /* ✅ Hardcoded Button Padding */
+  /* ✅ Hardcoded Button Sizes */
   .submit-button {
+    width: 160px;
+    height: 40px;
     padding: 8px 26px;
   }
 
   .clear-button {
+    width: 120px;
+    height: 35px;
     padding: 5.5px 20px;
   }
 }
@@ -874,15 +878,22 @@ h1 {
     margin-top: 0.6vh;
   }
 
-  /* ✅ Hardcoded Button Padding */
+  /* ✅ Hardcoded Button Sizes */
   body .game-container .submit-button {
+    width: 160px !important;
+    height: 40px !important;
     padding: 8px 26px !important;
   }
 
   body .game-container .clear-button {
+    width: 120px !important;
+    height: 35px !important;
     padding: 5.5px 20px !important;
   }
 }
+
+
+
 
 /* Dark Mode */
 body.dark-mode .top-bar {

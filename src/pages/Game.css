@@ -836,19 +836,13 @@ h1 {
     margin: 0.8vh;
   }
 
-  /* ✅ Reduce Width of Submit & Clear Buttons */
+  /* ✅ Hardcoded Button Padding */
   .submit-button {
-    min-width: 16vw;
-    max-width: 20vw;
-    font-size: 2vh;
-    padding: 1vh 3vh;
+    padding: 8px 26px;
   }
 
   .clear-button {
-    min-width: 12vw;
-    max-width: 16vw;
-    font-size: 1.8vh;
-    padding: 0.8vh 2.5vh;
+    padding: 5.5px 20px;
   }
 }
 
@@ -880,23 +874,15 @@ h1 {
     margin-top: 0.6vh;
   }
 
-  /* ✅ Reduce Width of Submit & Clear Buttons */
+  /* ✅ Hardcoded Button Padding */
   body .game-container .submit-button {
-    min-width: 14vw !important;
-    max-width: 18vw !important;
-    font-size: 1.8vh !important;
-    padding: 0.8vh 2.5vh !important;
+    padding: 8px 26px !important;
   }
 
   body .game-container .clear-button {
-    min-width: 10vw !important;
-    max-width: 14vw !important;
-    font-size: 1.6vh !important;
-    padding: 0.6vh 2vh !important;
+    padding: 5.5px 20px !important;
   }
 }
-
-
 
 /* Dark Mode */
 body.dark-mode .top-bar {

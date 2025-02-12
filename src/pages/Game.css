@@ -123,7 +123,6 @@ h1 {
   padding: 8px 0;
   overflow: visible;
   margin-top: -1vh; /* Adjusted to prevent clipping */
-  gap: 5vh; /* Adds slight space between images */
 }
 
 .image-container {
@@ -139,7 +138,7 @@ h1 {
 }
 
 .image-container:not(:last-child) {
-  margin-bottom: 5vh; /* Adds space below each image except the last one */
+  margin-bottom: 2vh; 
 }
 
 .image-container img {

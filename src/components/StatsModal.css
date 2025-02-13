@@ -32,7 +32,7 @@
 
 .stats-overlay-content.slide-down {
   animation: slide-down 0.4s ease;
-}  
+}
 
 /* Close Icon */
 .close-icon {
@@ -58,11 +58,11 @@
 }
 
 .distribution-header {
-margin-top: 5px;
-font-size: 18px;
-font-weight: bold;
-padding-bottom: 10px;
-margin-bottom: 1px;
+  margin-top: 5px;
+  font-size: 18px;
+  font-weight: bold;
+  padding-bottom: 10px;
+  margin-bottom: 1px;
 }
 
 /* Separator */
@@ -81,10 +81,10 @@ margin-bottom: 1px;
 }
 
 .stats-overview-second-row {
-display: grid;
-grid-template-columns: repeat(2, 1fr);
-gap: 10px;
-margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .stat-item {
@@ -129,34 +129,43 @@ margin-bottom: 10px;
 
 .bar-fill {
   height: 100%;
-  background-color: #b0b0b0; /* Darker gray for better contrast */
+  background-color: #b0b0b0;
+  /* Darker gray for better contrast */
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Align value to the end of the bar */
+  justify-content: flex-end;
+  /* Align value to the end of the bar */
   border-radius: 5px;
-  padding-right: 5px; /* Adding some padding to the right for spacing */
-  transition: background-color 0.3s ease, width 0.5s ease; /* Smooth transition for highlighting and width */
+  padding-right: 5px;
+  /* Adding some padding to the right for spacing */
+  transition: background-color 0.3s ease, width 0.5s ease;
+  /* Smooth transition for highlighting and width */
 }
 
 .bar-fill.highlight {
-  background-color: #4d73af !important; /* Highlight blue for the current bar */
+  background-color: #4d73af !important;
+  /* Highlight blue for the current bar */
 }
 
 .bar-value {
-  color: white; /* Make it stand out on the bar fill */
+  color: white;
+  /* Make it stand out on the bar fill */
   font-weight: bold;
   font-size: 14px;
 }
 
 /* Specific styling for the value of 0 to ensure it's centered */
 .bar-fill.zero-value {
-  justify-content: center !important; /* Center the value if it's zero */
-  padding-right: 0 !important; /* Remove the right padding for better centering */
+  justify-content: center !important;
+  /* Center the value if it's zero */
+  padding-right: 0 !important;
+  /* Remove the right padding for better centering */
 }
 
 .bar-fill.zero-value.highlight {
-  background-color: #4d73af !important; /* Use highlight color for zero-value bar */
+  background-color: #4d73af !important;
+  /* Use highlight color for zero-value bar */
   justify-content: center !important;
 }
 
@@ -171,236 +180,244 @@ margin-bottom: 10px;
 
 /* Share Buttons Container */
 .share-buttons-container {
-display: flex;
-justify-content: space-between;
-gap: 10px;
-width: 100%;
-margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  margin-top: 15px;
 }
 
 /* Ensures both share icons are the exact same size */
 .share-icon {
-font-size: 17px;
-width: 17px;
-height: 17px;
+  font-size: 17px;
+  width: 17px;
+  height: 17px;
+  margin-right: 6px;
 }
 
 /* General Share Button Styling */
-.modal-share-button, 
+.modal-share-button,
 .modal-share-today-button {
-display: flex; /* Make buttons align properly */
-align-items: center;
-justify-content: center;
-padding: 12px 30px;
-border: none;
-border-radius: 8px;
-cursor: pointer;
-font-size: 17px;
-transition: background-color 0.3s, transform 0.2s;
-font-family: 'Lato', sans-serif;
-max-width: 48%;
-white-space: nowrap;
+  display: flex;
+  /* Make buttons align properly */
+  align-items: center;
+  justify-content: center;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 17px;
+  transition: background-color 0.3s, transform 0.2s;
+  font-family: 'Lato', sans-serif;
+  max-width: 48%;
+  white-space: nowrap;
 }
 
 /* Blue button for Share Stats */
 .modal-share-button {
-background-color: #4d73af;
-color: white;
+  background-color: #4d73af;
+  color: white;
 }
 
 .modal-share-button:hover {
-background-color: #2557a8;
-transform: scale(1.05);
+  background-color: #2557a8;
+  transform: scale(1.05);
 }
 
 /* Green button for Share Today */
 .modal-share-today-button {
-background-color: #7bbf70;
-color: white;
+  background-color: #7bbf70;
+  color: white;
 }
 
 .modal-share-today-button:hover {
-background-color: #5e9c58;
-transform: scale(1.05);
+  background-color: #5e9c58;
+  transform: scale(1.05);
 }
 
 /* Non-Logged-In View */
 .guest-stats-content {
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-text-align: center;
-height: 100%;
-padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  padding: 20px;
 }
 
 .guest-stats-logo {
-width: 150px;
-margin-bottom: 15px;
+  width: 150px;
+  margin-bottom: 15px;
 }
 
 .guest-message {
-font-size: 1.5rem;
-font-weight: bold;
-margin-bottom: 10px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .guest-subtext {
-font-size: 1rem;
-color: #666;
-max-width: 300px;
-line-height: 1.5;
+  font-size: 1rem;
+  color: #666;
+  max-width: 300px;
+  line-height: 1.5;
 }
 
 .guest-cta-button {
-background-color: #4CAF50;
-color: white;
-padding: 12px 20px;
-border: none;
-border-radius: 8px;
-font-size: 16px;
-font-weight: bold;
-cursor: pointer;
-transition: background-color 0.3s ease, transform 0.2s ease;
-width: 80%;
-max-width: 300px;
-margin: 20px auto;
-display: block;
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 80%;
+  max-width: 300px;
+  margin: 20px auto;
+  display: block;
 }
 
 .guest-cta-button:hover {
-background-color: #388E3C;
-transform: scale(1.05);
+  background-color: #388E3C;
+  transform: scale(1.05);
 }
 
 
 /* Custom Share Warning Overlay */
 .share-warning-overlay {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background: rgba(0, 0, 0, 0.6);
-display: flex;
-justify-content: center;
-align-items: center;
-z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 .share-warning-content {
-background: white;
-padding: 20px;
-border-radius: 12px;
-text-align: center;
-width: 80%;
-max-width: 350px;
-box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.2);
-font-size: 16px;
-font-weight: bold;
-color: #333;
-animation: fadeInOut 1s ease-in-out;
-animation-fill-mode: forwards; /* Prevents animation from resetting */
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  width: 80%;
+  max-width: 350px;
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.2);
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  animation: fadeInOut 1s ease-in-out;
+  animation-fill-mode: forwards;
+  /* Prevents animation from resetting */
 }
 
 /* Dark Mode: Stats Modal */
 body.dark-mode .stats-overlay-content {
-background-color: #181818;
-color: #CFCFCF;
+  background-color: #181818;
+  color: #CFCFCF;
 }
 
 /* Dark Mode: Overlay */
 body.dark-mode .stats-overlay {
-background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 /* Dark Mode: Close Icon */
 body.dark-mode .close-icon {
-color: #CFCFCF;
+  color: #CFCFCF;
 }
 
 /* Dark Mode: Header */
 body.dark-mode .stats-header {
-border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-color: #CFCFCF;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  color: #CFCFCF;
 }
 
 /* Dark Mode: Separator */
 body.dark-mode .separator {
-border-top: 2px solid rgba(255, 255, 255, 0.2);
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Dark Mode: Stat Overview */
 body.dark-mode .stat-item {
-color: #CFCFCF;
+  color: #CFCFCF;
 }
 
 /* Dark Mode: Mistake Distribution */
 body.dark-mode .mistake-label {
-color: #CFCFCF;
+  color: #CFCFCF;
 }
 
 body.dark-mode .distribution-bar {
-background-color: #181818;
+  background-color: #181818;
 }
 
 body.dark-mode .bar-fill {
-background-color: #4d73af !important;
+  background-color: #4d73af !important;
 }
 
 /* Dark Mode: Guest Message */
 body.dark-mode .guest-message,
 body.dark-mode .guest-subtext {
-color: #CFCFCF;
+  color: #CFCFCF;
 }
 
 /* Dark Mode: Guest CTA Button */
 body.dark-mode .guest-cta-button {
-background-color: #4CAF50;
-color: white;
+  background-color: #4CAF50;
+  color: white;
 }
 
 body.dark-mode .guest-cta-button:hover {
-background-color: #388E3C;
+  background-color: #388E3C;
 }
 
 /* Dark Mode: Mistake Distribution */
 body.dark-mode .mistake-label {
-color: #CFCFCF;
+  color: #CFCFCF;
 }
 
 body.dark-mode .distribution-bar {
-background-color: #181818;
+  background-color: #181818;
 }
 
 body.dark-mode .bar-fill {
-background-color: #909090 !important; /* Default gray for all bars in dark mode */
+  background-color: #909090 !important;
+  /* Default gray for all bars in dark mode */
 }
 
 body.dark-mode .bar-fill.highlight {
-background-color: #4d73af !important; /* Highlight blue for the current mistake count */
+  background-color: #4d73af !important;
+  /* Highlight blue for the current mistake count */
 }
 
 
 /* Fade In & Out Animation */
 @keyframes fadeInOut {
-0% {
-  opacity: 0;
-  transform: scale(0.9);
-}
-10% {
-  opacity: 1;
-  transform: scale(1);
-}
-90% {
-  opacity: 1;
-  transform: scale(1);
-}
-100% {
-  opacity: 0;
-  transform: scale(0.9);
-}
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  10% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  90% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
 }
 
 
@@ -409,6 +426,7 @@ background-color: #4d73af !important; /* Highlight blue for the current mistake 
   from {
     transform: translateY(100%);
   }
+
   to {
     transform: translateY(0);
   }
@@ -418,6 +436,7 @@ background-color: #4d73af !important; /* Highlight blue for the current mistake 
   from {
     transform: translateY(0);
   }
+
   to {
     transform: translateY(100%);
   }

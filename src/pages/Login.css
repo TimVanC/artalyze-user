@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: flex-start;
   overflow: hidden; /* Disable scrolling by default */
-  padding-top: 70px; /* Prevent logo from being cut off */
+  padding-top: 70px; /* Prevent top bar from cutting off content */
   padding-bottom: 60px; /* Keep footer visible */
 }
 
@@ -44,13 +44,6 @@
   height: auto;
   transition: width 0.3s ease-in-out; /* Smooth transition */
 }
-
-/* Shrink logo when on the registration screen */
-.small-logo {
-  width: 47px;
-  max-width: 47px;
-}
-
 
 h2 {
   font-family: 'Lato', sans-serif;

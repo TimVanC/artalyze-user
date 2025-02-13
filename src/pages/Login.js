@@ -210,13 +210,12 @@ const Login = () => {
           Artalyze
         </div>
       </div>
-      <div className="login-logo-container">
-        <img
-          src={logo}
-          alt="Artalyze Logo"
-          className={`login-app-logo ${step === 3 ? 'small-logo' : ''}`}
-        />
-      </div>
+      {step !== 3 && (
+  <div className="login-logo-container">
+    <img src={logo} alt="Artalyze Logo" className="login-app-logo" />
+  </div>
+)}
+
 
 
 

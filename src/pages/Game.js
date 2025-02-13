@@ -746,7 +746,7 @@ const Game = () => {
 
   const handleSelection = (selectedImage, isHumanSelection) => {
     const updatedSelections = [...selections];
-
+  
     // If the image is already selected, deselect it
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
       updatedSelections[currentIndex] = null; // Remove selection
@@ -756,11 +756,11 @@ const Game = () => {
         isHumanSelection,
       };
     }
-
+  
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
   };
-
+  
 
 
   const handleCompletionShare = () => {

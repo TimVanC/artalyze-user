@@ -348,7 +348,6 @@ h1 {
 }
 
 
-
 /* Enlarged Image Modal */
 .enlarge-modal {
   position: fixed;
@@ -385,20 +384,6 @@ h1 {
   z-index: 1000;
 }
 
-/* Enlarged Image Modal: Ensure full-screen and center content */
-.enlarge-modal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7); /* Dim background */
-  z-index: 1000;
-}
-
 /* Center the enlarged image while allowing it to scale */
 .enlarged-image-container {
   display: flex;
@@ -411,9 +396,9 @@ h1 {
 
 /* Ensure images scale properly when enlarged */
 .enlarged-image {
-  display: block;
-  max-width: none;  /* Prevent width limitations */
-  max-height: none; /* Prevent height limitations */
+  max-width: 90vw;  /* Limits the width */
+  max-height: 90vh; /* Limits the height */
+  object-fit: contain; /* Prevents weird stretching */
 }
 
 /* Enlarged Image for Game Screen (1.5x) */
@@ -427,6 +412,7 @@ h1 {
   width: 300%;
   height: auto;
 }
+
 
 
 .swipe-button {

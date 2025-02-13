@@ -840,8 +840,9 @@ const Game = () => {
   };
 
   const handleImageClick = (imageUrl) => {
+    console.log("Opening enlarged image:", imageUrl);
     setEnlargedImage(imageUrl);
-    setEnlargedImageMode("completion-screen");
+    setEnlargedImageMode("game-screen"); // Change to default to game-screen
   };
 
   const closeEnlargedImage = () => {

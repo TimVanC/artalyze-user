@@ -370,50 +370,66 @@ h1 {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Enlarged Image Modal: Ensure it takes up full screen and centers content */
+/* Enlarged Image Modal - Fullscreen Overlay */
 .enlarge-modal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7); /* Dim background */
+  background: rgba(0, 0, 0, 0.8); /* Dim background for focus */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
 }
 
-/* Center the enlarged image while allowing it to scale */
+/* Container to center enlarged images properly */
 .enlarged-image-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;  /* Allow full width scaling */
-  height: 100%;
+  max-width: 90vw;  /* Prevent excessive width */
+  max-height: 90vh; /* Prevent excessive height */
   overflow: hidden;
 }
 
-/* Ensure images scale properly when enlarged */
+/* Default Enlarged Image Styling */
 .enlarged-image {
-  max-width: 90vw;  /* Limits the width */
-  max-height: 90vh; /* Limits the height */
-  object-fit: contain; /* Prevents weird stretching */
+  max-width: 90vw;  /* Limits image width */
+  max-height: 90vh; /* Limits image height */
+  object-fit: contain; /* Prevents distortion */
+  transform: scale(1); /* Default scale */
+  transition: transform 0.3s ease-in-out; /* Smooth scaling */
 }
 
 /* Enlarged Image for Game Screen (1.5x) */
 .enlarge-modal.game-screen .enlarged-image {
-  width: 70%;
-  height: auto;
+  max-width: 70vw;  /* Reduce scaling effect */
+  max-height: 70vh;
 }
 
-/* Enlarged Image for Completion Screen (3x) */
+/* Enlarged Image for Completion Screen (Limited to Fullscreen) */
 .enlarge-modal.completion-screen .enlarged-image {
-  width: 300%;
-  height: auto;
+  max-width: 90vw;  /* Prevent overflow */
+  max-height: 90vh;
 }
 
+/* Prevent unintended duplicate image stacking */
+.enlarge-modal img {
+  position: relative;
+  z-index: 1001; /* Ensure it's above the background */
+}
 
+/* Prevent background from repeating */
+.enlarge-modal::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Keep background dimmed */
+  z-index: 999; /* Ensure it's behind the image */
+}
 
 .swipe-button {
   position: absolute;

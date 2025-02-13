@@ -189,10 +189,11 @@
 
 /* Ensures both share icons are the exact same size */
 .share-icon {
-  font-size: 17px;
-  width: 17px;
-  height: 17px;
+  width: 17px !important;  /* Force fixed width */
+  height: 17px !important; /* Force fixed height */
+  flex-shrink: 0;  /* Prevents flexbox from resizing the icon */
 }
+
 
 /* General Share Button Styling */
 .modal-share-button,

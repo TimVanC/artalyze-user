@@ -170,7 +170,26 @@
     right: 10px;
 }
 
-/* Share Button Styles */
+/* Share Buttons Container */
+.share-buttons-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; /* Space between buttons */
+  width: 100%; /* Ensure full width */
+  margin-top: 15px;
+}
+
+/* Share Buttons */
+.modal-share-button,
+.modal-share-today-button {
+  flex: 1; /* Make both buttons take equal width */
+  max-width: 48%; /* Prevents them from being too wide */
+  white-space: nowrap; /* Ensures text never wraps */
+  text-align: center;
+  font-size: 16px;
+  padding: 10px 15px;
+}
+
 .modal-share-button {
     background-color: #4CAF50;
     color: white;

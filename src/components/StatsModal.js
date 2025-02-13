@@ -47,19 +47,19 @@ const StatsModal = ({
       try {
         const userIdFromStorage = localStorage.getItem("userId");
         const resolvedUserId = userId || userIdFromStorage;
-    
+
         if (!resolvedUserId) {
           console.warn("User ID is missing. Cannot fetch stats.");
           return;
         }
-    
+
         console.log("Fetching stats when StatsModal opens...");
         const response = await fetch(`https://artalyze-backend-production.up.railway.app/api/stats/${resolvedUserId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
         });
-    
+
         const text = await response.text(); // Get raw response
-    
+
         try {
           const updatedStats = JSON.parse(text); // Parse as JSON
           console.log("Fetched stats from backend:", updatedStats);
@@ -73,7 +73,7 @@ const StatsModal = ({
       } catch (error) {
         console.error("Error fetching or validating stats:", error);
       }
-    };    
+    };
 
     if (isOpen && isLoggedIn) {
       fetchAndValidateStats();
@@ -153,7 +153,7 @@ Perfect Games: ${stats.perfectPuzzles}
   // Helper function for sharing results
   const shareResults = (usedSelections) => {
     const puzzleNumber = calculatePuzzleNumber();
-  
+
     // Generate the visual representation of results
     const resultsVisual = usedSelections
       .map((selection, index) => {
@@ -161,15 +161,15 @@ Perfect Games: ${stats.perfectPuzzles}
         return isCorrect ? '🟢' : '🔴';
       })
       .join(' ');
-  
+
     const paintings = '🖼️ '.repeat(imagePairs.length).trim();
-  
+
     // Adjust the formatting to remove the extra line break before "Try it at:"
     const shareableText = `Artalyze #${puzzleNumber} ${correctCount}/${imagePairs.length}
   ${resultsVisual}
   ${paintings}
   Try it at: artalyze.app`;
-  
+
     if (navigator.share) {
       navigator
         .share({
@@ -186,7 +186,7 @@ Perfect Games: ${stats.perfectPuzzles}
         .catch((error) => console.error('Failed to copy:', error));
     }
   };
-  
+
 
 
 
@@ -308,7 +308,7 @@ Perfect Games: ${stats.perfectPuzzles}
             </div>
             <hr className="separator" />
             <div className="mistake-distribution">
-              <h3>Mistake Distribution</h3>
+              <h3 className="distribution-header">Mistake Distribution</h3>
               {Object.keys(stats.mistakeDistribution).map((mistakeCount) => {
                 const value = stats.mistakeDistribution[mistakeCount] || 0;
 
@@ -340,23 +340,26 @@ Perfect Games: ${stats.perfectPuzzles}
               })}
             </div>
             <hr className="separator" />
-            <button
-              className="modal-share-button"
-              onClick={handleHistoricalStatsShare}
-            >
-              <FaShareAlt /> Share All Stats
-            </button>
-            <button
-              className="modal-share-today-button"
-              onClick={() =>
-                handleCompletionShare(
-                  stats.mostRecentSelections || [],
-                  stats.mostRecentImagePairs || []
-                )
-              }
-            >
-              <FaShareAlt /> Share Today's Puzzle
-            </button>
+            <div className="share-buttons-container">
+              <button
+                className="modal-share-button"
+                onClick={handleHistoricalStatsShare}
+              >
+                <FaShareAlt /> Share All
+              </button>
+              <button
+                className="modal-share-today-button"
+                onClick={() =>
+                  handleCompletionShare(
+                    stats.mostRecentSelections || [],
+                    stats.mostRecentImagePairs || []
+                  )
+                }
+              >
+                <FaShareAlt /> Share Today's
+              </button>
+            </div>
+
           </>
         ) : (
           <div className="guest-stats-content">

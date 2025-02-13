@@ -433,14 +433,37 @@ const Game = () => {
   }, [userId, isGameComplete, imagePairs.length]);
 
   useEffect(() => {
-    const disableContextMenu = (event) => event.preventDefault();
-
+    const disableZoom = (event) => {
+      if (event.ctrlKey || event.metaKey || event.deltaY) {
+        event.preventDefault();
+      }
+    };
+  
+    const disableTouchZoom = (event) => {
+      event.preventDefault();
+    };
+  
+    const disableContextMenu = (event) => {
+      event.preventDefault();
+    };
+  
+    // Prevent right-click (context menu)
     document.addEventListener("contextmenu", disableContextMenu);
-
+  
+    // Prevent zooming gestures
+    document.addEventListener("wheel", disableZoom, { passive: false }); // Prevent Ctrl + Scroll zoom
+    document.addEventListener("keydown", disableZoom); // Prevent zoom shortcuts
+    document.addEventListener("gesturestart", disableTouchZoom); // Prevent pinch zoom (iOS)
+    document.addEventListener("gesturechange", disableTouchZoom); // Prevent zoom adjustments (iOS)
+  
     return () => {
       document.removeEventListener("contextmenu", disableContextMenu);
+      document.removeEventListener("wheel", disableZoom);
+      document.removeEventListener("keydown", disableZoom);
+      document.removeEventListener("gesturestart", disableTouchZoom);
+      document.removeEventListener("gesturechange", disableTouchZoom);
     };
-  }, []);
+  }, []);  
 
 
   // Persist isGameComplete state across refreshes

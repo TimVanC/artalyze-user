@@ -6,9 +6,10 @@ body {
   box-sizing: border-box;
 }
 
-/* Reset for html and body on the game screen */
 html, body {
-  background-color: #ffffff; /* Set the game screen background to white */
+  background-color: #ffffff; 
+  touch-action: manipulation; 
+  overflow-x: hidden;/
 }
 
 img {
@@ -16,7 +17,9 @@ img {
   -webkit-user-select: none;
   user-select: none;
   pointer-events: auto;
+  touch-action: none;
 }
+
 
 /* Top Bar */
 .top-bar {

@@ -178,12 +178,16 @@
   margin-top: 15px;
 }
 
+/* Ensures both share icons are the exact same size */
 .share-icon {
-  font-size: 20px; /* Explicitly set icon size */
-  width: 20px; /* Ensures consistent width */
-  height: 20px; /* Ensures consistent height */
-  display: inline-block;
+  font-size: 20px;
+  width: 20px; /* Enforce consistent width */
+  height: 20px; /* Enforce consistent height */
+  display: inline-flex; /* Ensures proper alignment inside buttons */
+  align-items: center;
+  justify-content: center;
 }
+
 
 
 /* General Share Button Styling */

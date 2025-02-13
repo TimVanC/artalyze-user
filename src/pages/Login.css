@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: flex-start;
   overflow: hidden; /* Disable scrolling by default */
-  padding-top: 70px; /* Push content down to avoid overlap with top bar */
+  padding-top: 70px; /* Prevent logo from being cut off */
   padding-bottom: 60px; /* Keep footer visible */
 }
 
@@ -38,17 +38,19 @@
   transition: opacity 0.3s ease, height 0.3s ease; /* Smoothly hides it */
 }
 
-.small-logo {
-  width: 47px;
+.login-app-logo {
+  width: 125px; /* Default logo size */
+  max-width: 90%;
+  height: auto;
+  transition: width 0.3s ease-in-out; /* Smooth transition */
 }
 
-/* Login Logo Styling */
-.login-app-logo {
-  width: 125px; /* Set the logo width */
-  max-width: 90%; /* Ensure it resizes properly on smaller screens */
-  height: auto; /* Maintain the aspect ratio */
-  transition: width 0.3s ease-in-out;
+/* Shrink logo when on the registration screen */
+.small-logo {
+  width: 47px;
+  max-width: 47px;
 }
+
 
 h2 {
   font-family: 'Lato', sans-serif;

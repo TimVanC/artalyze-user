@@ -211,8 +211,13 @@ const Login = () => {
         </div>
       </div>
       <div className="login-logo-container">
-        <img src={logo} alt="Artalyze Logo" className={`login-app-logo ${step === 3 ? 'small-logo' : ''}`} />
+        <img
+          src={logo}
+          alt="Artalyze Logo"
+          className={`login-app-logo ${step === 3 ? 'small-logo' : ''}`}
+        />
       </div>
+
 
 
       {

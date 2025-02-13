@@ -121,33 +121,26 @@ Perfect Games: ${stats.perfectPuzzles}
   };
 
   const handleCompletionShare = () => {
-    // Allow sharing after the game is completed
+    // Allow sharing only after the game is completed
     if (isGameComplete) {
       shareResults(completedSelections); // Pass finalized selections
       return;
     }
-
+  
     // If the overlay is already active, do nothing
     if (showShareWarning) return;
-
-    // Prevent sharing if the puzzle isn’t complete
-    if (!selections.length || !imagePairs.length) {
-      setShowShareWarning(true);
-
-      // Clear any existing timeout and set a new one
-      if (shareWarningTimeoutRef.current) {
-        clearTimeout(shareWarningTimeoutRef.current);
-      }
-
-      shareWarningTimeoutRef.current = setTimeout(() => {
-        setShowShareWarning(false);
-        shareWarningTimeoutRef.current = null; // Clear the reference
-      }, 1000); // Show for 1 second
-
-      return;
+  
+    // Show a warning if the user tries to share before completing today's puzzle
+    setShowShareWarning(true);
+  
+    if (shareWarningTimeoutRef.current) {
+      clearTimeout(shareWarningTimeoutRef.current);
     }
-
-    shareResults(selections); // Use current selections for in-progress games
+  
+    shareWarningTimeoutRef.current = setTimeout(() => {
+      setShowShareWarning(false);
+      shareWarningTimeoutRef.current = null;
+    }, 1500); // Show warning for 1.5 seconds
   };
 
   // Helper function for sharing results
@@ -348,16 +341,17 @@ Perfect Games: ${stats.perfectPuzzles}
                 <FaShareAlt className="share-icon" /> Share Stats
               </button>
               <button
-                className="modal-share-today-button"
-                onClick={() =>
-                  handleCompletionShare(
-                    stats.mostRecentSelections || [],
-                    stats.mostRecentImagePairs || []
-                  )
-                }
-              >
-                <FaShareAlt className="share-icon" /> Share Today
-              </button>
+  className="modal-share-today-button"
+  onClick={handleCompletionShare}
+  disabled={!isGameComplete}
+  style={{
+    backgroundColor: !isGameComplete ? "#ccc" : "#7bbf70", 
+    cursor: !isGameComplete ? "not-allowed" : "pointer",
+    opacity: !isGameComplete ? 0.6 : 1,
+  }}
+>
+  <FaShareAlt className="share-icon" /> Share Today
+</button>
             </div>
 
 

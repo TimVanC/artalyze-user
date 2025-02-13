@@ -378,7 +378,7 @@ Perfect Games: ${stats.perfectPuzzles}
       {showShareWarning && (
         <div className="share-warning-overlay">
           <div className="share-warning-content">
-            <p>Please finish Today's puzzle to share your results</p>
+            <p>Please finish the puzzle to share your results</p>
           </div>
         </div>
       )}

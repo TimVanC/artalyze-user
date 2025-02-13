@@ -345,10 +345,10 @@ Perfect Games: ${stats.perfectPuzzles}
                 className="modal-share-button"
                 onClick={handleHistoricalStatsShare}
               >
-                <FaShareAlt /> Share All
+                <FaShareAlt /> Share Stats
               </button>
               <button
-                className="modal-share-today-button"
+                className="modal-share-button"
                 onClick={() =>
                   handleCompletionShare(
                     stats.mostRecentSelections || [],
@@ -356,7 +356,7 @@ Perfect Games: ${stats.perfectPuzzles}
                   )
                 }
               >
-                <FaShareAlt /> Share Today's
+                <FaShareAlt /> Share Today
               </button>
             </div>
 

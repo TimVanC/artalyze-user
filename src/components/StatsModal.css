@@ -175,7 +175,7 @@
   display: flex;
   justify-content: space-between;
   gap: 10px; /* Space between buttons */
-  width: 100%; /* Ensure full width */
+  width: 100%;
   margin-top: 15px;
 }
 
@@ -191,26 +191,27 @@
 }
 
 .modal-share-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 25px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s, transform 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 20px; /* Add some space between the content above */
-    width: 80%; /* Ensure the button has good prominence */
-    justify-content: center;
-    font-family: 'Lato', sans-serif;
+  flex: 1; /* Equal width for both buttons */
+  background-color: #4d73af; /* Keep blue color */
+  color: white;
+  padding: 12px 20px; /* Balanced padding */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+  font-family: 'Lato', sans-serif;
+  max-width: 48%; /* Ensures buttons stay within the same row */
+  white-space: nowrap; /* Prevents text wrapping */
 }
 
 .modal-share-button:hover {
-    background-color: #2557a8;
-    transform: scale(1.05);
+  background-color: #2557a8;
+  transform: scale(1.05);
 }
 
 .modal-share-button {

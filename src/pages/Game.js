@@ -746,7 +746,7 @@ const Game = () => {
 
   const handleSelection = (selectedImage, isHumanSelection) => {
     const updatedSelections = [...selections];
-  
+
     // If the image is already selected, deselect it
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
       updatedSelections[currentIndex] = null; // Remove selection
@@ -756,11 +756,11 @@ const Game = () => {
         isHumanSelection,
       };
     }
-  
+
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
   };
-  
+
 
 
   const handleCompletionShare = () => {
@@ -1059,23 +1059,19 @@ const Game = () => {
                             const timeSinceLastTap = currentTime - lastTapTime.current;
 
                             if (timeSinceLastTap < 300) { // ✅ Double-tap detected
-                              clearTimeout(singleTapTimeout.current); // ✅ Cancel selection
-                              setEnlargedImage(image);
-                              setEnlargedImageMode("game-screen");
+                              clearTimeout(singleTapTimeout.current); // ✅ Cancel single tap selection
+                              if (!enlargedImage) { // ✅ Ensure enlargement only happens once
+                                setEnlargedImage(image);
+                                setEnlargedImageMode("game-screen");
+                              }
                             } else {
                               singleTapTimeout.current = setTimeout(() => {
-                                handleSelection(image, image === pair.human); // ✅ Select image only if no double-tap
+                                handleSelection(image, image === pair.human); // ✅ Select only if no double-tap
                               }, 150);
                             }
+
                             lastTapTime.current = currentTime;
                           }}
-                          onContextMenu={(e) => e.preventDefault()} // ❌ Block right-click & save menu
-                          onTouchStart={(e) => {
-                            e.preventDefault(); // ❌ Block iOS long-press menu
-                            e.stopPropagation();
-                          }}
-                          onMouseDown={(e) => e.preventDefault()} // ❌ Prevents dragging behavior
-                          style={{ touchAction: "none", pointerEvents: "auto", userSelect: "none" }} // ❌ Fully disables long-press
                           draggable="false"
                         />
 

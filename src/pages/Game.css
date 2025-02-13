@@ -807,19 +807,19 @@ h1 {
 
   /* Increase game header size */
   .game-header {
-    font-size: 19px;
+    font-size: 17px;
     margin-bottom: 20px;
   }
 
   /* Increase "Tries Left" text size */
   .tries-left {
-    font-size: 18px;
+    font-size: 16px;
     margin-bottom: 30px;
   }
 
   /* Increase palette icon size */
   .palette-icon {
-    font-size: 19px;
+    font-size: 16px;
   }
 
   /* Increase image pair size */
@@ -895,21 +895,21 @@ h1 {
 
    /* Increase game header size */
    .game-header {
-    font-size: 19px;
+    font-size: 17px;
     margin-bottom: 20px;
   }
 
   /* Increase "Tries Left" text size */
   .tries-left {
-    font-size: 18px;
+    font-size: 16px;
     margin-bottom: 30px;
   }
 
   /* Increase palette icon size */
   .palette-icon {
-    font-size: 19px;
+    font-size: 16px;
   }
-  
+
   body .game-container .image-container {
     width: 35vh !important;
     height: 35vh !important;

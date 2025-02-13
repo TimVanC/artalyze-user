@@ -192,14 +192,13 @@
   font-size: 17px;
   width: 17px;
   height: 17px;
-  margin-right: 6px;
 }
 
 /* General Share Button Styling */
 .modal-share-button,
 .modal-share-today-button {
   display: flex;
-  /* Make buttons align properly */
+  gap: 6px;
   align-items: center;
   justify-content: center;
   padding: 12px 30px;

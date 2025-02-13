@@ -180,33 +180,26 @@
 
 /* Ensures both share icons are the exact same size */
 .share-icon {
-  font-size: 20px;
-  width: 20px; /* Enforce consistent width */
-  height: 20px; /* Enforce consistent height */
-  display: inline-flex; /* Ensures proper alignment inside buttons */
-  align-items: center;
-  justify-content: center;
+  font-size: 17px;
+  width: 17px;
+  height: 17px;
 }
 
-
-
 /* General Share Button Styling */
-.modal-share-button,
+.modal-share-button, 
 .modal-share-today-button {
-  flex: 1;
-  padding: 12px 30px; /* Slightly increased padding */
+  display: flex; /* Make buttons align properly */
+  align-items: center;
+  justify-content: center;
+  padding: 12px 30px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 17px; /* Slightly increased font size */
+  font-size: 17px;
   transition: background-color 0.3s, transform 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  justify-content: center;
   font-family: 'Lato', sans-serif;
-  max-width: 48%; /* Ensures buttons stay within the same row */
-  white-space: nowrap; /* Prevents text wrapping */
+  max-width: 48%;
+  white-space: nowrap;
 }
 
 /* Blue button for Share Stats */

@@ -173,31 +173,25 @@
 .share-buttons-container {
   display: flex;
   justify-content: space-between;
-  gap: 10px; /* Space between buttons */
+  gap: 10px;
   width: 100%;
   margin-top: 15px;
 }
 
-/* Share Buttons */
-.modal-share-button,
-.modal-share-today-button {
-  flex: 1; /* Make both buttons take equal width */
-  max-width: 48%; /* Prevents them from being too wide */
-  white-space: nowrap; /* Ensures text never wraps */
-  text-align: center;
-  font-size: 16px;
-  padding: 10px 15px;
+/* Ensures share icons are the same size */
+.share-icon {
+  font-size: 17px;
 }
 
-.modal-share-button {
-  flex: 1; /* Equal width for both buttons */
-  background-color: #4d73af; /* Keep blue color */
-  color: white;
-  padding: 12px 20px; /* Balanced padding */
+/* General Share Button Styling */
+.modal-share-button,
+.modal-share-today-button {
+  flex: 1;
+  padding: 12px 30px; /* Slightly increased padding */
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 17px; /* Slightly increased font size */
   transition: background-color 0.3s, transform 0.2s;
   display: inline-flex;
   align-items: center;
@@ -208,58 +202,27 @@
   white-space: nowrap; /* Prevents text wrapping */
 }
 
+/* Blue button for Share Stats */
+.modal-share-button {
+  background-color: #4d73af;
+  color: white;
+}
+
 .modal-share-button:hover {
   background-color: #2557a8;
   transform: scale(1.05);
 }
 
-.modal-share-button {
-  background-color: #4d73af;
-  color: white;
-  padding: 12px 30px; /* Slightly increased padding */
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 17px; /* Slightly increased font size */
-  transition: background-color 0.3s, transform 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 20px;
-  width: 85%; /* Slightly wider button */
-  justify-content: center;
-  font-family: 'Lato', sans-serif;
-}
-
-.modal-share-button:hover {
-  background-color: #2557a8;
-  transform: scale(1.08); /* Slightly larger hover effect */
-}
-
-/* Add specific styles for a new share button */
+/* Green button for Share Today */
 .modal-share-today-button {
-  background-color: #7bbf70; /* Blue for differentiation */
+  background-color: #7bbf70;
   color: white;
-  padding: 12px 30px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 17px;
-  transition: background-color 0.3s, transform 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 15px;
-  width: 85%;
-  justify-content: center;
-  font-family: 'Lato', sans-serif;
 }
 
 .modal-share-today-button:hover {
-  background-color: #7bbf70;
-  transform: scale(1.08);
+  background-color: #5e9c58;
+  transform: scale(1.05);
 }
-
 
 /* Non-Logged-In View */
 .guest-stats-content {

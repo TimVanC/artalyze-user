@@ -272,7 +272,7 @@ Perfect Games: ${stats.perfectPuzzles}
               </div>
             </div>
             <hr className="separator" />
-            <div className="stats-overview">
+            <div className="stats-overview-second-row">
               <div className="stat-item">
                 <div className="stat-value">
                   {shouldAnimateNumbers ? (

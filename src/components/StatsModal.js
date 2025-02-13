@@ -341,24 +341,25 @@ Perfect Games: ${stats.perfectPuzzles}
             </div>
             <hr className="separator" />
             <div className="share-buttons-container">
-  <button
-    className="modal-share-button"
-    onClick={handleHistoricalStatsShare}
-  >
-    <FaShareAlt className="share-icon" /> Share Stats
-  </button>
-  <button
-    className="modal-share-today-button"
-    onClick={() =>
-      handleCompletionShare(
-        stats.mostRecentSelections || [],
-        stats.mostRecentImagePairs || []
-      )
-    }
-  >
-    <FaShareAlt className="share-icon" /> Share Today
-  </button>
-</div>
+              <button
+                className="modal-share-button"
+                onClick={handleHistoricalStatsShare}
+              >
+                <FaShareAlt className="share-icon" /> Share Stats
+              </button>
+              <button
+                className="modal-share-today-button"
+                onClick={() =>
+                  handleCompletionShare(
+                    stats.mostRecentSelections || [],
+                    stats.mostRecentImagePairs || []
+                  )
+                }
+              >
+                <FaShareAlt className="share-icon" /> Share Today
+              </button>
+            </div>
+
 
           </>
         ) : (

@@ -172,56 +172,57 @@
 /* Share Buttons Container */
 .share-buttons-container {
   display: flex;
-  justify-content: center; /* Center the buttons */
-  gap: 15px; /* Increase space between buttons */
+  justify-content: space-between;
+  gap: 12px; /* Slightly more space between buttons */
   width: 100%;
-  margin-top: 20px;
+  margin-top: 20px; /* Increased space above buttons */
+}
+
+/* Ensures both share icons are the exact same size */
+.share-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  margin-right: 6px; /* Adds spacing between icon and text */
 }
 
 /* General Share Button Styling */
-.modal-share-button,
+.modal-share-button, 
 .modal-share-today-button {
-  flex: 1;
-  padding: 14px 35px; /* Adjusted padding for a balanced look */
-  border: none;
-  border-radius: 10px; /* Slightly rounded edges for a modern look */
-  cursor: pointer;
-  font-size: 18px; /* Make text slightly larger */
-  font-weight: 600;
-  transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  max-width: 50%; /* Ensure buttons stay within their row */
-  min-width: 140px; /* Prevents buttons from being too small */
+  padding: 10px 25px; /* Reduced padding for smaller button size */
+  border: none;
+  border-radius: 6px; /* Slightly rounder edges */
+  cursor: pointer;
+  font-size: 16px; /* Slightly smaller text */
+  transition: background-color 0.3s, transform 0.2s;
+  font-family: 'Lato', sans-serif;
+  max-width: 45%; /* Ensure buttons fit well */
   white-space: nowrap;
-  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Blue button for Share Stats */
+.modal-share-button {
+  background-color: #4d73af;
+  color: white;
 }
 
 .modal-share-button:hover {
   background-color: #2557a8;
-  transform: scale(1.05);
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  transform: scale(1.03);
 }
 
-/* Share Today Button */
+/* Green button for Share Today */
 .modal-share-today-button {
-  background-color: #5cb85c;
+  background-color: #7bbf70;
   color: white;
 }
 
 .modal-share-today-button:hover {
-  background-color: #3d8b3d;
-  transform: scale(1.05);
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Fix share icon size inside buttons */
-.share-icon {
-  font-size: 18px;
-  width: 20px;
-  height: 20px;
-  margin-right: 8px; /* Adds spacing between icon and text */
+  background-color: #5e9c58;
+  transform: scale(1.03);
 }
 
 /* Non-Logged-In View */

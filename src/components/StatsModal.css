@@ -73,13 +73,13 @@
 }
 
 .stat-item {
-    font-size: 18px;
+    font-size: 16px;
     text-align: center;
     font-family: 'Lato', sans-serif;
 }
 
 .stat-value {
-    font-size: 22px;
+    font-size: 18px;
     font-weight: normal;
     font-family: 'Lato', sans-serif;
 }

@@ -1061,8 +1061,12 @@ const Game = () => {
                             if (timeSinceLastTap < 300) { // ✅ Double-tap detected
                               clearTimeout(singleTapTimeout.current); // ✅ Cancel single tap selection
                               if (!enlargedImage) { // ✅ Ensure enlargement only happens once
-                                setEnlargedImage(image);
-                                setEnlargedImageMode("game-screen");
+                                setEnlargedImage(null); // Ensure previous one is cleared
+                                setTimeout(() => {
+                                  setEnlargedImage(image);
+                                  setEnlargedImageMode("game-screen");
+                                }, 10); // Small delay prevents duplicate stacking
+
                               }
                             } else {
                               singleTapTimeout.current = setTimeout(() => {

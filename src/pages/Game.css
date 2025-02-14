@@ -493,9 +493,9 @@ h1 {
 
 .completion-score-badge {
   display: inline-block;
-  padding: 1.2vh 2.5vh; /* Increased height */
+  padding: 1.2vh 1vh; /* Increased height */
   color: white;
-  background-color: #4d73af; /* Default blue */
+  background-color: #c77c4d; /* Default blue */
   font-size: 2.2vh; /* Slightly larger text */
   font-weight: bold;
   border-radius: 6px;
@@ -515,11 +515,11 @@ h1 {
 }
 
 /* Compact Score Badge */
-.completion-score-badge.compact {
+/* .completion-score-badge.compact {
   padding: 6px 10px;
   font-size: 2vh;
   min-width: 90px;
-}
+} */
 
 /* ========================= */
 /*        BUTTONS            */
@@ -527,8 +527,8 @@ h1 {
 
 /* Compact Buttons */
 .stats-button.compact, .share-button.compact {
-  padding: 4px 10px;
-  font-size: 13px;
+  padding: 1.2vh 1vh;
+  font-size: 2.1vh;
   min-width: 65px;
   max-width: 90px;
   border-radius: 5px;

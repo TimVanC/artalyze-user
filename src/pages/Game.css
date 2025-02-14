@@ -467,44 +467,15 @@ h1 {
 
 /* Completion Message */
 .completion-message {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 1.3rem;
-}
-
-/* Completion Header (Stats, Score Badge, Share) */
-.completion-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px; /* Reduce space between elements */
-  flex-wrap: nowrap; /* Prevent wrapping to a new line */
-  width: 100%;
-  max-width: 350px; /* Keep it from spreading too wide */
-  margin: 0 auto 20px; /* Center align */
-}
-
-/* ========================= */
-/*       COMPLETION SCREEN   */
-/* ========================= */
-
-.completion-screen {
-  margin: 20px;
-  text-align: center;
-}
-
-/* Completion Message */
-.completion-message {
   font-size: 1.4rem;
   font-weight: bold;
   margin-bottom: 1.5vh; /* Added space below the message */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ========================= */
-/*        COMPLETION HEADER  */
-/* ========================= */
-
+/* Completion Header (Stats, Score Badge, Share) */
 .completion-header {
   display: flex;
   justify-content: center;
@@ -646,8 +617,8 @@ h1 {
 
 /* Individual Thumbnails */
 .thumbnail-container {
-  width: 22vw !important;  /* 17% of the viewport width */
-  height: 22vw !important; /* Maintain square aspect ratio */
+  width: 23.5vw !important;  /* 17% of the viewport width */
+  height: 23.5vw !important; /* Maintain square aspect ratio */
   max-width: 150px; /* Prevent images from being too large */
   max-height: 150px;
   border-radius: 5px;

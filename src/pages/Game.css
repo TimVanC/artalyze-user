@@ -462,25 +462,6 @@ h1 {
   margin: 1.5vh 0; /* Add spacing around the badge */
 }
 
-.completion-score-badge {
-  display: inline-block;
-  padding: 1.2vh 3vh; /* Compact padding */
-  color: white; /* Text color */
-  background-color: #4d73af; /* Default blue background color */
-  font-size: 2.45vh;
-  font-weight: bold;
-  border-radius: 8px; /* Rounded edges */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-}
-
-.completion-score-badge.five-correct {
-  background-color: #5c9b62; /* Green for 5/5 */
-}
-
-.completion-score-badge.zero-correct {
-  background-color: #d04e5f; /* Red for 0/5 */
-}
-
 .completion-screen {
   margin: 20px;
   text-align: center;
@@ -556,18 +537,52 @@ h1 {
   box-shadow: 0 0 10px 4px rgba(255, 61, 61, 0.4);
 }
 
-.completion-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
+.stats-button.compact, .share-button.compact {
+  padding: 4px 10px; /* Reduced padding for compact look */
+  font-size: 13px; /* Slightly smaller text */
+  min-width: 70px; /* Ensures they aren't too wide */
+  max-width: 90px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.stats-button.small, .share-button.small {
-  padding: 6px 12px;
-  font-size: 14px;
-  border-radius: 6px;
+/* Updated Completion Score Badge */
+.completion-score-badge {
+  display: inline-block;
+  padding: 0.8vh 2vh; /* Reduced padding */
+  color: white;
+  background-color: #4d73af; /* Default blue */
+  font-size: 2vh; /* Slightly smaller text */
+  font-weight: bold;
+  border-radius: 6px; /* Slightly smaller corners */
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-width: 90px; /* Ensures uniform width */
+}
+
+.completion-score-badge.five-correct {
+  background-color: #5c9b62; /* Green for perfect score */
+}
+
+.completion-score-badge.zero-correct {
+  background-color: #d04e5f; /* Red for 0/5 */
+}
+
+/* Compact version of the score badge */
+.completion-score-badge.compact {
+  padding: 4px 8px; /* Smaller padding */
+  font-size: 1.8vh; /* Adjusted font size */
+  font-weight: bold;
+  min-width: 85px;
+}
+
+/* Updated Compact Buttons */
+.stats-button.compact, .share-button.compact {
+  padding: 4px 8px; /* Reduced padding */
+  font-size: 13px; /* Smaller text */
+  min-width: 65px; /* Ensures buttons are less wide */
+  max-width: 85px;
+  border-radius: 5px;
   cursor: pointer;
 }
 

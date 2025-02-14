@@ -1237,23 +1237,23 @@ const Game = () => {
 
           {/* Top Header with Stats, Score Badge, and Share Button */}
           <div className="completion-header">
-            <button className="stats-button small" onClick={() => setIsStatsOpen(true)}>
+            <button className="stats-button compact" onClick={() => setIsStatsOpen(true)}>
               <FaChartBar /> Stats
             </button>
 
             <span
-              className={`completion-score-badge ${correctCount === 5
+              className={`completion-score-badge compact ${correctCount === 5
                 ? "five-correct"
                 : correctCount === 0
                   ? "zero-correct"
                   : ""
                 }`}
             >
-              {correctCount}/5 correct
+              Score: {correctCount}/5
             </span>
 
             <button
-              className="share-button small"
+              className="share-button compact"
               onClick={() =>
                 handleCompletionShare(
                   selections.map((s) => s?.isHumanSelection),
@@ -1264,6 +1264,7 @@ const Game = () => {
               <FaShareAlt /> Share
             </button>
           </div>
+
 
           {/* Completion Message */}
           <p className="completion-message">

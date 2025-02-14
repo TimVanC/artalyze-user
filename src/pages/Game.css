@@ -646,8 +646,8 @@ h1 {
 
 /* Individual Thumbnails */
 .thumbnail-container {
-  width: 20.7vw !important;  /* 17% of the viewport width */
-  height: 20.7vw !important; /* Maintain square aspect ratio */
+  width: 22vw !important;  /* 17% of the viewport width */
+  height: 22vw !important; /* Maintain square aspect ratio */
   max-width: 150px; /* Prevent images from being too large */
   max-height: 150px;
   border-radius: 5px;

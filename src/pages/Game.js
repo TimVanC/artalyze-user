@@ -1235,6 +1235,17 @@ const Game = () => {
       {isGameComplete && (
         <div className="completion-screen">
 
+          {/* Completion Message - Now Above Buttons and Score Badge */}
+          <p className="completion-message">
+            <strong>
+              {correctCount === 5
+                ? "Perfect score!"
+                : correctCount === 0
+                  ? "Better luck next time!"
+                  : `You'll get it next time!`}
+            </strong>
+          </p>
+
           {/* Top Header with Stats, Score Badge, and Share Button */}
           <div className="completion-header">
             <button className="stats-button compact" onClick={() => setIsStatsOpen(true)}>
@@ -1250,17 +1261,6 @@ const Game = () => {
             </button>
           </div>
 
-
-          {/* Completion Message */}
-          <p className="completion-message">
-            <strong>
-              {correctCount === 5
-                ? "Perfect score!"
-                : correctCount === 0
-                  ? "Better luck next time!"
-                  : `You'll get it next time!`}
-            </strong>
-          </p>
 
           {/* Thumbnail Grid */}
           <div className="horizontal-thumbnail-grid">

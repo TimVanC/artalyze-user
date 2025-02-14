@@ -1241,26 +1241,11 @@ const Game = () => {
               <FaChartBar /> Stats
             </button>
 
-            <span
-              className={`completion-score-badge compact ${correctCount === 5
-                ? "five-correct"
-                : correctCount === 0
-                  ? "zero-correct"
-                  : ""
-                }`}
-            >
+            <span className="completion-score-badge compact" style={{ flexShrink: 0 }}>
               Score: {correctCount}/5
             </span>
 
-            <button
-              className="share-button compact"
-              onClick={() =>
-                handleCompletionShare(
-                  selections.map((s) => s?.isHumanSelection),
-                  imagePairs
-                )
-              }
-            >
+            <button className="share-button compact" onClick={handleCompletionShare}>
               <FaShareAlt /> Share
             </button>
           </div>

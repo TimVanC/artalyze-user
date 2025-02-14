@@ -586,6 +586,18 @@ h1 {
   cursor: pointer;
 }
 
+.completion-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px; /* Reduce space between elements */
+  flex-wrap: nowrap; /* Prevent wrapping to a new line */
+  width: 100%;
+  max-width: 350px; /* Keep it from spreading too wide */
+  margin: 0 auto 20px; /* Center align */
+}
+
+
 /* Completion Buttons */
 .completion-buttons {
   display: flex;

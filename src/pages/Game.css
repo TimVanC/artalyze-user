@@ -486,20 +486,52 @@ h1 {
 }
 
 /* ========================= */
+/*       COMPLETION SCREEN   */
+/* ========================= */
+
+.completion-screen {
+  margin: 20px;
+  text-align: center;
+}
+
+/* Completion Message */
+.completion-message {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 1.5vh; /* Added space below the message */
+}
+
+/* ========================= */
+/*        COMPLETION HEADER  */
+/* ========================= */
+
+.completion-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px; /* Reduce space between elements */
+  flex-wrap: nowrap; /* Prevent wrapping to a new line */
+  width: 100%;
+  max-width: 350px; /* Keep it from spreading too wide */
+  margin: 0 auto 15px; /* Adjusted margin */
+}
+
+/* ========================= */
 /*        SCORE BADGE        */
 /* ========================= */
 
 .completion-score-badge {
   display: inline-block;
-  padding: 0.8vh 2vh; /* Reduced padding */
+  padding: 1.2vh 2.5vh; /* Increased height */
   color: white;
   background-color: #4d73af; /* Default blue */
-  font-size: 2vh; /* Slightly smaller text */
+  font-size: 2.2vh; /* Slightly larger text */
   font-weight: bold;
-  border-radius: 6px; /* Slightly smaller corners */
+  border-radius: 6px;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
-  min-width: 90px; /* Ensures uniform width */
+  min-width: 100px; /* Slightly wider */
+  height: auto; /* Let it expand based on content */
 }
 
 /* Score Badge Variants */
@@ -513,10 +545,9 @@ h1 {
 
 /* Compact Score Badge */
 .completion-score-badge.compact {
-  padding: 4px 8px; /* Smaller padding */
-  font-size: 1.8vh; /* Adjusted font size */
-  font-weight: bold;
-  min-width: 85px;
+  padding: 6px 10px;
+  font-size: 2vh;
+  min-width: 90px;
 }
 
 /* ========================= */
@@ -525,10 +556,10 @@ h1 {
 
 /* Compact Buttons */
 .stats-button.compact, .share-button.compact {
-  padding: 4px 8px; /* Reduced padding */
-  font-size: 13px; /* Smaller text */
-  min-width: 65px; /* Ensures buttons are less wide */
-  max-width: 85px;
+  padding: 4px 10px;
+  font-size: 13px;
+  min-width: 65px;
+  max-width: 90px;
   border-radius: 5px;
   cursor: pointer;
 }
@@ -536,60 +567,62 @@ h1 {
 /* Completion Buttons */
 .completion-buttons {
   display: flex;
-  justify-content: center; /* Centers the buttons horizontally */
-  align-items: center; /* Aligns buttons vertically */
-  gap: 2vh; /* Equal spacing between buttons */
-  margin-top: 1.5vh; /* Adjusted margin to 1.5vh */
+  justify-content: center;
+  align-items: center;
+  gap: 2vh;
+  margin-top: 1vh;
 }
 
 /* Default Button Styles */
 .stats-button,
 .share-button {
-  padding: 1.2vh 3vh; /* Increased padding for better tap area */
+  padding: 1.2vh 3vh;
   border: none;
-  border-radius: 1vh; /* Adjusted rounded edges */
-  font-size: 2vh; /* Adjusted font size */
+  border-radius: 1vh;
+  font-size: 2vh;
   font-weight: bold;
+  color: white; /* Made button text white */
   cursor: pointer;
   display: flex;
-  justify-content: center; /* Centers content horizontally */
-  align-items: center; /* Centers content vertically */
-  gap: 1vh; /* Space between icon and text */
-  width: 22vh; /* Ensuring a consistent width */
-  height: 5vh; /* Increased height slightly for better tap area */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  transition: all 0.3s ease; /* Smooth transition */
-  white-space: nowrap; /* Ensures text stays in one line */
+  justify-content: center;
+  align-items: center;
+  gap: 1vh;
+  width: 22vh;
+  height: 5vh;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 /* Button Hover Effects */
 .stats-button:hover,
 .share-button:hover {
-  transform: scale(1.05); /* Slight zoom effect */
+  transform: scale(1.05);
 }
 
 /* Button Colors */
 .stats-button {
-  background-color: #4d73af; /* Blue for stats */
+  background-color: #4d73af;
 }
 
 .stats-button:hover {
-  background-color: #355a86; /* Darker blue on hover */
+  background-color: #355a86;
 }
 
 .share-button {
-  background-color: #7bbf70; /* Green for share */
+  background-color: #7bbf70;
 }
 
 .share-button:hover {
-  background-color: #4e8a53; /* Darker green on hover */
+  background-color: #4e8a53;
 }
 
 /* Accessibility */
 .completion-buttons button:focus {
-  outline: 3px solid #82b1ff; /* Highlight focus for accessibility */
+  outline: 3px solid #82b1ff;
   outline-offset: 2px;
 }
+
 
 /* ========================= */
 /*       IMAGE GRID          */

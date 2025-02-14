@@ -467,7 +467,7 @@ h1 {
 
 /* Completion Message */
 .completion-message {
-  font-size: 1.4rem;
+  font-size: 17px;
   font-weight: bold;
   margin-bottom: 1.5vh; /* Added space below the message */
   white-space: nowrap;

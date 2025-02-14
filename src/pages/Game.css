@@ -459,15 +459,15 @@ h1 {
 /* Completion Screen */
 .completion-score-container {
   text-align: center;
-  margin: 1.5em 0; /* Add spacing around the badge */
+  margin: 1.5vh 0; /* Add spacing around the badge */
 }
 
 .completion-score-badge {
   display: inline-block;
-  padding: 0.5em 1.5em; /* Compact padding */
+  padding: 1.2vh 3vh; /* Compact padding */
   color: white; /* Text color */
   background-color: #4d73af; /* Default blue background color */
-  font-size: 1.2em;
+  font-size: 2.45vh;
   font-weight: bold;
   border-radius: 8px; /* Rounded edges */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
@@ -507,8 +507,8 @@ h1 {
 }
 
 .thumbnail-container {
-  width: 17vw !important;  /* 17% of the viewport width */
-  height: 17vw !important; /* Maintain square aspect ratio */
+  width: 20.7vw !important;  /* 17% of the viewport width */
+  height: 20.7vw !important; /* Maintain square aspect ratio */
   max-width: 150px; /* Prevent images from being too large */
   max-height: 150px;
   border-radius: 5px;

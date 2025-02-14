@@ -1252,7 +1252,21 @@ const Game = () => {
               <FaChartBar /> Stats
             </button>
 
-            <span className="completion-score-badge compact" style={{ flexShrink: 0 }}>
+            <span
+              className={`completion-score-badge compact ${correctCount === 5
+                  ? "five-correct"
+                  : correctCount === 4
+                    ? "four-correct"
+                    : correctCount === 3
+                      ? "three-correct"
+                      : correctCount === 2
+                        ? "two-correct"
+                        : correctCount === 1
+                          ? "one-correct"
+                          : "zero-correct"
+                }`}
+              style={{ flexShrink: 0 }}
+            >
               Score: {correctCount}/5
             </span>
 

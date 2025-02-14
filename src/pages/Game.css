@@ -495,7 +495,7 @@ h1 {
   display: inline-block;
   padding: 1.2vh 1vh; /* Increased height */
   color: white;
-  background-color: #e0b54c; /* Default blue */
+  background-color: #e0b54c; /* Default yellow */
   font-size: 2.2vh; /* Slightly larger text */
   font-weight: bold;
   border-radius: 6px;
@@ -506,20 +506,29 @@ h1 {
 }
 
 /* Score Badge Variants */
-.completion-score-badge.five-correct {
-  background-color: #5c9b62; /* Green for perfect score */
-}
-
 .completion-score-badge.zero-correct {
   background-color: #d04e5f; /* Red for 0/5 */
 }
 
-/* Compact Score Badge */
-/* .completion-score-badge.compact {
-  padding: 6px 10px;
-  font-size: 2vh;
-  min-width: 90px;
-} */
+.completion-score-badge.one-correct {
+  background-color: #c56a56; /* Red-orange for 1/5 */
+}
+
+.completion-score-badge.two-correct {
+  background-color: #d08852; /* Deep orange for 2/5 */
+}
+
+.completion-score-badge.three-correct {
+  background-color: #c5a54e; /* Mustard yellow for 3/5 */
+}
+
+.completion-score-badge.four-correct {
+  background-color: #89a45b; /* Yellow-green for 4/5 */
+}
+
+.completion-score-badge.five-correct {
+  background-color: #5c9b62; /* Green for 5/5 */
+}
 
 /* ========================= */
 /*        BUTTONS            */

@@ -480,7 +480,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px; /* Reduce space between elements */
+  gap: 22px; /* Reduce space between elements */
   flex-wrap: nowrap; /* Prevent wrapping to a new line */
   width: 100%;
   max-width: 350px; /* Keep it from spreading too wide */
@@ -495,7 +495,7 @@ h1 {
   display: inline-block;
   padding: 1.2vh 1vh; /* Increased height */
   color: white;
-  background-color: #c77c4d; /* Default blue */
+  background-color: #e0b54c; /* Default blue */
   font-size: 2.2vh; /* Slightly larger text */
   font-weight: bold;
   border-radius: 6px;

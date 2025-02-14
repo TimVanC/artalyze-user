@@ -438,24 +438,24 @@ const Game = () => {
         event.preventDefault();
       }
     };
-  
+
     const disableTouchZoom = (event) => {
       event.preventDefault();
     };
-  
+
     const disableContextMenu = (event) => {
       event.preventDefault();
     };
-  
+
     // Prevent right-click (context menu)
     document.addEventListener("contextmenu", disableContextMenu);
-  
+
     // Prevent zooming gestures
     document.addEventListener("wheel", disableZoom, { passive: false }); // Prevent Ctrl + Scroll zoom
     document.addEventListener("keydown", disableZoom); // Prevent zoom shortcuts
     document.addEventListener("gesturestart", disableTouchZoom); // Prevent pinch zoom (iOS)
     document.addEventListener("gesturechange", disableTouchZoom); // Prevent zoom adjustments (iOS)
-  
+
     return () => {
       document.removeEventListener("contextmenu", disableContextMenu);
       document.removeEventListener("wheel", disableZoom);
@@ -463,7 +463,7 @@ const Game = () => {
       document.removeEventListener("gesturestart", disableTouchZoom);
       document.removeEventListener("gesturechange", disableTouchZoom);
     };
-  }, []);  
+  }, []);
 
 
   // Persist isGameComplete state across refreshes
@@ -1234,17 +1234,13 @@ const Game = () => {
 
       {isGameComplete && (
         <div className="completion-screen">
-          <p className="completion-message">
-            <strong>
-              {correctCount === 5
-                ? "Perfect score!"
-                : correctCount === 0
-                  ? "Better luck next time!"
-                  : `You'll get it next time!`}
-            </strong>
-          </p>
 
-          <div className="completion-score-container">
+          {/* Top Header with Stats, Score Badge, and Share Button */}
+          <div className="completion-header">
+            <button className="stats-button small" onClick={() => setIsStatsOpen(true)}>
+              <FaChartBar /> Stats
+            </button>
+
             <span
               className={`completion-score-badge ${correctCount === 5
                 ? "five-correct"
@@ -1255,106 +1251,9 @@ const Game = () => {
             >
               {correctCount}/5 correct
             </span>
-          </div>
 
-          <div className="horizontal-thumbnail-grid">
-            {/* First row: Pairs 1-3 */}
-            <div className="first-row">
-              {imagePairs.slice(0, 3).map((pair, index) => {
-                const selection = completedSelections[index];
-                const isCorrect = selection?.selected === pair.human;
-                return (
-                  <div key={index} className="pair-thumbnails-horizontal">
-                    <div
-                      className={`thumbnail-container human ${selection?.selected === pair.human ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
-                      onClick={() => handleImageClick(pair.human)}
-                    >
-                      <img
-                        src={pair.human}
-                        alt={`Human Painting for pair ${index + 1}`}
-                        onContextMenu={(e) => e.preventDefault()} // Disable right-click
-                        onClick={() => setEnlargedImage(pair.human)} // Clicking enlarges
-                        draggable="false"
-                      />
-
-                    </div>
-                    <div
-                      className={`thumbnail-container ai ${selection?.selected === pair.ai ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
-                      onClick={() => handleImageClick(pair.ai)}
-                    >
-                      <img
-                        src={pair.ai}
-                        alt={`AI Painting for pair ${index + 1}`}
-                        onContextMenu={(e) => e.preventDefault()} // Disable right-click
-                        onClick={() => setEnlargedImage(pair.ai)} // Clicking enlarges
-                        draggable="false"
-                      />
-
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Second row: Pairs 4-5 */}
-            <div className="second-row">
-              {imagePairs.slice(3, 5).map((pair, index) => {
-                const selection = completedSelections[index + 3];
-                const isCorrect = selection?.selected === pair.human;
-                return (
-                  <div key={index + 3} className="pair-thumbnails-horizontal">
-                    <div
-                      className={`thumbnail-container human ${selection?.selected === pair.human ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
-                      onClick={() => handleImageClick(pair.human)}
-                    >
-                      <img
-                        src={pair.human}
-                        alt={`Human Painting for pair ${index + 4}`}
-                        onContextMenu={(e) => e.preventDefault()}
-                        onTouchStart={(e) => {
-                          longPressTimer.current = setTimeout(() => {
-                            setEnlargedImage(pair.human);
-                            setEnlargedImageMode("completion-screen");
-                          }, 500);
-                        }}
-                        onTouchEnd={(e) => clearTimeout(longPressTimer.current)}
-                        onMouseUp={() => handleImageClick(pair.human)}
-                        onMouseDown={(e) => e.preventDefault()}
-                        draggable="false"
-                      />
-                    </div>
-                    <div
-                      className={`thumbnail-container ai ${selection?.selected === pair.ai ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
-                      onClick={() => handleImageClick(pair.ai)}
-                    >
-                      <img
-                        src={pair.ai}
-                        alt={`AI Painting for pair ${index + 4}`}
-                        onContextMenu={(e) => e.preventDefault()}
-                        onTouchStart={(e) => {
-                          longPressTimer.current = setTimeout(() => {
-                            setEnlargedImage(pair.ai);
-                            setEnlargedImageMode("completion-screen");
-                          }, 500);
-                        }}
-                        onTouchEnd={(e) => clearTimeout(longPressTimer.current)}
-                        onMouseUp={() => handleImageClick(pair.ai)}
-                        onMouseDown={(e) => e.preventDefault()}
-                        draggable="false"
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="completion-buttons">
-            <button className="stats-button" onClick={() => setIsStatsOpen(true)}>
-              <FaChartBar /> See Stats
-            </button>
             <button
-              className="share-button"
+              className="share-button small"
               onClick={() =>
                 handleCompletionShare(
                   selections.map((s) => s?.isHumanSelection),
@@ -1365,8 +1264,56 @@ const Game = () => {
               <FaShareAlt /> Share
             </button>
           </div>
+
+          {/* Completion Message */}
+          <p className="completion-message">
+            <strong>
+              {correctCount === 5
+                ? "Perfect score!"
+                : correctCount === 0
+                  ? "Better luck next time!"
+                  : `You'll get it next time!`}
+            </strong>
+          </p>
+
+          {/* Thumbnail Grid */}
+          <div className="horizontal-thumbnail-grid">
+            {imagePairs.map((pair, index) => {
+              const selection = completedSelections[index];
+              const isCorrect = selection?.selected === pair.human;
+              return (
+                <div key={index} className="pair-thumbnails-horizontal">
+                  <div
+                    className={`thumbnail-container human ${selection?.selected === pair.human ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
+                    onClick={() => handleImageClick(pair.human)}
+                  >
+                    <img
+                      src={pair.human}
+                      alt={`Human Painting for pair ${index + 1}`}
+                      onContextMenu={(e) => e.preventDefault()}
+                      onClick={() => setEnlargedImage(pair.human)}
+                      draggable="false"
+                    />
+                  </div>
+                  <div
+                    className={`thumbnail-container ai ${selection?.selected === pair.ai ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
+                    onClick={() => handleImageClick(pair.ai)}
+                  >
+                    <img
+                      src={pair.ai}
+                      alt={`AI Painting for pair ${index + 1}`}
+                      onContextMenu={(e) => e.preventDefault()}
+                      onClick={() => setEnlargedImage(pair.ai)}
+                      draggable="false"
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
+
 
       {enlargedImage && (
         <div className={`enlarge-modal ${enlargedImageMode}`} onClick={closeEnlargedImage}>

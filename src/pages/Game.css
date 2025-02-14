@@ -556,6 +556,20 @@ h1 {
   box-shadow: 0 0 10px 4px rgba(255, 61, 61, 0.4);
 }
 
+.completion-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stats-button.small, .share-button.small {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
 /* Completion Buttons */
 .completion-buttons {

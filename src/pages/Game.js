@@ -827,10 +827,13 @@ const Game = () => {
 
     // Construct the shareable text with a fully clickable link
     const shareableText = `
-Artalyze #${puzzleNumber} ${score}/${imagePairs.length}
-${resultsVisual}
-${paintings}
-Try it at: https://artalyze.app
+    Artalyze #${puzzleNumber}  ${score}/${imagePairs.length}  
+    
+    ${resultsVisual}  
+    
+    ${paintings}  
+    
+    Try it at: https://artalyze.app
     `.trim();
 
     // Check if the device supports native sharing

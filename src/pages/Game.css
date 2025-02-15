@@ -71,14 +71,15 @@ h1 {
 /* ========================= */
 /*       TRIES LEFT          */
 /* ========================= */
-
 .tries-left {
   display: flex;
   align-items: center;
-  gap: 6px; 
-  font-size: 15px; 
+  justify-content: center;
+  gap: 6px;
+  font-size: 15px;
   color: #333333;
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px; /* Added margin to separate from images */
 }
 
 .tries-circle {
@@ -153,11 +154,12 @@ h1 {
 /* ========================= */
 .status-bar {
   display: flex;
-  justify-content: space-between; /* Spreads Clear, Navigation, and Submit evenly */
+  justify-content: space-between; /* Keeps Clear, Navigation, and Submit aligned */
   align-items: center;
   width: 100%;
-  max-width: 400px; /* Slightly wider for better balance */
-  margin: 0 auto 10px;
+  max-width: 400px; /* Keeps balance */
+  margin: 10px auto 10px; /* Adjusted margin */
+  padding: 5px 0;
 }
 
 /* ========================= */
@@ -166,13 +168,13 @@ h1 {
 .navigation-buttons {
   display: flex;
   justify-content: center;
-  flex-grow: 1; /* Ensures it takes up remaining space */
-  gap: 2vh; /* Increased spacing slightly */
+  flex-grow: 1; /* Ensures even spacing */
+  gap: 2vh; /* Keeps buttons evenly spaced */
 }
 
 .navigation-buttons .nav-button {
   background-color: #ccc;
-  width: 2.5vh;  /* Small circles */
+  width: 2.5vh; /* Small circles */
   height: 2.5vh;
   border-radius: 50%;
   border: none;
@@ -205,8 +207,8 @@ h1 {
   border-radius: 6px;
   cursor: not-allowed;
   transition: all 0.3s ease;
-  min-width: 65px;
-  max-width: 90px;
+  min-width: 70px;
+  max-width: 95px;
   height: 4.7vh;
   display: flex;
   justify-content: center;
@@ -236,8 +238,8 @@ h1 {
   border: none;
   cursor: not-allowed;
   border-radius: 6px;
-  min-width: 85px;
-  max-width: 110px;
+  min-width: 90px;
+  max-width: 115px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -253,7 +255,6 @@ h1 {
 .submit-button.enabled:hover {
   background-color: #355a86;
 }
-
 
 /* Mid-Turn Feedback Overlay */
 .mid-turn-overlay {

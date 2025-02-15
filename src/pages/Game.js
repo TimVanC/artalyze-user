@@ -1031,6 +1031,15 @@ const Game = () => {
         <>
           <h1 className="game-header">Guess the human painting from each pair!</h1>
 
+          {/* Tries Left Section (Above Image Pairs) */}
+          <div className="tries-left">
+            <span>Tries Left:</span>
+            {[...Array(triesLeft)].map((_, i) => (
+              <span key={i} className="tries-circle"></span>
+            ))}
+          </div>
+
+          {/* Image Pairs */}
           {imagePairs && imagePairs.length > 0 ? (
             <Swiper
               loop={true}
@@ -1084,7 +1093,7 @@ const Game = () => {
             <p>Loading...</p>
           )}
 
-          {/* Updated Layout: Clear Button (Left) | Navigation (Center) | Submit Button (Right) */}
+          {/* Status Bar (Clear Left, Navigation Center, Submit Right) */}
           <div className="status-bar">
             <button
               className={`clear-button ${selections.length > 0 ? 'enabled' : ''}`}
@@ -1129,6 +1138,7 @@ const Game = () => {
             </button>
           </div>
 
+          {/* Enlarged Image Modal */}
           {enlargedImage && (
             <div className="enlarge-modal" onClick={closeEnlargedImage}>
               <div className="swiper-container">
@@ -1147,7 +1157,6 @@ const Game = () => {
                     imagePairs.map((pair, index) => (
                       <SwiperSlide key={index}>
                         <div className="enlarged-image-container">
-                          {/* Display only one image per slide (human or AI) */}
                           <img
                             src={enlargedImage}
                             alt="Enlarged view"
@@ -1172,6 +1181,7 @@ const Game = () => {
           )}
         </>
       )}
+
 
 
       {showOverlay && (

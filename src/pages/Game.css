@@ -486,6 +486,7 @@ h1 {
   border-radius: 6px;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
+  letter-spacing: .4px;
   min-width: 100px; /* Slightly wider */
   height: auto; /* Let it expand based on content */
 }
@@ -862,8 +863,8 @@ h1 {
     margin-bottom: 30px;
   }
 
-  /* Increase palette icon size */
-  .palette-icon {
+  /* Increase circle icon size */
+  .tries-circle {
     font-size: 16px;
   }
 
@@ -898,20 +899,12 @@ h1 {
     gap: 4vw;
   }
 
-  /* ✅ Make Navigation Buttons Smaller */
-  .navigation-buttons .nav-button {
-    width: 3vh;
-    height: 3vh;
-    font-size: 0;
-    margin: 0.8vh;
-  }
-
   /* ✅ Fixed Submit & Clear Button Sizes */
   .game-container .button-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px; /* Keep spacing between buttons */
+    gap: 15px;
   }
 
   .game-container .button-container .submit-button {
@@ -920,8 +913,8 @@ h1 {
     padding: 8px 24px !important;
     font-size: 16px !important;
     max-width: 170px !important;
-    min-width: auto !important; /* ✅ Override min-width */
-    flex-grow: 0 !important; /* Prevent expansion */
+    min-width: auto !important;
+    flex-grow: 0 !important;
   }
 
   .game-container .button-container .clear-button {
@@ -930,16 +923,15 @@ h1 {
     padding: 6px 20px !important;
     font-size: 15px !important;
     max-width: 130px !important;
-    min-width: auto !important; /* ✅ Override min-width */
-    flex-grow: 0 !important; /* Prevent expansion */
+    min-width: auto !important;
+    flex-grow: 0 !important;
   }
 }
 
 /* ✅ Desktops & Large Screens */
 @media (min-width: 1280px) {
-
-   /* Increase game header size */
-   .game-header {
+  /* Increase game header size */
+  .game-header {
     font-size: 17px;
     margin-bottom: 20px;
   }
@@ -950,21 +942,12 @@ h1 {
     margin-bottom: 30px;
   }
 
-  /* Increase palette icon size */
-  .palette-icon {
+  /* Increase circle icon size */
+  .tries-circle{
     font-size: 16px;
   }
 
-  body .game-container .image-container {
-    width: 35vh !important;
-    height: 35vh !important;
-  }
-
-  body .game-container .game-header {
-    font-size: 30px !important;
-  }
-
-  /* ✅ Ensure image pairs display horizontally */
+  /* Ensure image pairs display properly */
   .image-pair-container {
     display: flex !important;
     flex-direction: row !important;
@@ -972,28 +955,37 @@ h1 {
     gap: 4vw !important;
   }
 
-  /* ✅ Ensure completion screen follows two-row structure */
-  body .completion-screen .horizontal-thumbnail-grid {
+  /* ✅ Completion screen image grid - Two Rows on Large Screens */
+  .completion-screen .horizontal-thumbnail-grid {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     gap: 5vh !important;
   }
 
-  body .completion-screen .first-row,
-  body .completion-screen .second-row {
+  .completion-screen .first-row,
+  .completion-screen .second-row {
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
     gap: 5vw !important;
   }
 
-  /* ✅ Make Navigation Buttons Even Smaller */
-  body .game-container .navigation-buttons .nav-button {
-    width: 2.5vh !important;
-    height: 2.5vh !important;
-    font-size: 0 !important;
-    margin-top: 0.6vh;
+  /* ✅ Adjust individual image containers */
+  .pair-thumbnails-horizontal {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 2vw !important;
+    margin-bottom: 1vh !important;
+  }
+
+  .thumbnail-container {
+    width: 18vw !important;
+    height: 18vw !important;
+    max-width: 160px !important;
+    max-height: 160px !important;
   }
 
   /* ✅ Fixed Submit & Clear Button Sizes */
@@ -1001,7 +993,7 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px; /* Keep spacing between buttons */
+    gap: 15px;
   }
 
   .game-container .button-container .submit-button {
@@ -1010,8 +1002,8 @@ h1 {
     padding: 10px 26px !important;
     font-size: 17px !important;
     max-width: 180px !important;
-    min-width: auto !important; /* ✅ Override min-width */
-    flex-grow: 0 !important; /* Prevent expansion */
+    min-width: auto !important;
+    flex-grow: 0 !important;
   }
 
   .game-container .button-container .clear-button {
@@ -1020,10 +1012,30 @@ h1 {
     padding: 8px 22px !important;
     font-size: 16px !important;
     max-width: 140px !important;
-    min-width: auto !important; /* ✅ Override min-width */
-    flex-grow: 0 !important; /* Prevent expansion */
+    min-width: auto !important;
+    flex-grow: 0 !important;
   }
 }
+
+/* ✅ Mobile: Stack Thumbnails */
+@media (max-width: 850px) {
+  .horizontal-thumbnail-grid {
+    flex-direction: column;
+  }
+
+  .first-row,
+  .second-row {
+    flex-direction: column;
+  }
+
+  .thumbnail-container {
+    width: 30vw;
+    height: 30vw;
+    max-width: 120px;
+    max-height: 120px;
+  }
+}
+
 
 /* Dark Mode */
 body.dark-mode .top-bar {

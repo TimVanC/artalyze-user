@@ -1251,45 +1251,58 @@ const Game = () => {
             </button>
           </div>
 
-
-          {/* Thumbnail Grid */}
+          {/* Thumbnail Grid - Two Rows for Large Screens, Single Column for Mobile */}
           <div className="horizontal-thumbnail-grid">
-            {imagePairs.map((pair, index) => {
-              const selection = completedSelections[index];
-              const isCorrect = selection?.selected === pair.human;
-              return (
-                <div key={index} className="pair-thumbnails-horizontal">
-                  <div
-                    className={`thumbnail-container human ${selection?.selected === pair.human ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
-                    onClick={() => handleImageClick(pair.human)}
-                  >
-                    <img
-                      src={pair.human}
-                      alt={`Human Painting for pair ${index + 1}`}
-                      onContextMenu={(e) => e.preventDefault()}
+            {/* First Row: First 3 Image Pairs */}
+            <div className="first-row">
+              {imagePairs.slice(0, 3).map((pair, index) => {
+                const selection = completedSelections[index];
+                const isCorrect = selection?.selected === pair.human;
+                return (
+                  <div key={index} className="pair-thumbnails-horizontal">
+                    <div
+                      className={`thumbnail-container human ${isCorrect ? "correct pulse" : "incorrect pulse"}`}
                       onClick={() => setEnlargedImage(pair.human)}
-                      draggable="false"
-                    />
-                  </div>
-                  <div
-                    className={`thumbnail-container ai ${selection?.selected === pair.ai ? (isCorrect ? "correct pulse" : "incorrect pulse") : ""}`}
-                    onClick={() => handleImageClick(pair.ai)}
-                  >
-                    <img
-                      src={pair.ai}
-                      alt={`AI Painting for pair ${index + 1}`}
-                      onContextMenu={(e) => e.preventDefault()}
+                    >
+                      <img src={pair.human} alt={`Human ${index + 1}`} draggable="false" />
+                    </div>
+                    <div
+                      className={`thumbnail-container ai ${!isCorrect ? "incorrect pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
-                      draggable="false"
-                    />
+                    >
+                      <img src={pair.ai} alt={`AI ${index + 1}`} draggable="false" />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+
+            {/* Second Row: Last 2 Image Pairs */}
+            <div className="second-row">
+              {imagePairs.slice(3, 5).map((pair, index) => {
+                const selection = completedSelections[index + 3];
+                const isCorrect = selection?.selected === pair.human;
+                return (
+                  <div key={index + 3} className="pair-thumbnails-horizontal">
+                    <div
+                      className={`thumbnail-container human ${isCorrect ? "correct pulse" : "incorrect pulse"}`}
+                      onClick={() => setEnlargedImage(pair.human)}
+                    >
+                      <img src={pair.human} alt={`Human ${index + 4}`} draggable="false" />
+                    </div>
+                    <div
+                      className={`thumbnail-container ai ${!isCorrect ? "incorrect pulse" : ""}`}
+                      onClick={() => setEnlargedImage(pair.ai)}
+                    >
+                      <img src={pair.ai} alt={`AI ${index + 4}`} draggable="false" />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
-
 
       {enlargedImage && (
         <div className={`enlarge-modal ${enlargedImageMode}`} onClick={closeEnlargedImage}>

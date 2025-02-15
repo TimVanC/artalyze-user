@@ -1015,9 +1015,12 @@ body.dark-mode .top-bar {
 body.dark-mode .app-title,
 body.dark-mode .icon,
 body.dark-mode .game-header,
-body.dark-mode .tries-left,
-body.dark-mode .tries-circle {
+body.dark-mode .tries-left {
   color: #CFCFCF;
+}
+
+body.dark-mode .tries-circle {
+  background-color: #CFCFCF;
 }
 
 body.dark-mode .nav-button {

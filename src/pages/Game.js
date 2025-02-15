@@ -1031,22 +1031,7 @@ const Game = () => {
         <>
           <h1 className="game-header">Guess the human painting from each pair!</h1>
 
-          {/* Move Navigation Buttons ABOVE the image pairs */}
-          <div className="navigation-buttons">
-            {imagePairs.map((_, index) => (
-              <button
-                key={index}
-                className={`nav-button ${currentIndex === index ? 'active' : ''} ${selections[index]?.selected ? 'selected' : ''}`}
-                onClick={() => {
-                  setCurrentIndex(index);
-                  swiperRef.current.slideToLoop(index);
-                }}
-                aria-label={`Go to image pair ${index + 1}`} /* Accessibility */
-              />
-            ))}
-          </div>
-
-          {/* Image Pairs (Remains in the center) */}
+          {/* Image Pairs (Stays in the center) */}
           {imagePairs && imagePairs.length > 0 ? (
             <Swiper
               loop={true}
@@ -1100,7 +1085,22 @@ const Game = () => {
             <p>Loading...</p>
           )}
 
-          {/* Move Status Bar BELOW the image pairs */}
+          {/* Move Navigation Buttons BELOW Image Pairs but ABOVE Status Bar */}
+          <div className="navigation-buttons">
+            {imagePairs.map((_, index) => (
+              <button
+                key={index}
+                className={`nav-button ${currentIndex === index ? 'active' : ''} ${selections[index]?.selected ? 'selected' : ''}`}
+                onClick={() => {
+                  setCurrentIndex(index);
+                  swiperRef.current.slideToLoop(index);
+                }}
+                aria-label={`Go to image pair ${index + 1}`} /* Accessibility */
+              />
+            ))}
+          </div>
+
+          {/* Move Status Bar to the Bottom */}
           <div className={`status-bar ${showOverlay ? 'blurred' : ''}`}>
             <button
               className={`clear-button ${selections.length > 0 ? 'enabled' : ''}`}
@@ -1137,7 +1137,7 @@ const Game = () => {
             </button>
           </div>
 
-          {/* Enlarged Image Modal (Remains the same) */}
+          {/* Enlarged Image Modal (Stays the Same) */}
           {enlargedImage && (
             <div className="enlarge-modal" onClick={closeEnlargedImage}>
               <div className="swiper-container">
@@ -1181,7 +1181,6 @@ const Game = () => {
           )}
         </>
       )}
-
 
       {showOverlay && (
         <div className="mid-turn-overlay">

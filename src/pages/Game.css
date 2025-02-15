@@ -591,77 +591,52 @@ h1 {
 
 
 /* ========================= */
-/*       IMAGE GRID          */
+/*     COMPLETION SCREEN     */
 /* ========================= */
 
-.horizontal-thumbnail-grid {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Thumbnail Pairs */
-.pair-thumbnails-horizontal {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 2vw; /* Space between human and AI images */
-  margin-bottom: 1vh; /* Reduce spacing between pairs */
-}
-
-/* Individual Thumbnails */
+/* Thumbnail Containers */
 .thumbnail-container {
-  width: 22.5vw !important;  
-  height: 22.5vw !important; 
-  max-width: 105px; 
+  width: 22.5vw !important;
+  height: 22.5vw !important;
+  max-width: 105px;
   max-height: 105px;
   border-radius: 5px;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f4f4f4;
+  background-color: transparent; /* Ensure no background */
   transition: transform 0.3s ease;
   position: relative;
 }
 
-/* ✅ Ensure images fully fill the container */
+/* ✅ Ensure images fill the container without gaps */
 .thumbnail-container img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensures no gaps */
-  border-radius: inherit; /* Matches container’s rounding */
+  object-fit: cover;
+  border-radius: inherit; /* Forces exact matching */
   display: block;
   image-rendering: -webkit-optimize-contrast;
+}
+
+/* ✅ Remove unwanted gaps & ensure full wrapping */
+.thumbnail-container.correct,
+.thumbnail-container.incorrect {
+  border-radius: inherit !important; /* Ensures highlight exactly matches the image */
+  overflow: hidden; /* Prevents glow from leaking */
+  padding: 0; /* Ensures no extra spacing */
 }
 
 /* ✅ Fix white space issue for Safari & mobile browsers */
 @supports (-webkit-touch-callout: none) {
   .thumbnail-container img {
-    width: 100%;
-    height: 100%;
+    width: 101%;
+    height: 101%;
   }
 }
 
-/* ✅ Ensure selection glow fully wraps the image */
-.thumbnail-container.correct,
-.thumbnail-container.incorrect {
-  border-radius: inherit;
-  overflow: hidden;
-}
-
-/* Thumbnail Borders */
-.thumbnail-container.ai {
-  border-left: 1px solid rgba(0, 0, 0, 0.1); /* Subtle vertical divider */
-}
-
-/* Thumbnail Hover Effect */
-.thumbnail-container:hover {
-  transform: scale(1.05); /* Slightly enlarge on hover */
-}
-
-/* ✅ Highlight Correct & Incorrect Selections */
+/* ✅ Ensure the selection fully hugs the image */
 .thumbnail-container.correct {
   border: 3px solid #4CAF50;
   box-shadow: 0 0 10px 4px rgba(76, 175, 80, 0.4);
@@ -671,6 +646,7 @@ h1 {
   border: 3px solid #FF3D3D;
   box-shadow: 0 0 10px 4px rgba(255, 61, 61, 0.4);
 }
+
 
 /* Image Loading */
 .full-page-loading-screen {

@@ -1031,7 +1031,42 @@ const Game = () => {
         <>
           <h1 className="game-header">Guess the human painting from each pair!</h1>
 
-          {/* Image Pairs (Stays in the center) */}
+          <div className={`status-bar ${showOverlay ? 'blurred' : ''}`}>
+            <button
+              className={`clear-button ${selections.length > 0 ? 'enabled' : ''}`}
+              onClick={() => {
+                if (selections.length > 0) {
+                  updateSelections([]);
+                  localStorage.removeItem("selections");
+
+                  if (isUserLoggedIn()) {
+                    axiosInstance.put(`/stats/selections`, { selections: [] })
+                      .then(() => console.log("Selections cleared in backend"))
+                      .catch(error => console.error("Error clearing selections:", error));
+                  }
+                }
+              }}
+              disabled={selections.length === 0}
+            >
+              Clear
+            </button>
+
+            <div className="tries-left">
+              <span>Tries Left:</span>
+              {[...Array(triesLeft)].map((_, i) => (
+                <span key={i} className="tries-circle"></span>
+              ))}
+            </div>
+
+            <button
+              className={`submit-button ${isSubmitEnabled ? 'enabled' : 'disabled'}`}
+              onClick={handleSubmit}
+              disabled={!isSubmitEnabled}
+            >
+              Submit
+            </button>
+          </div>
+
           {imagePairs && imagePairs.length > 0 ? (
             <Swiper
               loop={true}
@@ -1085,7 +1120,6 @@ const Game = () => {
             <p>Loading...</p>
           )}
 
-          {/* Move Navigation Buttons BELOW Image Pairs but ABOVE Status Bar */}
           <div className="navigation-buttons">
             {imagePairs.map((_, index) => (
               <button
@@ -1100,44 +1134,6 @@ const Game = () => {
             ))}
           </div>
 
-          {/* Move Status Bar to the Bottom */}
-          <div className={`status-bar ${showOverlay ? 'blurred' : ''}`}>
-            <button
-              className={`clear-button ${selections.length > 0 ? 'enabled' : ''}`}
-              onClick={() => {
-                if (selections.length > 0) {
-                  updateSelections([]);
-                  localStorage.removeItem("selections");
-
-                  if (isUserLoggedIn()) {
-                    axiosInstance.put(`/stats/selections`, { selections: [] })
-                      .then(() => console.log("Selections cleared in backend"))
-                      .catch(error => console.error("Error clearing selections:", error));
-                  }
-                }
-              }}
-              disabled={selections.length === 0}
-            >
-              Clear
-            </button>
-
-            <div className="tries-left">
-              <span>Tries Left:</span>
-              {[...Array(triesLeft)].map((_, i) => (
-                <span key={i} className="tries-circle"></span>
-              ))}
-            </div>
-
-            <button
-              className={`submit-button ${isSubmitEnabled ? 'enabled' : 'disabled'}`}
-              onClick={handleSubmit}
-              disabled={!isSubmitEnabled}
-            >
-              Submit
-            </button>
-          </div>
-
-          {/* Enlarged Image Modal (Stays the Same) */}
           {enlargedImage && (
             <div className="enlarge-modal" onClick={closeEnlargedImage}>
               <div className="swiper-container">
@@ -1181,6 +1177,7 @@ const Game = () => {
           )}
         </>
       )}
+
 
       {showOverlay && (
         <div className="mid-turn-overlay">

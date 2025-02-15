@@ -91,10 +91,22 @@ h1 {
   border-right: none;
 }
 
-/* Status Bar */
+/* ========================= */
+/*       STATUS BAR          */
+/* ========================= */
+
 .status-bar {
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between; /* Space out elements */
+  align-items: center;
+  width: 90%;
+  margin: 0 auto 20px; /* Center and add bottom margin */
+  padding: 10px 0;
 }
+
+/* ========================= */
+/*        GAME HEADER        */
+/* ========================= */
 
 .game-header {
   font-size: 18px;
@@ -108,22 +120,78 @@ h1 {
   margin-bottom: 20px;
 }
 
-/* Tries Left */
+/* ========================= */
+/*       TRIES LEFT          */
+/* ========================= */
+
 .tries-left {
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-weight: normal;
+  font-weight: bold;
   gap: 10px;
-  margin-bottom: 2vh;
-  font-size: 16px;
+  font-size: 2vh;
   color: black;
 }
 
 .palette-icon {
-  font-size: 16px;
+  font-size: 18px;
   color: black;
 }
+
+/* ========================= */
+/*       CLEAR BUTTON        */
+/* ========================= */
+
+.clear-button {
+  background-color: transparent;
+  border: 2px solid #909090;
+  color: grey;
+  padding: 0.8vh 2vh;
+  font-size: 1.8vh;
+  border-radius: 1.2vh;
+  cursor: not-allowed;
+  transition: all 0.3s ease;
+  width: 12vw;
+  text-align: center;
+}
+
+.clear-button.enabled {
+  border: 2px solid #4d73af;
+  color: #4d73af;
+  cursor: pointer;
+}
+
+.clear-button.enabled:hover {
+  background-color: #4d73af;
+  color: white;
+}
+
+/* ========================= */
+/*      SUBMIT BUTTON        */
+/* ========================= */
+
+.submit-button {
+  background-color: grey;
+  color: white;
+  padding: 0.8vh 2vh;
+  font-size: 1.8vh;
+  border: none;
+  cursor: not-allowed;
+  border-radius: 1.2vh;
+  width: 12vw;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.submit-button.enabled {
+  background-color: #4d73af;
+  cursor: pointer;
+}
+
+.submit-button.enabled:hover {
+  background-color: #355a86;
+}
+
 
 /* Image Pairs */
 .image-pair-container {
@@ -195,81 +263,6 @@ h1 {
 
 .navigation-buttons .nav-button.active {
   background-color: #4d73af;
-}
-
-/* Submit & Clear Buttons */
-.button-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  margin-top: 2vh; /* Keeps them close to nav buttons */
-}
-
-.submit-button {
-  background-color: grey;
-  color: white;
-  padding: 1.2vh 4vh; /* Reduced height, increased width */
-  font-size: 2.2vh; /* Slightly smaller text */
-  border: none;
-  cursor: pointer;
-  border-radius: 1.2vh; /* Slightly reduced border-radius */
-  width: auto;
-  min-width: 22vw; /* Increased width */
-  max-width: 27vw;
-  transition: all 0.3s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.submit-button.enabled {
-  background-color: #4d73af;
-}
-
-.submit-button.disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.submit-button,
-.clear-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-/* Clear Button */
-.clear-button {
-  background-color: transparent;
-  border: 2px solid #909090;
-  color: grey;
-  padding: 0.8vh 3vh; /* Reduced height, increased width */
-  font-size: 2vh;
-  border-radius: 1.2vh; /* Reduced border-radius */
-  cursor: not-allowed;
-  transition: all 0.3s ease;
-  letter-spacing: .1rem;
-  width: auto;
-  min-width: 16vw; /* Increased width */
-  max-width: 20vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.clear-button.enabled {
-  border: 2px solid #4d73af;
-  color: #4d73af;
-  cursor: pointer;
-}
-
-.clear-button.enabled:hover {
-  background-color: #4d73af;
-  color: white;
 }
 
 /* Mid-Turn Feedback Overlay */

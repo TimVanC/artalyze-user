@@ -1048,7 +1048,24 @@ const Game = () => {
 */}
 
           <div className={`status-bar ${showOverlay ? 'blurred' : ''}`}>
-            <div className="header-separator"></div>  {/* Add space between the header and the tries line */}
+            <button
+              className={`clear-button ${selections.length > 0 ? 'enabled' : ''}`}
+              onClick={() => {
+                if (selections.length > 0) {
+                  updateSelections([]);
+                  localStorage.removeItem("selections");
+
+                  if (isUserLoggedIn()) {
+                    axiosInstance.put(`/stats/selections`, { selections: [] })
+                      .then(() => console.log("Selections cleared in backend"))
+                      .catch(error => console.error("Error clearing selections:", error));
+                  }
+                }
+              }}
+              disabled={selections.length === 0}
+            >
+              Clear
+            </button>
 
             <div className="tries-left">
               <span>Tries Left:</span>
@@ -1056,7 +1073,16 @@ const Game = () => {
                 <FaPalette key={i} className="palette-icon" />
               ))}
             </div>
+
+            <button
+              className={`submit-button ${isSubmitEnabled ? 'enabled' : 'disabled'}`}
+              onClick={handleSubmit}
+              disabled={!isSubmitEnabled}
+            >
+              Submit
+            </button>
           </div>
+
 
           {imagePairs && imagePairs.length > 0 ? (
             <Swiper
@@ -1170,39 +1196,6 @@ const Game = () => {
               />
             ))}
           </div>
-
-
-
-          <div className="button-container">
-            <button
-              className={`clear-button ${selections.length > 0 ? 'enabled' : ''}`}
-              onClick={() => {
-                if (selections.length > 0) {
-                  updateSelections([]);
-                  localStorage.removeItem("selections");
-
-                  if (isUserLoggedIn()) {
-                    axiosInstance.put(`/stats/selections`, { selections: [] })
-                      .then(() => console.log("Selections cleared in backend"))
-                      .catch(error => console.error("Error clearing selections:", error));
-                  }
-                }
-              }}
-              disabled={selections.length === 0}
-            >
-              Clear
-            </button>
-
-            <button
-              className={`submit-button ${isSubmitEnabled ? 'enabled' : 'disabled'}`}
-              onClick={handleSubmit}
-              disabled={!isSubmitEnabled}
-            >
-              Submit
-            </button>
-          </div>
-
-
         </>
       )}
 
@@ -1254,16 +1247,16 @@ const Game = () => {
 
             <span
               className={`completion-score-badge compact ${correctCount === 5
-                  ? "five-correct"
-                  : correctCount === 4
-                    ? "four-correct"
-                    : correctCount === 3
-                      ? "three-correct"
-                      : correctCount === 2
-                        ? "two-correct"
-                        : correctCount === 1
-                          ? "one-correct"
-                          : "zero-correct"
+                ? "five-correct"
+                : correctCount === 4
+                  ? "four-correct"
+                  : correctCount === 3
+                    ? "three-correct"
+                    : correctCount === 2
+                      ? "two-correct"
+                      : correctCount === 1
+                        ? "one-correct"
+                        : "zero-correct"
                 }`}
               style={{ flexShrink: 0 }}
             >

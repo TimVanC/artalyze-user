@@ -1031,42 +1031,6 @@ const Game = () => {
         <>
           <h1 className="game-header">Guess the human painting from each pair!</h1>
 
-          <div className={`status-bar ${showOverlay ? 'blurred' : ''}`}>
-            <button
-              className={`clear-button ${selections.length > 0 ? 'enabled' : ''}`}
-              onClick={() => {
-                if (selections.length > 0) {
-                  updateSelections([]);
-                  localStorage.removeItem("selections");
-
-                  if (isUserLoggedIn()) {
-                    axiosInstance.put(`/stats/selections`, { selections: [] })
-                      .then(() => console.log("Selections cleared in backend"))
-                      .catch(error => console.error("Error clearing selections:", error));
-                  }
-                }
-              }}
-              disabled={selections.length === 0}
-            >
-              Clear
-            </button>
-
-            <div className="tries-left">
-              <span>Tries Left:</span>
-              {[...Array(triesLeft)].map((_, i) => (
-                <span key={i} className="tries-circle"></span>
-              ))}
-            </div>
-
-            <button
-              className={`submit-button ${isSubmitEnabled ? 'enabled' : 'disabled'}`}
-              onClick={handleSubmit}
-              disabled={!isSubmitEnabled}
-            >
-              Submit
-            </button>
-          </div>
-
           {imagePairs && imagePairs.length > 0 ? (
             <Swiper
               loop={true}
@@ -1120,18 +1084,49 @@ const Game = () => {
             <p>Loading...</p>
           )}
 
-          <div className="navigation-buttons">
-            {imagePairs.map((_, index) => (
-              <button
-                key={index}
-                className={`nav-button ${currentIndex === index ? 'active' : ''} ${selections[index]?.selected ? 'selected' : ''}`}
-                onClick={() => {
-                  setCurrentIndex(index);
-                  swiperRef.current.slideToLoop(index);
-                }}
-                aria-label={`Go to image pair ${index + 1}`} /* Accessibility */
-              />
-            ))}
+          {/* Updated Layout: Clear Button (Left) | Navigation (Center) | Submit Button (Right) */}
+          <div className="status-bar">
+            <button
+              className={`clear-button ${selections.length > 0 ? 'enabled' : ''}`}
+              onClick={() => {
+                if (selections.length > 0) {
+                  updateSelections([]);
+                  localStorage.removeItem("selections");
+
+                  if (isUserLoggedIn()) {
+                    axiosInstance.put(`/stats/selections`, { selections: [] })
+                      .then(() => console.log("Selections cleared in backend"))
+                      .catch(error => console.error("Error clearing selections:", error));
+                  }
+                }
+              }}
+              disabled={selections.length === 0}
+            >
+              Clear
+            </button>
+
+            {/* Navigation Buttons Centered */}
+            <div className="navigation-buttons">
+              {imagePairs.map((_, index) => (
+                <button
+                  key={index}
+                  className={`nav-button ${currentIndex === index ? 'active' : ''} ${selections[index]?.selected ? 'selected' : ''}`}
+                  onClick={() => {
+                    setCurrentIndex(index);
+                    swiperRef.current.slideToLoop(index);
+                  }}
+                  aria-label={`Go to image pair ${index + 1}`} /* Accessibility */
+                />
+              ))}
+            </div>
+
+            <button
+              className={`submit-button ${isSubmitEnabled ? 'enabled' : 'disabled'}`}
+              onClick={handleSubmit}
+              disabled={!isSubmitEnabled}
+            >
+              Submit
+            </button>
           </div>
 
           {enlargedImage && (
@@ -1202,8 +1197,6 @@ const Game = () => {
           </div>
         </div>
       )}
-
-
 
       {isGameComplete && (
         <div className="completion-screen">

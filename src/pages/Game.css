@@ -69,21 +69,6 @@ h1 {
 }
 
 /* ========================= */
-/*       STATUS BAR          */
-/* ========================= */
-
-.status-bar {
-  display: flex;
-  justify-content: center; /* Keep elements centered */
-  align-items: center;
-  gap: 22px; /* Match completion screen spacing */
-  flex-wrap: nowrap; /* Prevent wrapping */
-  width: 100%;
-  max-width: 350px; /* Keep it from spreading too wide */
-  margin: 0 auto 10px; /* Adjusted margin */
-}
-
-/* ========================= */
 /*       TRIES LEFT          */
 /* ========================= */
 
@@ -102,69 +87,6 @@ h1 {
   background-color: #4A4A4A; /* Default filled */
   border-radius: 50%;
   display: inline-block;
-}
-
-/* ========================= */
-/*       CLEAR BUTTON        */
-/* ========================= */
-
-.clear-button {
-  background-color: transparent;
-  border: 2px solid #909090;
-  color: grey;
-  padding: 0.6vh 1.5vh; /* Reduced height but kept width */
-  font-size: 15px; /* Updated size */
-  border-radius: 6px;
-  cursor: not-allowed;
-  transition: all 0.3s ease;
-  min-width: 65px;
-  max-width: 90px;
-  height: 4.7vh; /* Reduced height while maintaining alignment */
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.clear-button.enabled {
-  border: 2px solid #4d73af;
-  color: #4d73af;
-  cursor: pointer;
-}
-
-.clear-button.enabled:hover {
-  background-color: #4d73af;
-  color: white;
-}
-
-/* ========================= */
-/*      SUBMIT BUTTON        */
-/* ========================= */
-
-.submit-button {
-  background-color: grey;
-  color: white;
-  padding: 1.2vh 2vh; /* Increased width */
-  font-size: 15px; /* Updated size */
-  border: none;
-  cursor: not-allowed;
-  border-radius: 6px;
-  min-width: 85px; /* Increased width */
-  max-width: 110px;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.3s ease;
-}
-
-.submit-button.enabled {
-  background-color: #4d73af;
-  cursor: pointer;
-}
-
-.submit-button.enabled:hover {
-  background-color: #355a86;
 }
 
 /* ========================= */
@@ -226,22 +148,35 @@ h1 {
   overflow: hidden; /* Prevents any border leaking */
 }
 
-/* Navigation Buttons */
+/* ========================= */
+/*       STATUS BAR          */
+/* ========================= */
+.status-bar {
+  display: flex;
+  justify-content: space-between; /* Spreads Clear, Navigation, and Submit evenly */
+  align-items: center;
+  width: 100%;
+  max-width: 400px; /* Slightly wider for better balance */
+  margin: 0 auto 10px;
+}
+
+/* ========================= */
+/*    NAVIGATION BUTTONS     */
+/* ========================= */
 .navigation-buttons {
-  margin: 10px 0;
   display: flex;
   justify-content: center;
+  flex-grow: 1; /* Ensures it takes up remaining space */
   gap: 2vh; /* Increased spacing slightly */
 }
 
 .navigation-buttons .nav-button {
   background-color: #ccc;
-  color: white;
   width: 2.5vh;  /* Small circles */
   height: 2.5vh;
   border-radius: 50%;
   border: none;
-  display: inline-flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   font-size: 0; /* Hide text */
@@ -257,6 +192,68 @@ h1 {
 .navigation-buttons .nav-button.active {
   background-color: #4d73af;
 }
+
+/* ========================= */
+/*       CLEAR BUTTON        */
+/* ========================= */
+.clear-button {
+  background-color: transparent;
+  border: 2px solid #909090;
+  color: grey;
+  padding: 0.6vh 1.5vh;
+  font-size: 15px;
+  border-radius: 6px;
+  cursor: not-allowed;
+  transition: all 0.3s ease;
+  min-width: 65px;
+  max-width: 90px;
+  height: 4.7vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Enabled Clear Button */
+.clear-button.enabled {
+  border: 2px solid #4d73af;
+  color: #4d73af;
+  cursor: pointer;
+}
+
+.clear-button.enabled:hover {
+  background-color: #4d73af;
+  color: white;
+}
+
+/* ========================= */
+/*       SUBMIT BUTTON       */
+/* ========================= */
+.submit-button {
+  background-color: grey;
+  color: white;
+  padding: 1.2vh 2vh;
+  font-size: 15px;
+  border: none;
+  cursor: not-allowed;
+  border-radius: 6px;
+  min-width: 85px;
+  max-width: 110px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+/* Enabled Submit Button */
+.submit-button.enabled {
+  background-color: #4d73af;
+  cursor: pointer;
+}
+
+.submit-button.enabled:hover {
+  background-color: #355a86;
+}
+
 
 /* Mid-Turn Feedback Overlay */
 .mid-turn-overlay {

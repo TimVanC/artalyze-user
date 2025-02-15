@@ -1031,60 +1031,22 @@ const Game = () => {
         <>
           <h1 className="game-header">Guess the human painting from each pair!</h1>
 
-          {/* 
-<div className="progress-bar-container">
-  <div className="progress-bar">
-    {[...Array(5)].map((_, index) => (
-      <div
-        key={index}
-        className="progress-bar-segment"
-        style={{
-          backgroundColor: selections[index] ? "#4d73af" : "#e0e0e0",  // Fill based on selections
-        }}
-      />
-    ))}
-  </div>
-</div>
-*/}
-
-          <div className={`status-bar ${showOverlay ? 'blurred' : ''}`}>
-            <button
-              className={`clear-button ${selections.length > 0 ? 'enabled' : ''}`}
-              onClick={() => {
-                if (selections.length > 0) {
-                  updateSelections([]);
-                  localStorage.removeItem("selections");
-
-                  if (isUserLoggedIn()) {
-                    axiosInstance.put(`/stats/selections`, { selections: [] })
-                      .then(() => console.log("Selections cleared in backend"))
-                      .catch(error => console.error("Error clearing selections:", error));
-                  }
-                }
-              }}
-              disabled={selections.length === 0}
-            >
-              Clear
-            </button>
-
-            <div className="tries-left">
-              <span>Tries Left:</span>
-              {[...Array(triesLeft)].map((_, i) => (
-                <span key={i} className="tries-circle"></span>
-              ))}
-            </div>
-
-
-            <button
-              className={`submit-button ${isSubmitEnabled ? 'enabled' : 'disabled'}`}
-              onClick={handleSubmit}
-              disabled={!isSubmitEnabled}
-            >
-              Submit
-            </button>
+          {/* Move Navigation Buttons ABOVE the image pairs */}
+          <div className="navigation-buttons">
+            {imagePairs.map((_, index) => (
+              <button
+                key={index}
+                className={`nav-button ${currentIndex === index ? 'active' : ''} ${selections[index]?.selected ? 'selected' : ''}`}
+                onClick={() => {
+                  setCurrentIndex(index);
+                  swiperRef.current.slideToLoop(index);
+                }}
+                aria-label={`Go to image pair ${index + 1}`} /* Accessibility */
+              />
+            ))}
           </div>
 
-
+          {/* Image Pairs (Remains in the center) */}
           {imagePairs && imagePairs.length > 0 ? (
             <Swiper
               loop={true}
@@ -1117,7 +1079,6 @@ const Game = () => {
                                   setEnlargedImage(image);
                                   setEnlargedImageMode("game-screen");
                                 }, 10); // Small delay prevents duplicate stacking
-
                               }
                             } else {
                               singleTapTimeout.current = setTimeout(() => {
@@ -1129,7 +1090,6 @@ const Game = () => {
                           }}
                           draggable="false"
                         />
-
                       </div>
                     ))}
                   </div>
@@ -1140,6 +1100,44 @@ const Game = () => {
             <p>Loading...</p>
           )}
 
+          {/* Move Status Bar BELOW the image pairs */}
+          <div className={`status-bar ${showOverlay ? 'blurred' : ''}`}>
+            <button
+              className={`clear-button ${selections.length > 0 ? 'enabled' : ''}`}
+              onClick={() => {
+                if (selections.length > 0) {
+                  updateSelections([]);
+                  localStorage.removeItem("selections");
+
+                  if (isUserLoggedIn()) {
+                    axiosInstance.put(`/stats/selections`, { selections: [] })
+                      .then(() => console.log("Selections cleared in backend"))
+                      .catch(error => console.error("Error clearing selections:", error));
+                  }
+                }
+              }}
+              disabled={selections.length === 0}
+            >
+              Clear
+            </button>
+
+            <div className="tries-left">
+              <span>Tries Left:</span>
+              {[...Array(triesLeft)].map((_, i) => (
+                <span key={i} className="tries-circle"></span>
+              ))}
+            </div>
+
+            <button
+              className={`submit-button ${isSubmitEnabled ? 'enabled' : 'disabled'}`}
+              onClick={handleSubmit}
+              disabled={!isSubmitEnabled}
+            >
+              Submit
+            </button>
+          </div>
+
+          {/* Enlarged Image Modal (Remains the same) */}
           {enlargedImage && (
             <div className="enlarge-modal" onClick={closeEnlargedImage}>
               <div className="swiper-container">
@@ -1172,7 +1170,6 @@ const Game = () => {
                             onMouseDown={(e) => e.preventDefault()} // Block dragging
                             draggable="false"
                           />
-
                         </div>
                       </SwiperSlide>
                     ))}
@@ -1182,23 +1179,9 @@ const Game = () => {
               <div className="swiper-button-next">&#8594;</div>
             </div>
           )}
-
-
-          <div className="navigation-buttons">
-            {imagePairs.map((_, index) => (
-              <button
-                key={index}
-                className={`nav-button ${currentIndex === index ? 'active' : ''} ${selections[index]?.selected ? 'selected' : ''}`}
-                onClick={() => {
-                  setCurrentIndex(index);
-                  swiperRef.current.slideToLoop(index);
-                }}
-                aria-label={`Go to image pair ${index + 1}`} /* Accessibility */
-              />
-            ))}
-          </div>
         </>
       )}
+
 
       {showOverlay && (
         <div className="mid-turn-overlay">

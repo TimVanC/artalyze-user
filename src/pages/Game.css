@@ -591,11 +591,32 @@ h1 {
 
 
 /* ========================= */
-/*     COMPLETION SCREEN     */
+/*       IMAGE GRID FIX      */
 /* ========================= */
 
-/* Thumbnail Containers */
+.horizontal-thumbnail-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 380px; /* Prevents excessive width */
+  margin: 0 auto;
+}
+
+/* ✅ Restore Proper Pairing Layout */
+.pair-thumbnails-horizontal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; /* Space between human and AI images */
+  width: 100%;
+  max-width: 380px; /* Keeps thumbnails centered */
+  margin-bottom: 10px;
+}
+
+/* ✅ Ensure Consistent Thumbnail Size & Alignment */
 .thumbnail-container {
+  flex: 1 1 50%; /* Ensures even spacing */
   width: 22.5vw !important;
   height: 22.5vw !important;
   max-width: 105px;
@@ -605,38 +626,37 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: transparent; /* Ensure no background */
+  background-color: transparent; /* No background */
   transition: transform 0.3s ease;
   position: relative;
 }
 
-/* ✅ Ensure images fill the container without gaps */
+/* ✅ Ensure images fully fill the container */
 .thumbnail-container img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: inherit; /* Forces exact matching */
+  object-fit: cover; /* Prevents gaps */
+  border-radius: inherit;
   display: block;
   image-rendering: -webkit-optimize-contrast;
 }
 
-/* ✅ Remove unwanted gaps & ensure full wrapping */
-.thumbnail-container.correct,
-.thumbnail-container.incorrect {
-  border-radius: inherit !important; /* Ensures highlight exactly matches the image */
-  overflow: hidden; /* Prevents glow from leaking */
-  padding: 0; /* Ensures no extra spacing */
-}
-
-/* ✅ Fix white space issue for Safari & mobile browsers */
+/* ✅ Fix White Space Without Breaking Layout */
 @supports (-webkit-touch-callout: none) {
   .thumbnail-container img {
-    width: 101%;
-    height: 101%;
+    width: 100%;
+    height: 100%;
   }
 }
 
-/* ✅ Ensure the selection fully hugs the image */
+/* ✅ Ensure Selection Glow Wraps the Image Perfectly */
+.thumbnail-container.correct,
+.thumbnail-container.incorrect {
+  border-radius: inherit !important;
+  overflow: hidden;
+}
+
+/* ✅ Highlight Correct & Incorrect Selections */
 .thumbnail-container.correct {
   border: 3px solid #4CAF50;
   box-shadow: 0 0 10px 4px rgba(76, 175, 80, 0.4);
@@ -646,6 +666,7 @@ h1 {
   border: 3px solid #FF3D3D;
   box-shadow: 0 0 10px 4px rgba(255, 61, 61, 0.4);
 }
+
 
 
 /* Image Loading */

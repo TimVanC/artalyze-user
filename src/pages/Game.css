@@ -219,13 +219,11 @@ h1 {
 
 /* Selected image styling */
 .image-container.selected {
-  border: 4px solid #4CAF50;
-  border-radius: 7px; /* Reduce slightly so it doesn't extend beyond image */
-  box-shadow: 0 0 6px 2px rgba(76, 175, 80, 0.8); /* Less spread to avoid excess glow */
-  padding: 1px; /* NEW: Slight inward shift to cover white sliver */
-  overflow: hidden; /* Ensures border doesn’t leak out */
+  border: 3px solid #4CAF50; /* Reduce border thickness for tighter fit */
+  border-radius: 6px; /* Reduce slightly to match image container */
+  box-shadow: inset 0 0 4px rgba(76, 175, 80, 0.7); /* Move shadow inside */
+  overflow: hidden; /* Prevents any border leakage */
 }
-
 
 /* Navigation Buttons */
 .navigation-buttons {

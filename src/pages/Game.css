@@ -220,10 +220,12 @@ h1 {
 /* Selected image styling */
 .image-container.selected {
   border: 4px solid #4CAF50;
-  border-radius: 10px; /* Slightly more rounded for aesthetic effect */
-  box-shadow: 0 0 8px 2px rgba(76, 175, 80, 0.7); /* Adjusted to keep selection tight */
-  overflow: hidden; /* Prevents selection from leaking outside */
+  border-radius: 7px; /* Reduce slightly so it doesn't extend beyond image */
+  box-shadow: 0 0 6px 2px rgba(76, 175, 80, 0.8); /* Less spread to avoid excess glow */
+  padding: 1px; /* NEW: Slight inward shift to cover white sliver */
+  overflow: hidden; /* Ensures border doesn’t leak out */
 }
+
 
 /* Navigation Buttons */
 .navigation-buttons {

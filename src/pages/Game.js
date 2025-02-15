@@ -394,7 +394,7 @@ const Game = () => {
   };
 
   // Game logic: Initialize or restore game state based on completion status
-  
+
   useEffect(() => {
     const hasPlayedBefore = localStorage.getItem("hasPlayedBefore");
 
@@ -1271,13 +1271,13 @@ const Game = () => {
                 return (
                   <div key={index} className="pair-thumbnails-horizontal">
                     <div
-                      className={`thumbnail-container human ${isCorrect ? "correct pulse" : "incorrect pulse"}`}
+                      className={`thumbnail-container human ${isCorrect ? "correct pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.human)}
                     >
                       <img src={pair.human} alt={`Human ${index + 1}`} draggable="false" />
                     </div>
                     <div
-                      className={`thumbnail-container ai ${!isCorrect ? "incorrect pulse" : ""}`}
+                      className={`thumbnail-container ai ${!isCorrect && selection ? "incorrect pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
                       <img src={pair.ai} alt={`AI ${index + 1}`} draggable="false" />
@@ -1295,13 +1295,13 @@ const Game = () => {
                 return (
                   <div key={index + 3} className="pair-thumbnails-horizontal">
                     <div
-                      className={`thumbnail-container human ${isCorrect ? "correct pulse" : "incorrect pulse"}`}
+                      className={`thumbnail-container human ${isCorrect ? "correct pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.human)}
                     >
                       <img src={pair.human} alt={`Human ${index + 4}`} draggable="false" />
                     </div>
                     <div
-                      className={`thumbnail-container ai ${!isCorrect ? "incorrect pulse" : ""}`}
+                      className={`thumbnail-container ai ${!isCorrect && selection ? "incorrect pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
                       <img src={pair.ai} alt={`AI ${index + 4}`} draggable="false" />
@@ -1311,6 +1311,7 @@ const Game = () => {
               })}
             </div>
           </div>
+
 
         </div>
       )}

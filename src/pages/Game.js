@@ -1204,7 +1204,7 @@ const Game = () => {
               </>
             ) : correctCount >= 0 && correctCount <= 3 ? (
               <>
-                <h2 className="mid-turn-overlay-title">{getRandomEncouragement()}</h2>
+                <h2 className="mid-turn-overlay-title">Not quite, try again!</h2>
                 <p className="mid-turn-overlay-message">You have {triesLeft} tries left</p>
               </>
             ) : null}

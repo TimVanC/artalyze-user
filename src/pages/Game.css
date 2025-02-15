@@ -184,24 +184,30 @@ h1 {
 /* Ensure image containers fully fill the screen width */
 .image-container {
   position: relative;
-  width: 30vh;
-  height: 30vh;
+  width: 250px; /* Fixed pixel size to prevent rounding issues */
+  height: 250px;
   background-color: #f5f5f5;
   border-radius: 8px;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-shrink: 0; /* Prevents flexbox from resizing incorrectly */
 }
 
 .image-container img {
-  width: 102%; /* Expand beyond container to prevent any gaps */
-  height: 102%;
+  width: 100.5%; /* Slightly beyond container */
+  height: 100.5%;
   object-fit: cover;
   border-radius: 8px;
   display: block;
-  image-rendering: -webkit-optimize-contrast; /* Optimizes rendering in Safari */
+  image-rendering: -webkit-optimize-contrast;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .image-container img {
+    width: 101%;
+    height: 101%;
+  }
 }
 
 /* Prevent any extra margins from shifting images */

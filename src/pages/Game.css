@@ -617,8 +617,8 @@ h1 {
 /* ✅ Make Thumbnails Slightly Smaller */
 .thumbnail-container {
   flex: 1 1 50%;
-  width: 20vw !important; /* Reduce size slightly */
-  height: 20vw !important;
+  width: 22vw !important; /* Reduce size slightly */
+  height: 22vw !important;
   max-width: 95px; /* Reduce max size slightly */
   max-height: 95px;
   border-radius: 2px;

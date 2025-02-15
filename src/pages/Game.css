@@ -599,34 +599,34 @@ h1 {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 380px; /* Prevents excessive width */
+  max-width: 360px; /* Reduce max width slightly */
   margin: 0 auto;
 }
 
-/* ✅ Restore Proper Pairing Layout */
+/* ✅ Maintain Proper Pairing Layout */
 .pair-thumbnails-horizontal {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px; /* Space between human and AI images */
+  gap: 8px; /* Slightly reduce space between images */
   width: 100%;
-  max-width: 380px; /* Keeps thumbnails centered */
-  margin-bottom: 10px;
+  max-width: 360px;
+  margin-bottom: 8px;
 }
 
-/* ✅ Ensure Consistent Thumbnail Size & Alignment */
+/* ✅ Make Thumbnails Slightly Smaller */
 .thumbnail-container {
-  flex: 1 1 50%; /* Ensures even spacing */
-  width: 22.5vw !important;
-  height: 22.5vw !important;
-  max-width: 105px;
-  max-height: 105px;
+  flex: 1 1 50%;
+  width: 20vw !important; /* Reduce size slightly */
+  height: 20vw !important;
+  max-width: 95px; /* Reduce max size slightly */
+  max-height: 95px;
   border-radius: 5px;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: transparent; /* No background */
+  background-color: transparent;
   transition: transform 0.3s ease;
   position: relative;
 }
@@ -635,13 +635,13 @@ h1 {
 .thumbnail-container img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Prevents gaps */
+  object-fit: cover;
   border-radius: inherit;
   display: block;
   image-rendering: -webkit-optimize-contrast;
 }
 
-/* ✅ Fix White Space Without Breaking Layout */
+/* ✅ Maintain white space fix for Safari */
 @supports (-webkit-touch-callout: none) {
   .thumbnail-container img {
     width: 100%;
@@ -649,25 +649,25 @@ h1 {
   }
 }
 
-/* ✅ Ensure Selection Glow Wraps the Image Perfectly */
+/* ✅ Restore Rounded Corners for Selections */
 .thumbnail-container.correct,
 .thumbnail-container.incorrect {
-  border-radius: inherit !important;
+  border-radius: 8px !important; /* Bring back rounded corners */
   overflow: hidden;
 }
 
-/* ✅ Highlight Correct & Incorrect Selections */
+/* ✅ Adjust Selection Borders */
 .thumbnail-container.correct {
   border: 3px solid #4CAF50;
+  border-radius: 8px; /* Match image border */
   box-shadow: 0 0 10px 4px rgba(76, 175, 80, 0.4);
 }
 
 .thumbnail-container.incorrect {
   border: 3px solid #FF3D3D;
+  border-radius: 8px; /* Match image border */
   box-shadow: 0 0 10px 4px rgba(255, 61, 61, 0.4);
 }
-
-
 
 /* Image Loading */
 .full-page-loading-screen {

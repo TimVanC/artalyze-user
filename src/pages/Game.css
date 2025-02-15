@@ -217,15 +217,12 @@ h1 {
   margin-bottom: 2vh;
 }
 
-/* Selected image styling */
 .image-container.selected {
   border: 4px solid #4CAF50; /* Thick but precise border */
-  border-radius: 6px; /* Reduce slightly to eliminate corner gaps */
+  border-radius: 5px; /* Reduce slightly to eliminate corner gaps */
   box-shadow: 0 0 8px 2px rgba(76, 175, 80, 0.8); /* Keeps subtle glow */
   overflow: hidden; /* Ensures no leaking outside the image */
 }
-
-
 
 /* Navigation Buttons */
 .navigation-buttons {

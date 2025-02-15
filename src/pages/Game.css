@@ -95,10 +95,12 @@ h1 {
   letter-spacing: .5px;
 }
 
-/* Smaller Palette Icons */
-.palette-icon {
-  font-size: 14px; /* Reduced to match request */
-  color: black;
+.tries-circle {
+  width: 15px;
+  height: 15px;
+  background-color: black; /* Default filled */
+  border-radius: 50%;
+  display: inline-block;
 }
 
 /* ========================= */

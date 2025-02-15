@@ -67,41 +67,17 @@ h1 {
   margin-top: 20px;
 }
 
-/* Progress Bar */
-.progress-bar-container {
-  width: 60%;
-  margin: 10px auto;
-}
-
-.progress-bar {
-  height: 10px;
-  background-color: #e0e0e0;
-  border-radius: 5px;
-  overflow: hidden;
-  display: flex;
-}
-
-.progress-bar-segment {
-  flex: 1;
-  height: 100%;
-  border-right: 1px solid white;
-}
-
-.progress-bar-segment:last-child {
-  border-right: none;
-}
-
 /* ========================= */
 /*       STATUS BAR          */
 /* ========================= */
 
 .status-bar {
   display: flex;
-  justify-content: space-between; /* Space out elements */
+  justify-content: space-between; /* Distribute elements evenly */
   align-items: center;
-  width: 90%;
-  margin: 0 auto 20px; /* Center and add bottom margin */
-  padding: 10px 0;
+  width: 95%; /* Slightly wider for better spacing */
+  margin: 0 auto 10px; /* Reduce bottom margin */
+  padding: 5px 0; /* Reduce padding */
 }
 
 /* ========================= */
@@ -113,11 +89,11 @@ h1 {
   font-weight: 600;
   text-align: center;
   color: #333;
-  margin-bottom: 20px;
+  margin-bottom: 15px; /* Reduce margin for compactness */
 }
 
 .header-separator {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 /* ========================= */
@@ -128,13 +104,14 @@ h1 {
   display: flex;
   align-items: center;
   font-weight: bold;
-  gap: 10px;
-  font-size: 2vh;
+  gap: 5px; /* Reduce space between text and icons */
+  font-size: 1.6vh; /* Reduce text size slightly */
   color: black;
 }
 
+/* Smaller Palette Icons */
 .palette-icon {
-  font-size: 18px;
+  font-size: 10px; /* Further reduced for better spacing */
   color: black;
 }
 
@@ -146,13 +123,17 @@ h1 {
   background-color: transparent;
   border: 2px solid #909090;
   color: grey;
-  padding: 0.8vh 2vh;
-  font-size: 1.8vh;
-  border-radius: 1.2vh;
+  padding: 0.6vh 1.5vh; /* Reduce padding for a tighter look */
+  font-size: 1.6vh; /* Match tries-left text */
+  border-radius: 1vh;
   cursor: not-allowed;
   transition: all 0.3s ease;
-  width: 12vw;
+  width: 10vw; /* Reduce width for better alignment */
+  height: 3.5vh; /* Ensure buttons are same height */
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .clear-button.enabled {
@@ -173,13 +154,17 @@ h1 {
 .submit-button {
   background-color: grey;
   color: white;
-  padding: 0.8vh 2vh;
-  font-size: 1.8vh;
+  padding: 0.6vh 1.5vh; /* Reduce padding */
+  font-size: 1.6vh;
   border: none;
   cursor: not-allowed;
-  border-radius: 1.2vh;
-  width: 12vw;
+  border-radius: 1vh;
+  width: 10vw; /* Match Clear button width */
+  height: 3.5vh;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   transition: all 0.3s ease;
 }
 

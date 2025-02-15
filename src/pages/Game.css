@@ -257,65 +257,6 @@ h1 {
   background-color: #355a86;
 }
 
-/* Mid-Turn Feedback Overlay */
-.mid-turn-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);  /* Semi-transparent background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.mid-turn-overlay-content {
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  text-align: center;
-  width: 80%;
-  max-width: 400px;
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.3s ease-in-out, scaleUp 0.3s ease-in-out, shake 0.5s ease-out; /* Apply the shake animation */
-}
-
-.mid-turn-overlay-content.disappearing {
-  animation: fadeOut 0.3s ease-in-out, scaleDown 0.3s ease-in-out;
-}
-
-.mid-turn-overlay-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 15px;
-}
-
-.mid-turn-overlay-message {
-  font-size: 18px;
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.mid-turn-overlay-try-again-button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 12px 25px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-}
-
-.mid-turn-overlay-try-again-button:hover {
-  background-color: #388E3C;
-  transform: scale(1.05);
-}
-
 /* Keyframe Animation for Shaking "No" Nod */
 @keyframes shake {
   0% {
@@ -631,41 +572,110 @@ h1 {
   box-shadow: 0 0 10px 4px rgba(255, 61, 61, 0.4);
 }
 
-/* Image Loading */
-.full-page-loading-screen {
-  position: absolute;
-  top: 50px; /* Matches the height of the top bar */
+/* ========================= */
+/*      MID-TURN OVERLAY     */
+/* ========================= */
+
+.mid-turn-overlay {
+  position: fixed;
+  top: 0;
   left: 0;
   width: 100%;
-  height: calc(100vh - 50px); /* Full height minus the top bar */
-  background-color: #b2cbed; /* Light blue background */
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
-  flex-direction: column; /* Stack logo above the progress bar */
   justify-content: center;
   align-items: center;
-  z-index: 10; /* Ensure it overlays all other content */
+  z-index: 1000;
+}
+
+.mid-turn-overlay-content {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  width: 80%;
+  max-width: 400px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out, scaleUp 0.3s ease-in-out, shake 0.5s ease-out;
+}
+
+.mid-turn-overlay-content.disappearing {
+  animation: fadeOut 0.3s ease-in-out, scaleDown 0.3s ease-in-out;
+}
+
+.mid-turn-overlay-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.mid-turn-overlay-message {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.mid-turn-overlay-try-again-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 25px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.mid-turn-overlay-try-again-button:hover {
+  background-color: #388E3C;
+  transform: scale(1.05);
+}
+
+/* ========================= */
+/*  FULL PAGE LOADING SCREEN */
+/* ========================= */
+
+.full-page-loading-screen {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 50px);
+  background-color: #b2cbed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
 }
 
 .loading-logo {
-  width: 70px; /* Set the logo width */
-  margin-bottom: 20px; /* Add spacing between the logo and the progress bar */
+  width: 70px;
+  margin-bottom: 20px;
 }
 
 .full-page-progress-bar {
-  width: 150px; 
-  height: 10px; /* Slim progress bar */
-  background-color: #ffffff; /* White background for the bar */
+  width: 150px;
+  height: 10px;
+  background-color: #ffffff;
   border-radius: 5px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .full-page-progress-fill {
-  width: 0%; /* Start with an empty bar */
+  width: 0%;
   height: 100%;
-  background-color: #000000; /* Black fill color */
-  animation: fullPageFillProgress 3s linear forwards; /* Fill the bar over 3 seconds */
+  background-color: #000000;
+  animation: fullPageFillProgress 3s linear forwards;
 }
+
+/* ========================= */
+/*  MOBILE WARNING OVERLAY   */
+/* ========================= */
 
 .mobile-warning-overlay {
   position: fixed;
@@ -707,14 +717,17 @@ h1 {
   cursor: pointer;
 }
 
-/* ✅ Duplicate Guess Overlay (Styled like Mid-Turn Overlay) */
+/* ========================= */
+/*   DUPLICATE GUESS OVERLAY */
+/* ========================= */
+
 .duplicate-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Slightly lighter background */
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -723,11 +736,11 @@ h1 {
 
 .duplicate-overlay-content {
   background: white;
-  padding: 15px; /* Slightly smaller padding */
-  border-radius: 10px; /* Slightly smaller border radius */
+  padding: 15px;
+  border-radius: 10px;
   text-align: center;
-  width: 60%; /* Smaller width */
-  max-width: 300px; /* Smaller max width */
+  width: 60%;
+  max-width: 300px;
   box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.25s ease-in-out, scaleUp 0.25s ease-in-out, shake 0.4s ease-out;
 }
@@ -737,7 +750,7 @@ h1 {
 }
 
 .duplicate-overlay-title {
-  font-size: 18px; /* Smaller font size */
+  font-size: 18px;
   font-weight: bold;
   color: #333;
   margin-bottom: 8px;

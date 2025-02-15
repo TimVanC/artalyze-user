@@ -799,16 +799,16 @@ const Game = () => {
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available
     if (!completedSelections.length || !imagePairs.length) {
-      alert("No data available to share today's puzzle!");
-      return;
+        alert("No data available to share today's puzzle!");
+        return;
     }
 
     // Calculate the score based on completed selections
     const score = completedSelections.reduce((count, selection, index) => {
-      if (selection?.selected === imagePairs[index]?.human) {
-        return count + 1;
-      }
-      return count;
+        if (selection?.selected === imagePairs[index]?.human) {
+            return count + 1;
+        }
+        return count;
     }, 0);
 
     // Get the puzzle number dynamically
@@ -816,43 +816,43 @@ const Game = () => {
 
     // Build the visual representation of results
     const resultsVisual = completedSelections
-      .map((selection, index) => {
-        const isCorrect = selection?.selected === imagePairs[index]?.human;
-        return isCorrect ? "🟢" : "🔴";
-      })
-      .join(" ");
+        .map((selection, index) => {
+            const isCorrect = selection?.selected === imagePairs[index]?.human;
+            return isCorrect ? "🟢" : "🔴";
+        })
+        .join(" ");
 
     // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
 
-    // Construct the shareable text
+    // Construct the shareable text with a fully clickable link
     const shareableText = `
-  Artalyze #${puzzleNumber} ${score}/${imagePairs.length}
-  ${resultsVisual}
-  ${paintings}
-  Try it at: artalyze.app
+Artalyze #${puzzleNumber} ${score}/${imagePairs.length}
+${resultsVisual}
+${paintings}
+Try it at: https://artalyze.app
     `.trim();
 
     // Check if the device supports native sharing
     if (navigator.share) {
-      navigator
-        .share({
-          title: `Artalyze #${puzzleNumber}`,
-          text: shareableText,
-        })
-        .catch((error) => console.log("Error sharing:", error));
+        navigator
+            .share({
+                title: `Artalyze #${puzzleNumber}`,
+                text: shareableText,
+            })
+            .catch((error) => console.log("Error sharing:", error));
     } else {
-      // Fallback to clipboard copy if native sharing is unavailable
-      navigator.clipboard
-        .writeText(shareableText)
-        .then(() => {
-          alert("Results copied to clipboard! You can now paste it anywhere.");
-        })
-        .catch((error) => {
-          console.error("Failed to copy:", error);
-        });
+        // Fallback to clipboard copy if native sharing is unavailable
+        navigator.clipboard
+            .writeText(shareableText)
+            .then(() => {
+                alert("Results copied to clipboard! You can now paste it anywhere.");
+            })
+            .catch((error) => {
+                console.error("Failed to copy:", error);
+            });
     }
-  };
+};
 
   const handlePlayClick = () => {
     if (window.innerWidth > 768) { // Targeting laptop/desktop screens

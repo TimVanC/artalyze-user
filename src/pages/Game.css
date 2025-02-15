@@ -91,14 +91,14 @@ h1 {
   align-items: center;
   gap: 6px; 
   font-size: 15px; 
-  color: black;
+  color: #333333;
   letter-spacing: .5px;
 }
 
 .tries-circle {
   width: 15px;
   height: 15px;
-  background-color: black; /* Default filled */
+  background-color: #4A4A4A; /* Default filled */
   border-radius: 50%;
   display: inline-block;
 }
@@ -1016,7 +1016,7 @@ body.dark-mode .app-title,
 body.dark-mode .icon,
 body.dark-mode .game-header,
 body.dark-mode .tries-left,
-body.dark-mode .palette-icon {
+body.dark-mode .tries-circle {
   color: #CFCFCF;
 }
 

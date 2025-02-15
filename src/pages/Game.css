@@ -219,9 +219,9 @@ h1 {
 
 .image-container.selected {
   border: 5px solid #4CAF50; /* Thick but precise border */
-  border-radius: 5px; /* Reduce slightly to eliminate corner gaps */
-  box-shadow: 0 0 8px 2px rgba(76, 175, 80, 0.8); /* Keeps subtle glow */
-  overflow: hidden; /* Ensures no leaking outside the image */
+  border-radius: 5px; /* Keeps corners tight */
+  box-shadow: inset 0 0 10px 2px rgba(76, 175, 80, 0.7); /* Glow moves inside */
+  overflow: hidden; /* Prevents selection from leaking */
 }
 
 /* Navigation Buttons */

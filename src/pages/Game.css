@@ -184,24 +184,26 @@ h1 {
 /* Ensure image containers fully fill the screen width */
 .image-container {
   position: relative;
-  width: 250px; /* Fixed pixel size to prevent rounding issues */
-  height: 250px;
+  width: 29vh; /* Restoring original responsiveness */
+  height: 29vh;
   background-color: #f5f5f5;
   border-radius: 8px;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .image-container img {
-  width: 100.5%; /* Slightly beyond container */
-  height: 100.5%;
+  width: 101%; /* Slightly beyond container to prevent white slivers */
+  height: 101%;
   object-fit: cover;
   border-radius: 8px;
   display: block;
   image-rendering: -webkit-optimize-contrast;
 }
+
 
 @supports (-webkit-touch-callout: none) {
   .image-container img {

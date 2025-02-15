@@ -73,27 +73,13 @@ h1 {
 
 .status-bar {
   display: flex;
-  justify-content: space-between; /* Distribute elements evenly */
+  justify-content: center; /* Keep elements centered */
   align-items: center;
-  width: 95%; /* Slightly wider for better spacing */
-  margin: 0 auto 10px; /* Reduce bottom margin */
-  padding: 5px 0; /* Reduce padding */
-}
-
-/* ========================= */
-/*        GAME HEADER        */
-/* ========================= */
-
-.game-header {
-  font-size: 18px;
-  font-weight: 600;
-  text-align: center;
-  color: #333;
-  margin-bottom: 15px; /* Reduce margin for compactness */
-}
-
-.header-separator {
-  margin-bottom: 15px;
+  gap: 22px; /* Match completion screen spacing */
+  flex-wrap: nowrap; /* Prevent wrapping */
+  width: 100%;
+  max-width: 350px; /* Keep it from spreading too wide */
+  margin: 0 auto 10px; /* Adjusted margin */
 }
 
 /* ========================= */
@@ -104,7 +90,7 @@ h1 {
   display: flex;
   align-items: center;
   font-weight: bold;
-  gap: 5px; /* Reduce space between text and icons */
+  gap: 6px; /* Reduce space between text and icons */
   font-size: 1.6vh; /* Reduce text size slightly */
   color: black;
 }
@@ -123,13 +109,13 @@ h1 {
   background-color: transparent;
   border: 2px solid #909090;
   color: grey;
-  padding: 0.6vh 1.5vh; /* Reduce padding for a tighter look */
+  padding: 1.2vh 1vh; /* Reduce padding for a tighter look */
   font-size: 1.6vh; /* Match tries-left text */
-  border-radius: 1vh;
+  border-radius: 6px;
   cursor: not-allowed;
   transition: all 0.3s ease;
-  width: 10vw; /* Reduce width for better alignment */
-  height: 3.5vh; /* Ensure buttons are same height */
+  min-width: 65px;
+  max-width: 90px;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -154,13 +140,13 @@ h1 {
 .submit-button {
   background-color: grey;
   color: white;
-  padding: 0.6vh 1.5vh; /* Reduce padding */
+  padding: 1.2vh 1vh; /* Reduce padding */
   font-size: 1.6vh;
   border: none;
   cursor: not-allowed;
-  border-radius: 1vh;
-  width: 10vw; /* Match Clear button width */
-  height: 3.5vh;
+  border-radius: 6px;
+  min-width: 65px;
+  max-width: 90px;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -176,7 +162,6 @@ h1 {
 .submit-button.enabled:hover {
   background-color: #355a86;
 }
-
 
 /* Image Pairs */
 .image-pair-container {

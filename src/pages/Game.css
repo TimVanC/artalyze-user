@@ -89,10 +89,10 @@ h1 {
 .tries-left {
   display: flex;
   align-items: center;
-  font-weight: bold;
-  gap: 6px; /* Reduce space between text and icons */
-  font-size: 15px; /* Adjusted size */
+  gap: 6px; 
+  font-size: 15px; 
   color: black;
+  letter-spacing: .5px;
 }
 
 /* Smaller Palette Icons */
@@ -171,13 +171,13 @@ h1 {
   align-items: center;
   padding: 8px 0;
   overflow: visible;
-  margin-top: -1vh; /* Adjusted to prevent clipping */
+  margin-top: -1vh;
 }
 
 .image-container {
   position: relative;
-  width: 29.8vh; /* Responsive size */
-  height: 29.8vh;
+  width: 29.7vh;
+  height: 29.7vh;
   background-color: #f5f5f5;
   border-radius: 8px;
   overflow: hidden;

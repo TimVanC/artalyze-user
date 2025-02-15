@@ -276,7 +276,6 @@ h1 {
   }
 }
 
-
 /* ========================= */
 /*     ENLARGED IMAGE MODAL  */
 /* ========================= */
@@ -300,35 +299,19 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 90vw;  /* Prevent excessive width */
-  max-height: 90vh; /* Prevent excessive height */
+  max-width: 70vw;  /* Unified width across all screens */
+  max-height: 70vh; /* Unified height across all screens */
   overflow: hidden;
 }
 
-/* Default Enlarged Image Styling */
+/* Enlarged Image Styling */
 .enlarged-image {
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain; /* Maintain aspect ratio */
   border-radius: 8px; /* Match overall UI */
   transform: scale(1);
   transition: transform 0.3s ease-in-out;
-}
-
-/* ========================= */
-/*     DIFFERENT SCREENS     */
-/* ========================= */
-
-/* Enlarged Image for Game Screen */
-.enlarge-modal.game-screen .enlarged-image {
-  max-width: 70vw;  /* Ensure moderate size */
-  max-height: 70vh;
-}
-
-/* Enlarged Image for Completion Screen */
-.enlarge-modal.completion-screen .enlarged-image {
-  max-width: 70vw;  /* Match game screen size */
-  max-height: 70vh;
 }
 
 /* Prevent unintended duplicate image stacking */
@@ -337,7 +320,7 @@ h1 {
   z-index: 1001; /* Ensure it's above the background */
 }
 
-/* Prevent background from repeating */
+/* Background Overlay */
 .enlarge-modal::before {
   content: "";
   position: absolute;
@@ -346,6 +329,7 @@ h1 {
   background: rgba(0, 0, 0, 0.7); /* Dim background */
   z-index: 999; /* Keep it behind the image */
 }
+
 
 /* ========================= */
 /*       COMPLETION SCREEN   */
@@ -392,7 +376,7 @@ h1 {
   border-radius: 6px;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
-  letter-spacing: .4px;
+  letter-spacing: .7px;
   min-width: 100px; /* Slightly wider */
   height: auto; /* Let it expand based on content */
 }

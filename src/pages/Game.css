@@ -626,16 +626,27 @@ h1 {
   position: relative;
 }
 
+/* Ensure images fully fill the container without white gaps */
+.thumbnail-container img {
+  width: 101%;
+  height: 101%;
+  object-fit: cover;
+  border-radius: inherit;
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* ✅ Fix white space issue - Ensure full coverage */
+@supports (-webkit-touch-callout: none) {
+  .thumbnail-container img {
+    width: 101%;
+    height: 101%;
+  }
+}
+
 /* Thumbnail Borders */
 .thumbnail-container.ai {
   border-left: 1px solid rgba(0, 0, 0, 0.1); /* Subtle vertical divider */
-}
-
-.thumbnail-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 6px;
 }
 
 /* Thumbnail Hover Effect */
@@ -653,8 +664,6 @@ h1 {
   border: 3px solid #FF3D3D;
   box-shadow: 0 0 10px 4px rgba(255, 61, 61, 0.4);
 }
-
-
 
 /* Image Loading */
 .full-page-loading-screen {
@@ -880,7 +889,7 @@ h1 {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 3vw; /* Add spacing between images */
+    gap: 3vw;
   }
 
   /* ✅ Adjust completion screen layout */
@@ -943,7 +952,7 @@ h1 {
   }
 
   /* Increase circle icon size */
-  .tries-circle{
+  .tries-circle {
     font-size: 16px;
   }
 
@@ -1036,6 +1045,23 @@ h1 {
   }
 }
 
+/* ✅ Fix white space issue - Ensure full coverage */
+.thumbnail-container img {
+  width: 101%;
+  height: 101%;
+  object-fit: cover;
+  border-radius: inherit;
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* ✅ Fix for WebKit browsers */
+@supports (-webkit-touch-callout: none) {
+  .thumbnail-container img {
+    width: 101%;
+    height: 101%;
+  }
+}
 
 /* Dark Mode */
 body.dark-mode .top-bar {

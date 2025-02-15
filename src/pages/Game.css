@@ -220,9 +220,9 @@ h1 {
 /* Selected image styling */
 .image-container.selected {
   border: 4px solid #4CAF50;
-  border-radius: inherit; /* Ensures rounded corners match */
-  box-shadow: 0 0 10px 3px rgba(76, 175, 80, 0.8); /* Adjusted to prevent overflow */
-  overflow: hidden; /* Prevents the border from leaking */
+  border-radius: 10px; /* Slightly more rounded for aesthetic effect */
+  box-shadow: 0 0 8px 2px rgba(76, 175, 80, 0.7); /* Adjusted to keep selection tight */
+  overflow: hidden; /* Prevents selection from leaking outside */
 }
 
 /* Navigation Buttons */

@@ -1068,11 +1068,11 @@ const Game = () => {
             </button>
 
             <div className="tries-left">
-  <span>Tries Left:</span>
-  {[...Array(triesLeft)].map((_, i) => (
-    <span key={i} className="tries-circle"></span>
-  ))}
-</div>
+              <span>Tries Left:</span>
+              {[...Array(triesLeft)].map((_, i) => (
+                <span key={i} className="tries-circle"></span>
+              ))}
+            </div>
 
 
             <button

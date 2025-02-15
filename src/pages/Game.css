@@ -12,12 +12,13 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Ensure images behave properly across devices */
 img {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
   pointer-events: auto;
-  touch-action: none;
+  touch-action: manipulation;
 }
 
 
@@ -96,8 +97,8 @@ h1 {
 }
 
 .tries-circle {
-  width: 15px;
-  height: 15px;
+  width: 13px;
+  height: 13px;
   background-color: #4A4A4A; /* Default filled */
   border-radius: 50%;
   display: inline-block;
@@ -166,20 +167,25 @@ h1 {
   background-color: #355a86;
 }
 
-/* Image Pairs */
+/* ========================= */
+/*        IMAGE PAIRS        */
+/* ========================= */
+
 .image-pair-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 8px 0;
-  overflow: visible;
   margin-top: -1vh;
+  width: 100%; /* Ensure full width */
+  overflow: hidden; /* Prevent horizontal overflow */
 }
 
+/* Ensure image containers fully fill the screen width */
 .image-container {
   position: relative;
-  width: 29.7vh;
-  height: 29.7vh;
+  width: 30vh; /* Slightly adjusted to align properly */
+  height: 30vh;
   background-color: #f5f5f5;
   border-radius: 8px;
   overflow: hidden;
@@ -188,15 +194,18 @@ h1 {
   align-items: center;
 }
 
+/* Prevent any extra margins from shifting images */
 .image-container:not(:last-child) {
-  margin-bottom: 2vh; 
+  margin-bottom: 2vh;
 }
 
+/* Ensure images fully extend without gaps */
 .image-container img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* Ensures full image coverage */
   border-radius: 8px;
+  display: block; /* Prevents white gaps below images */
   z-index: 1;
 }
 

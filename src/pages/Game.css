@@ -612,9 +612,9 @@ h1 {
 
 /* Individual Thumbnails */
 .thumbnail-container {
-  width: 22.5vw !important;  /* 17% of the viewport width */
-  height: 22.5vw !important; /* Maintain square aspect ratio */
-  max-width: 105px; /* Prevent images from being too large */
+  width: 22.5vw !important;  
+  height: 22.5vw !important; 
+  max-width: 105px; 
   max-height: 105px;
   border-radius: 5px;
   overflow: hidden;
@@ -626,22 +626,29 @@ h1 {
   position: relative;
 }
 
-/* Ensure images fully fill the container without white gaps */
+/* ✅ Ensure images fully fill the container */
 .thumbnail-container img {
-  width: 101%;
-  height: 101%;
-  object-fit: cover;
-  border-radius: inherit;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures no gaps */
+  border-radius: inherit; /* Matches container’s rounding */
   display: block;
   image-rendering: -webkit-optimize-contrast;
 }
 
-/* ✅ Fix white space issue - Ensure full coverage */
+/* ✅ Fix white space issue for Safari & mobile browsers */
 @supports (-webkit-touch-callout: none) {
   .thumbnail-container img {
-    width: 101%;
-    height: 101%;
+    width: 100%;
+    height: 100%;
   }
+}
+
+/* ✅ Ensure selection glow fully wraps the image */
+.thumbnail-container.correct,
+.thumbnail-container.incorrect {
+  border-radius: inherit;
+  overflow: hidden;
 }
 
 /* Thumbnail Borders */

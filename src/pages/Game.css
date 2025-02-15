@@ -219,11 +219,12 @@ h1 {
 
 /* Selected image styling */
 .image-container.selected {
-  border: 4px solid #4CAF50; /* Slightly thicker border */
-  border-radius: 7px; /* Keeps it slightly rounded but snug */
-  box-shadow: 0 0 8px 2px rgba(76, 175, 80, 0.8); /* Bring back subtle outer glow */
-  overflow: hidden; /* Ensures clean edges */
+  border: 4px solid #4CAF50; /* Thick but precise border */
+  border-radius: 6px; /* Reduce slightly to eliminate corner gaps */
+  box-shadow: 0 0 8px 2px rgba(76, 175, 80, 0.8); /* Keeps subtle glow */
+  overflow: hidden; /* Ensures no leaking outside the image */
 }
+
 
 
 /* Navigation Buttons */

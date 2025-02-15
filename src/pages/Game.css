@@ -184,8 +184,8 @@ h1 {
 /* Ensure image containers fully fill the screen width */
 .image-container {
   position: relative;
-  width: 30vh; /* Slightly adjusted to align properly */
-  height: 30vh;
+  width: calc(30vh);
+  height: calc(30vh);
   background-color: #f5f5f5;
   border-radius: 8px;
   overflow: hidden;
@@ -201,12 +201,12 @@ h1 {
 
 /* Ensure images fully extend without gaps */
 .image-container img {
-  width: 100%;
-  height: 100%;
+  width: calc(100% + 1px); /* Expands slightly to fill any subpixel gaps */
+  height: calc(100% + 1px);
   object-fit: cover;
   border-radius: 8px;
-  display: block; /* Removes default inline spacing */
-  image-rendering: -webkit-optimize-contrast; /* Helps Safari and WebKit */
+  display: block; /* Ensures no extra inline spacing */
+  image-rendering: -webkit-optimize-contrast; /* Improves rendering on Safari */
 }
 
 /* Selected image styling */

@@ -394,6 +394,16 @@ const Game = () => {
   };
 
   // Game logic: Initialize or restore game state based on completion status
+  
+  useEffect(() => {
+    const hasPlayedBefore = localStorage.getItem("hasPlayedBefore");
+
+    if (!hasPlayedBefore) {
+      setIsInfoOpen(true); // Show info modal for first-time users
+      localStorage.setItem("hasPlayedBefore", "true"); // Mark that they have played
+    }
+  }, []);
+
   useEffect(() => {
     if (!isGameComplete) {
       console.log("Initializing game...");

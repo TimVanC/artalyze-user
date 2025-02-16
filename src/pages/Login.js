@@ -211,10 +211,10 @@ const Login = () => {
         </div>
       </div>
       {step !== 3 && (
-  <div className="login-logo-container">
-    <img src={logo} alt="Artalyze Logo" className="login-app-logo" />
-  </div>
-)}
+        <div className="login-logo-container">
+          <img src={logo} alt="Artalyze Logo" className="login-app-logo" />
+        </div>
+      )}
 
 
 
@@ -319,10 +319,16 @@ const Login = () => {
             <div className="terms-container">
               <p>
                 By continuing, you agree to the{' '}
-                <a href="/terms-of-service">Terms of Service</a> and{' '}
-                <a href="/privacy-policy">Privacy Policy</a>.
+                <a href="/terms-of-service.html" target="_blank" rel="noopener noreferrer">
+                  Terms of Service
+                </a>{' '}
+                and{' '}
+                <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer">
+                  Privacy Policy
+                </a>.
               </p>
             </div>
+
           </form>
 
 

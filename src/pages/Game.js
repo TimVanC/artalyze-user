@@ -794,8 +794,6 @@ const Game = () => {
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
   };
 
-
-
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available
     if (!completedSelections.length || !imagePairs.length) {
@@ -816,25 +814,14 @@ const Game = () => {
 
     // Build the visual representation of results
     const resultsVisual = completedSelections
-        .map((selection, index) => {
-            const isCorrect = selection?.selected === imagePairs[index]?.human;
-            return isCorrect ? "🟢" : "🔴";
-        })
+        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
         .join(" ");
 
     // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
 
-    // Construct the shareable text with a fully clickable link
-    const shareableText = `
-    Artalyze #${puzzleNumber}  ${score}/${imagePairs.length}  
-    
-    ${resultsVisual}  
-    
-    ${paintings}  
-    
-    Try it at: https://artalyze.app
-    `.trim();
+    // Construct the shareable text (compact format)
+    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${resultsVisual}\n${paintings}\nCheck it out here: https://artalyze.app`;
 
     // Check if the device supports native sharing
     if (navigator.share) {
@@ -856,6 +843,7 @@ const Game = () => {
             });
     }
 };
+
 
   const handlePlayClick = () => {
     if (window.innerWidth > 768) { // Targeting laptop/desktop screens

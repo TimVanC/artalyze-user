@@ -54,6 +54,7 @@ const Game = () => {
   const [firstSwipeDetected, setFirstSwipeDetected] = useState(false);
   const [hasUserSwiped, setHasUserSwiped] = useState(false);
   const [allowHint, setAllowHint] = useState(false);
+  const [showSwipeHint, setShowSwipeHint] = useState(false);
 
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
   const { selections = [], updateSelections, isLoading, error: selectionsError } = useSelections(userId, isLoggedIn);
@@ -533,9 +534,18 @@ const Game = () => {
     }
   }, [currentIndex, imagePairs]);
 
-  
+
   useEffect(() => {
     setTimeout(() => setAllowHint(true), 1000);
+  }, []);
+
+  useEffect(() => {
+    // Check if user has seen the swipe hint before
+    const hasSeenSwipeHint = localStorage.getItem("hasSeenSwipeHint");
+
+    if (!hasSeenSwipeHint) {
+      setShowSwipeHint(false); // Initially hidden
+    }
   }, []);
 
   // Apply animations to thumbnails when the stats modal is dismissed
@@ -811,17 +821,14 @@ const Game = () => {
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
 
-    // ✅ Mark that a selection has been made
-    setSelectionMade(true);
-
-    // Auto-swipe to next pair after 700ms if not on the last pair
-    if (currentIndex < imagePairs.length - 1) {
-      setTimeout(() => {
-        setCurrentIndex((prev) => prev + 1);
-        swiperRef.current.slideNext();
-      }, 700);
+    // ✅ Show swipe hint only if it's the user's first time playing
+    if (!localStorage.getItem("hasSeenSwipeHint")) {
+      setShowSwipeHint(true);
+      localStorage.setItem("hasSeenSwipeHint", "true"); // ✅ Store that they’ve seen it
+      setTimeout(() => setShowSwipeHint(false), 2500); // ✅ Hide after 2.5 seconds
     }
   };
+
 
   const handleSwipe = (swiper) => {
     setCurrentIndex(swiper.realIndex);
@@ -1072,9 +1079,6 @@ const Game = () => {
         completedSelections={completedSelections}
       />
 
-
-
-
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
@@ -1133,6 +1137,16 @@ const Game = () => {
                   </div>
                 </div>
               )}
+
+              {/* Floating Swipe Hint Modal */}
+              {showSwipeHint && (
+                <div className="swipe-hint-overlay">
+                  <div className="swipe-hint-content">
+                    <p>Swipe left or right to navigate between images!</p>
+                  </div>
+                </div>
+              )}
+
             </>
           ) : (
             <p>Loading...</p>

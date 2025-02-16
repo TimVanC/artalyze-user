@@ -820,8 +820,8 @@ const Game = () => {
     // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
 
-    // Construct the shareable text (compact format)
-    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${resultsVisual}\n${paintings}\nCheck it out here: https://artalyze.app`;
+    // Construct the shareable text with better formatting
+    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${resultsVisual}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
 
     // Check if the device supports native sharing
     if (navigator.share) {
@@ -843,7 +843,6 @@ const Game = () => {
             });
     }
 };
-
 
   const handlePlayClick = () => {
     if (window.innerWidth > 768) { // Targeting laptop/desktop screens

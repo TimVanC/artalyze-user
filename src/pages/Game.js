@@ -789,15 +789,8 @@ const Game = () => {
   
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
+  };
   
-    // Auto-swipe to next pair after 700ms if not on the last pair
-    if (currentIndex < imagePairs.length - 1) {
-      setTimeout(() => {
-        setCurrentIndex((prev) => prev + 1);
-        swiperRef.current.slideNext();
-      }, 700);
-    }
-  };  
 
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available

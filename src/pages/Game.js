@@ -53,6 +53,7 @@ const Game = () => {
   const [selectionMade, setSelectionMade] = useState(false);
   const [firstSwipeDetected, setFirstSwipeDetected] = useState(false);
   const [hasUserSwiped, setHasUserSwiped] = useState(false);
+  const [allowHint, setAllowHint] = useState(false);
 
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
   const { selections = [], updateSelections, isLoading, error: selectionsError } = useSelections(userId, isLoggedIn);
@@ -519,6 +520,10 @@ const Game = () => {
       }, 100);
     }
 
+    useEffect(() => {
+      setTimeout(() => setAllowHint(true), 1000);
+    }, []);
+
     const today = new Date().toISOString().split("T")[0];
 
     // ✅ Detect first swipe and show hint only if it hasn't been shown today
@@ -820,20 +825,23 @@ const Game = () => {
   const handleSwipe = (swiper) => {
     setCurrentIndex(swiper.realIndex);
 
-    // ✅ Ensure it's an actual user swipe, not an auto-loop event
+    // ✅ If this is the first swipe, mark it as a real user interaction
     if (!hasUserSwiped) {
       setHasUserSwiped(true);
       return;
     }
 
+    // ✅ Ensure the hint is allowed (prevents triggering on initial load)
+    if (!allowHint) return;
+
     const today = new Date().toISOString().split("T")[0];
 
-    // ✅ Show hint if it's the first swipe & hasn't been shown today
+    // ✅ Show hint only if it's the first real swipe & hasn't been shown today
     if (!firstSwipeDetected && !localStorage.getItem("swipeBackHintShown")) {
-      console.log("🎯 First real user swipe detected! Showing hint.");
+      console.log("🎯 First user swipe detected! Showing hint.");
       setShowSwipeBackHint(true);
       localStorage.setItem("swipeBackHintShown", today);
-      setFirstSwipeDetected(true); // ✅ Prevent future triggers
+      setFirstSwipeDetected(true);
 
       setTimeout(() => setShowSwipeBackHint(false), 2000); // Hide after 2s
     }
@@ -1088,7 +1096,7 @@ const Game = () => {
           {imagePairs && imagePairs.length > 0 ? (
             <>
               <Swiper
-                loop={true} // ✅ Enables infinite loop
+                loop={true} // ✅ Infinite loop enabled
                 onSlideChange={handleSwipe}
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper;

@@ -50,6 +50,7 @@ const Game = () => {
   const lastTapTime = useRef(0);
   const singleTapTimeout = useRef(null);
   const [showSwipeBackHint, setShowSwipeBackHint] = useState(false);
+  const [selectionMade, setSelectionMade] = useState(false);
 
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
   const { selections = [], updateSelections, isLoading, error: selectionsError } = useSelections(userId, isLoggedIn);
@@ -799,20 +800,30 @@ const Game = () => {
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
 
+    // ✅ Mark that a selection was made
+    setSelectionMade(true);
+
     // Auto-swipe to next pair after 700ms if not on the last pair
     if (currentIndex < imagePairs.length - 1) {
       setTimeout(() => {
         setCurrentIndex((prev) => prev + 1);
         swiperRef.current.slideNext();
-
-        // Show "Swipe back" hint only after making a selection and swiping
-        const today = new Date().toISOString().split("T")[0];
-        if (currentIndex === 0 && !localStorage.getItem("swipeBackHintShown")) {
-          setShowSwipeBackHint(true);
-          localStorage.setItem("swipeBackHintShown", today);
-          setTimeout(() => setShowSwipeBackHint(false), 2000); // Hide after 2s
-        }
       }, 700);
+    }
+  };
+
+
+  const handleSwipe = (swiper) => {
+    setCurrentIndex(swiper.realIndex);
+
+    const today = new Date().toISOString().split("T")[0];
+
+    // ✅ Show hint *only if* user has made a selection before swiping & it's the first time today
+    if (selectionMade && currentIndex === 0 && !localStorage.getItem("swipeBackHintShown")) {
+      setShowSwipeBackHint(true);
+      localStorage.setItem("swipeBackHintShown", today);
+
+      setTimeout(() => setShowSwipeBackHint(false), 2000); // Hide after 2s
     }
   };
 
@@ -1062,17 +1073,17 @@ const Game = () => {
           </div>
 
           {/* Image Pairs */}
-          {/* Image Pairs */}
           {imagePairs && imagePairs.length > 0 ? (
             <>
               <Swiper
                 loop={false}
-                onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
+                onSlideChange={handleSwipe} // ✅ Detects when user swipes & handles hint logic
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper;
-                  swiper.slideToLoop(0);
+                  swiper.slideTo(0, 0); // ✅ Ensures it starts at first slide without looping
                 }}
               >
+
                 {imagePairs.map((pair, index) => (
                   <SwiperSlide key={index}>
                     <div className="image-pair-container">

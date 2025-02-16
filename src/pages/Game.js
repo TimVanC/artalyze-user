@@ -520,10 +520,6 @@ const Game = () => {
       }, 100);
     }
 
-    useEffect(() => {
-      setTimeout(() => setAllowHint(true), 1000);
-    }, []);
-
     const today = new Date().toISOString().split("T")[0];
 
     // ✅ Detect first swipe and show hint only if it hasn't been shown today
@@ -536,6 +532,11 @@ const Game = () => {
       setTimeout(() => setShowSwipeBackHint(false), 2000); // Hide after 2s
     }
   }, [currentIndex, imagePairs]);
+
+  
+  useEffect(() => {
+    setTimeout(() => setAllowHint(true), 1000);
+  }, []);
 
   // Apply animations to thumbnails when the stats modal is dismissed
   useEffect(() => {

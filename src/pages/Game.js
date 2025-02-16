@@ -508,6 +508,7 @@ const Game = () => {
   // Monitor updates to imagePairs
   useEffect(() => {
     console.log("Image pairs state updated:", imagePairs);
+    
     if (imagePairs.length > 0) {
       setTimeout(() => {
         if (swiperRef.current) {
@@ -515,6 +516,18 @@ const Game = () => {
           swiperRef.current.slideToLoop(currentIndex, 0);
         }
       }, 100);
+    }
+  
+    const today = new Date().toISOString().split("T")[0];
+  
+    // ✅ Detect first swipe and show hint only if it hasn't been shown today
+    if (!firstSwipeDetected && currentIndex > 0 && !localStorage.getItem("swipeBackHintShown")) {
+      console.log("🎯 First swipe detected! Showing hint.");
+      setShowSwipeBackHint(true);
+      localStorage.setItem("swipeBackHintShown", today);
+      setFirstSwipeDetected(true); // ✅ Prevent future triggers
+  
+      setTimeout(() => setShowSwipeBackHint(false), 2000); // Hide after 2s
     }
   }, [currentIndex, imagePairs]);
 

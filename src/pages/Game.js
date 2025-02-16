@@ -1111,7 +1111,10 @@ const Game = () => {
               {/* Floating Swipe Back Hint */}
               {showSwipeBackHint && (
                 <div className="swipe-back-hint-overlay">
-                  <p><FaLongArrowAltLeft /> Swipe back if needed</p>
+                  <div className="swipe-back-hint-content">
+                    <FaLongArrowAltLeft className="swipe-back-arrow" />
+                    <p>Swipe back if needed</p>
+                  </div>
                 </div>
               )}
             </>

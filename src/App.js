@@ -8,6 +8,7 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import PrivateRoute from "./routes/PrivateRoute";
 import { AuthProvider } from "./AuthContext";
+import { Analytics } from "@vercel/analytics/react"; // ✅ Import Vercel Analytics
 
 // Import Font Awesome CSS
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -43,7 +44,8 @@ function App() {
   return (
     <AuthProvider>
       <DarkModeProvider>
-        <AppContent /> {/* ✅ Now, useDarkMode() is inside the provider! */}
+        <AppContent /> {/* ✅ App content */}
+        <Analytics />   {/* ✅ Add Vercel Analytics here */}
       </DarkModeProvider>
     </AuthProvider>
   );

@@ -529,6 +529,16 @@ const Game = () => {
     }
   }, [isStatsModalDismissed]);
 
+  // Check if user has already seen the hint today
+  useEffect(() => {
+    const lastHintShown = localStorage.getItem("swipeBackHintShown");
+    const today = new Date().toISOString().split("T")[0];
+
+    if (lastHintShown === today) {
+      setShowSwipeBackHint(false);
+    }
+  }, []);
+
   // Persist selections for guest users
   useEffect(() => {
     if (!isLoggedIn && selections.length > 0) {
@@ -795,9 +805,11 @@ const Game = () => {
         setCurrentIndex((prev) => prev + 1);
         swiperRef.current.slideNext();
 
-        // Show "Swipe back" hint only when reaching the second pair
-        if (currentIndex === 0) {
+        // Show "Swipe back" hint only after making a selection and swiping
+        const today = new Date().toISOString().split("T")[0];
+        if (currentIndex === 0 && !localStorage.getItem("swipeBackHintShown")) {
           setShowSwipeBackHint(true);
+          localStorage.setItem("swipeBackHintShown", today);
           setTimeout(() => setShowSwipeBackHint(false), 2000); // Hide after 2s
         }
       }, 700);
@@ -1082,8 +1094,13 @@ const Game = () => {
                 ))}
               </Swiper>
 
-              {/* Swipe Back Hint */}
-              {showSwipeBackHint && <p className="swipe-back-hint">Swipe back if needed ↩</p>}
+              {/* Floating Swipe Back Hint */}
+              {showSwipeBackHint && (
+                <div className="swipe-back-hint-overlay">
+                  <p>Swipe back if needed ↩</p>
+                </div>
+              )}
+
             </>
           ) : (
             <p>Loading...</p>

@@ -811,16 +811,16 @@ const Game = () => {
 
   const handleSelection = (selectedImage, isHumanSelection) => {
     const updatedSelections = [...selections];
-
+  
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
       updatedSelections[currentIndex] = null;
     } else {
       updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
-
+  
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
-
+  
     // ✅ Show swipe hint only if it's the user's first time playing
     if (!localStorage.getItem("hasSeenSwipeHint")) {
       setShowSwipeHint(true);
@@ -828,7 +828,6 @@ const Game = () => {
       setTimeout(() => setShowSwipeHint(false), 2500); // ✅ Hide after 2.5 seconds
     }
   };
-
 
   const handleSwipe = (swiper) => {
     setCurrentIndex(swiper.realIndex);
@@ -1099,58 +1098,58 @@ const Game = () => {
 
           {/* Image Pairs */}
           {imagePairs && imagePairs.length > 0 ? (
-            <>
-              <Swiper
-                loop={true} // ✅ Infinite loop enabled
-                onSlideChange={handleSwipe}
-                onSwiper={(swiper) => {
-                  swiperRef.current = swiper;
-                }}
+  <>
+    <Swiper
+      loop={true} // ✅ Infinite loop enabled
+      onSlideChange={handleSwipe}
+      onSwiper={(swiper) => {
+        swiperRef.current = swiper;
+      }}
+    >
+      {imagePairs.map((pair, index) => (
+        <SwiperSlide key={index}>
+          <div className="image-pair-container">
+            {pair.images.map((image, idx) => (
+              <div
+                key={idx}
+                className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
               >
-                {imagePairs.map((pair, index) => (
-                  <SwiperSlide key={index}>
-                    <div className="image-pair-container">
-                      {pair.images.map((image, idx) => (
-                        <div
-                          key={idx}
-                          className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
-                        >
-                          <img
-                            src={image}
-                            alt={`Painting ${idx + 1}`}
-                            onClick={() => handleSelection(image, image === pair.human)}
-                            draggable="false"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
+                <img
+                  src={image}
+                  alt={`Painting ${idx + 1}`}
+                  onClick={() => handleSelection(image, image === pair.human)}
+                  draggable="false"
+                />
+              </div>
+            ))}
+          </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
 
-              {/* Floating Swipe Back Hint */}
-              {showSwipeBackHint && (
-                <div className="swipe-back-hint-overlay">
-                  <div className="swipe-back-hint-content">
-                    <FaLongArrowAltLeft className="swipe-back-arrow" />
-                    <p>Swipe back if needed</p>
-                  </div>
-                </div>
-              )}
+    {/* ✅ Floating Swipe Back Hint */}
+    {showSwipeBackHint && (
+      <div className="swipe-back-hint-overlay">
+        <div className="swipe-back-hint-content">
+          <FaLongArrowAltLeft className="swipe-back-arrow" />
+          <p>Swipe back if needed</p>
+        </div>
+      </div>
+    )}
 
-              {/* Floating Swipe Hint Modal */}
-              {showSwipeHint && (
-                <div className="swipe-hint-overlay">
-                  <div className="swipe-hint-content">
-                    <p>Swipe left or right to navigate between images!</p>
-                  </div>
-                </div>
-              )}
+    {/* ✅ Floating Swipe Hint (First-Time Only) */}
+    {showSwipeHint && (
+      <div className="swipe-hint-overlay">
+        <div className="swipe-hint-content">
+          <p>Swipe left or right to navigate between images!</p>
+        </div>
+      </div>
+    )}
+  </>
+) : (
+  <p>Loading...</p>
+)}
 
-            </>
-          ) : (
-            <p>Loading...</p>
-          )}
 
 
 

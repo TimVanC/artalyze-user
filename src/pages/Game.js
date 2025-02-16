@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaPalette } from 'react-icons/fa';
+import { HiArrowUturnLeft } from "react-icons/hi2";
 import logo from '../assets/images/artalyze-logo.png';
 import SwiperCore, { Swiper, SwiperSlide } from 'swiper/react';
 import { getTodayInEST } from '../utils/dateUtils';
@@ -508,7 +509,7 @@ const Game = () => {
   // Monitor updates to imagePairs
   useEffect(() => {
     console.log("Image pairs state updated:", imagePairs);
-    
+
     if (imagePairs.length > 0) {
       setTimeout(() => {
         if (swiperRef.current) {
@@ -517,16 +518,16 @@ const Game = () => {
         }
       }, 100);
     }
-  
+
     const today = new Date().toISOString().split("T")[0];
-  
+
     // ✅ Detect first swipe and show hint only if it hasn't been shown today
     if (!firstSwipeDetected && currentIndex > 0 && !localStorage.getItem("swipeBackHintShown")) {
       console.log("🎯 First swipe detected! Showing hint.");
       setShowSwipeBackHint(true);
       localStorage.setItem("swipeBackHintShown", today);
       setFirstSwipeDetected(true); // ✅ Prevent future triggers
-  
+
       setTimeout(() => setShowSwipeBackHint(false), 2000); // Hide after 2s
     }
   }, [currentIndex, imagePairs]);
@@ -1108,12 +1109,13 @@ const Game = () => {
                 ))}
               </Swiper>
 
-              {/* ✅ Floating Swipe Back Hint (Now Outside Swiper) */}
+              {/* Floating Swipe Back Hint */}
               {showSwipeBackHint && (
                 <div className="swipe-back-hint-overlay">
-                  <p>Swipe back if needed ↩</p>
+                  <p><HiArrowUturnLeft /> Swipe back if needed</p>
                 </div>
               )}
+
             </>
           ) : (
             <p>Loading...</p>

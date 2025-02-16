@@ -779,70 +779,25 @@ const Game = () => {
 
   const handleSelection = (selectedImage, isHumanSelection) => {
     const updatedSelections = [...selections];
-
-    // If the image is already selected, deselect it
+  
+    // Deselect if already selected
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
-      updatedSelections[currentIndex] = null; // Remove selection
+      updatedSelections[currentIndex] = null;
     } else {
-      updatedSelections[currentIndex] = {
-        selected: selectedImage,
-        isHumanSelection,
-      };
+      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
-
+  
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
-  };
-
-  const handleCompletionShare = () => {
-    // Ensure completedSelections and imagePairs are available
-    if (!completedSelections.length || !imagePairs.length) {
-        alert("No data available to share today's puzzle!");
-        return;
+  
+    // Auto-swipe to next pair after 700ms if not on the last pair
+    if (currentIndex < imagePairs.length - 1) {
+      setTimeout(() => {
+        setCurrentIndex((prev) => prev + 1);
+        swiperRef.current.slideNext();
+      }, 700);
     }
-
-    // Calculate the score based on completed selections
-    const score = completedSelections.reduce((count, selection, index) => {
-        if (selection?.selected === imagePairs[index]?.human) {
-            return count + 1;
-        }
-        return count;
-    }, 0);
-
-    // Get the puzzle number dynamically
-    const puzzleNumber = calculatePuzzleNumber();
-
-    // Build the visual representation of results
-    const resultsVisual = completedSelections
-        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-        .join(" ");
-
-    // Add placeholder for painting emojis
-    const paintings = "🖼️ ".repeat(imagePairs.length).trim();
-
-    // Construct the shareable text with better formatting
-    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${resultsVisual}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
-
-    // Check if the device supports native sharing
-    if (navigator.share) {
-        navigator
-            .share({
-                title: `Artalyze #${puzzleNumber}`,
-                text: shareableText,
-            })
-            .catch((error) => console.log("Error sharing:", error));
-    } else {
-        // Fallback to clipboard copy if native sharing is unavailable
-        navigator.clipboard
-            .writeText(shareableText)
-            .then(() => {
-                alert("Results copied to clipboard! You can now paste it anywhere.");
-            })
-            .catch((error) => {
-                console.error("Failed to copy:", error);
-            });
-    }
-};
+  };  
 
   const handlePlayClick = () => {
     if (window.innerWidth > 768) { // Targeting laptop/desktop screens

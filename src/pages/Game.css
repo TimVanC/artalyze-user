@@ -141,11 +141,11 @@ h1 {
 }
 
 .image-container.selected {
-  border: 5px solid #4CAF50; /* Thick border */
+  border: 5px solid #5f91e3; /* Thick border */
   border-radius: 5px; /* Keeps corners tight */
   box-shadow: 
-    inset 0 0 6px 2px rgba(76, 175, 80, 0.6), /* Inner glow to cover white gaps */
-    0 0 8px 2px rgba(76, 175, 80, 0.8); /* Outer glow for visibility */
+    inset 0 0 6px 2px rgba(95, 145, 227, 0.6), /* Inner glow to cover white gaps */
+    0 0 8px 2px rgba(95, 145, 227, 0.8); /* Outer glow for visibility */
   overflow: hidden; /* Prevents any border leaking */
 }
 

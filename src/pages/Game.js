@@ -52,6 +52,7 @@ const Game = () => {
   const [showSwipeBackHint, setShowSwipeBackHint] = useState(false);
   const [selectionMade, setSelectionMade] = useState(false);
   const [firstSwipeDetected, setFirstSwipeDetected] = useState(false);
+  const [hasUserSwiped, setHasUserSwiped] = useState(false);
 
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
   const { selections = [], updateSelections, isLoading, error: selectionsError } = useSelections(userId, isLoggedIn);
@@ -819,13 +820,20 @@ const Game = () => {
   const handleSwipe = (swiper) => {
     setCurrentIndex(swiper.realIndex);
 
+    // ✅ Ensure it's an actual user swipe, not an auto-loop event
+    if (!hasUserSwiped) {
+      setHasUserSwiped(true);
+      return;
+    }
+
     const today = new Date().toISOString().split("T")[0];
 
-    // ✅ Show hint if it's the first swipe of the day & it hasn't been shown yet
+    // ✅ Show hint if it's the first swipe & hasn't been shown today
     if (!firstSwipeDetected && !localStorage.getItem("swipeBackHintShown")) {
+      console.log("🎯 First real user swipe detected! Showing hint.");
       setShowSwipeBackHint(true);
       localStorage.setItem("swipeBackHintShown", today);
-      setFirstSwipeDetected(true); // ✅ Mark that swipe has been detected
+      setFirstSwipeDetected(true); // ✅ Prevent future triggers
 
       setTimeout(() => setShowSwipeBackHint(false), 2000); // Hide after 2s
     }
@@ -1080,11 +1088,10 @@ const Game = () => {
           {imagePairs && imagePairs.length > 0 ? (
             <>
               <Swiper
-                loop={true}
-                onSlideChange={handleSwipe} // ✅ Now detects swipe even before selection
+                loop={true} // ✅ Enables infinite loop
+                onSlideChange={handleSwipe}
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper;
-                  swiper.slideTo(0, 0); // ✅ Ensures it starts at first slide without looping
                 }}
               >
                 {imagePairs.map((pair, index) => (

@@ -544,16 +544,6 @@ const Game = () => {
     }
   }, [isStatsModalDismissed]);
 
-  // Check if user has already seen the hint today
-  useEffect(() => {
-    const lastHintShown = localStorage.getItem("swipeBackHintShown");
-    const today = new Date().toISOString().split("T")[0];
-
-    if (lastHintShown === today) {
-      setShowSwipeBackHint(false);
-    }
-  }, []);
-
   // Persist selections for guest users
   useEffect(() => {
     if (!isLoggedIn && selections.length > 0) {

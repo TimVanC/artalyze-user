@@ -1153,6 +1153,7 @@ const Game = () => {
 
 
 
+
           {/* Status Bar (Clear Left, Navigation Center, Submit Right) */}
           <div className="status-bar">
             <button

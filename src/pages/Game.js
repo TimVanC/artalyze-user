@@ -828,6 +828,7 @@ const Game = () => {
       setTimeout(() => setShowSwipeHint(false), 2500); // ✅ Hide after 2.5 seconds
     }
   };
+  
 
   const handleSwipe = (swiper) => {
     setCurrentIndex(swiper.realIndex);

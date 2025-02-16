@@ -1080,7 +1080,7 @@ const Game = () => {
           {imagePairs && imagePairs.length > 0 ? (
             <>
               <Swiper
-                loop={false}
+                loop={true}
                 onSlideChange={handleSwipe} // ✅ Now detects swipe even before selection
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper;

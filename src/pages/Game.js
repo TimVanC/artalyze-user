@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaPalette } from 'react-icons/fa';
-import { HiArrowUturnLeft } from "react-icons/hi2";
+import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaPalette, FaLongArrowAltLeft } from 'react-icons/fa'; // ✅ Add FaLongArrowAltLeft
 import logo from '../assets/images/artalyze-logo.png';
 import SwiperCore, { Swiper, SwiperSlide } from 'swiper/react';
 import { getTodayInEST } from '../utils/dateUtils';
@@ -1112,10 +1111,9 @@ const Game = () => {
               {/* Floating Swipe Back Hint */}
               {showSwipeBackHint && (
                 <div className="swipe-back-hint-overlay">
-                  <p><HiArrowUturnLeft /> Swipe back if needed</p>
+                  <p><FaLongArrowAltLeft /> Swipe back if needed</p>
                 </div>
               )}
-
             </>
           ) : (
             <p>Loading...</p>

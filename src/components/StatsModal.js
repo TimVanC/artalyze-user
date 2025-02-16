@@ -91,15 +91,19 @@ const StatsModal = ({
 
   const handleHistoricalStatsShare = () => {
     const shareableText = `
-🎨 Artalyze Stats 🎨
-Games Played: ${stats.gamesPlayed}
-Win %: ${stats.winPercentage}%
-Current Streak: ${stats.currentStreak}
-Max Streak: ${stats.maxStreak}
-Perfect Streak: ${stats.perfectStreak}
-Max Perfect Streak: ${stats.maxPerfectStreak}
-Perfect Games: ${stats.perfectPuzzles}
-    `;
+    🎨 Artalyze Stats 🎨
+    
+    Games Played: ${stats.gamesPlayed}
+    Win Rate: ${stats.winPercentage}%
+    Current Streak: ${stats.currentStreak}
+    Max Streak: ${stats.maxStreak}
+    Perfect Streak: ${stats.perfectStreak}
+    Max Perfect Streak: ${stats.maxPerfectStreak}
+    Perfect Games: ${stats.perfectPuzzles}
+    
+    Track your stats and play daily:
+    https://artalyze.app
+    `;    
 
     if (navigator.share) {
       navigator
@@ -145,44 +149,51 @@ Perfect Games: ${stats.perfectPuzzles}
 
   // Helper function for sharing results
   const shareResults = (usedSelections) => {
+    // Ensure we have valid selections and image pairs
+    if (!usedSelections.length || !imagePairs.length) {
+        alert("No data available to share today's puzzle!");
+        return;
+    }
+
     const puzzleNumber = calculatePuzzleNumber();
+
+    // Calculate the correct count
+    const correctCount = usedSelections.reduce((count, selection, index) => {
+        return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
+    }, 0);
 
     // Generate the visual representation of results
     const resultsVisual = usedSelections
-      .map((selection, index) => {
-        const isCorrect = selection?.selected === imagePairs[index]?.human;
-        return isCorrect ? '🟢' : '🔴';
-      })
-      .join(' ');
+        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+        .join(" ");
 
-    const paintings = '🖼️ '.repeat(imagePairs.length).trim();
+    const paintings = "🖼️ ".repeat(imagePairs.length).trim();
 
-    // Adjust the formatting to remove the extra line break before "Try it at:"
+    // Construct the shareable text with proper formatting
     const shareableText = `Artalyze #${puzzleNumber} ${correctCount}/${imagePairs.length}
-  ${resultsVisual}
-  ${paintings}
-  Try it at: artalyze.app`;
+${resultsVisual}
+${paintings}
 
+Check it out here:
+https://artalyze.app`;
+
+    // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
-      navigator
-        .share({
-          title: `Artalyze #${puzzleNumber}`,
-          text: shareableText,
-        })
-        .catch((error) => console.log('Error sharing:', error));
+        navigator
+            .share({
+                title: `Artalyze #${puzzleNumber}`,
+                text: shareableText,
+            })
+            .catch((error) => console.log("Error sharing:", error));
     } else {
-      navigator.clipboard
-        .writeText(shareableText)
-        .then(() => {
-          alert('Results copied to clipboard! You can now paste it anywhere.');
-        })
-        .catch((error) => console.error('Failed to copy:', error));
+        navigator.clipboard
+            .writeText(shareableText)
+            .then(() => {
+                alert("Results copied to clipboard! You can now paste it anywhere.");
+            })
+            .catch((error) => console.error("Failed to copy:", error));
     }
-  };
-
-
-
-
+};
 
   if (!isOpen && !isDismissing) return null;
 

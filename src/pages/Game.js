@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaPalette, FaLongArrowAltLeft } from 'react-icons/fa'; // ✅ Add FaLongArrowAltLeft
+import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaArrowRight } from 'react-icons/fa';
 import logo from '../assets/images/artalyze-logo.png';
 import SwiperCore, { Swiper, SwiperSlide } from 'swiper/react';
 import { getTodayInEST } from '../utils/dateUtils';
@@ -49,12 +49,8 @@ const Game = () => {
   const swiperRef = useRef(null);
   const lastTapTime = useRef(0);
   const singleTapTimeout = useRef(null);
-  const [showSwipeBackHint, setShowSwipeBackHint] = useState(false);
-  const [selectionMade, setSelectionMade] = useState(false);
-  const [firstSwipeDetected, setFirstSwipeDetected] = useState(false);
-  const [hasUserSwiped, setHasUserSwiped] = useState(false);
-  const [allowHint, setAllowHint] = useState(false);
-  const [showSwipeHint, setShowSwipeHint] = useState(false);
+  const [showSwipeOverlay, setShowSwipeOverlay] = useState(false);
+
 
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
   const { selections = [], updateSelections, isLoading, error: selectionsError } = useSelections(userId, isLoggedIn);
@@ -511,7 +507,6 @@ const Game = () => {
   // Monitor updates to imagePairs
   useEffect(() => {
     console.log("Image pairs state updated:", imagePairs);
-
     if (imagePairs.length > 0) {
       setTimeout(() => {
         if (swiperRef.current) {
@@ -520,33 +515,7 @@ const Game = () => {
         }
       }, 100);
     }
-
-    const today = new Date().toISOString().split("T")[0];
-
-    // ✅ Detect first swipe and show hint only if it hasn't been shown today
-    if (!firstSwipeDetected && currentIndex > 0 && !localStorage.getItem("swipeBackHintShown")) {
-      console.log("🎯 First swipe detected! Showing hint.");
-      setShowSwipeBackHint(true);
-      localStorage.setItem("swipeBackHintShown", today);
-      setFirstSwipeDetected(true); // ✅ Prevent future triggers
-
-      setTimeout(() => setShowSwipeBackHint(false), 2000); // Hide after 2s
-    }
   }, [currentIndex, imagePairs]);
-
-
-  useEffect(() => {
-    setTimeout(() => setAllowHint(true), 1000);
-  }, []);
-
-  useEffect(() => {
-    // Check if user has seen the swipe hint before
-    const hasSeenSwipeHint = localStorage.getItem("hasSeenSwipeHint");
-
-    if (!hasSeenSwipeHint) {
-      setShowSwipeHint(false); // Initially hidden
-    }
-  }, []);
 
   // Apply animations to thumbnails when the stats modal is dismissed
   useEffect(() => {
@@ -811,47 +780,21 @@ const Game = () => {
 
   const handleSelection = (selectedImage, isHumanSelection) => {
     const updatedSelections = [...selections];
-  
+
+    // Deselect if already selected
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
       updatedSelections[currentIndex] = null;
     } else {
       updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
-  
+
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
-  
-    // ✅ Show swipe hint only if it's the user's first time playing
-    if (!localStorage.getItem("hasSeenSwipeHint")) {
-      setShowSwipeHint(true);
-      localStorage.setItem("hasSeenSwipeHint", "true"); // ✅ Store that they’ve seen it
-      setTimeout(() => setShowSwipeHint(false), 2500); // ✅ Hide after 2.5 seconds
-    }
-  };
-  
 
-  const handleSwipe = (swiper) => {
-    setCurrentIndex(swiper.realIndex);
-
-    // ✅ If this is the first swipe, mark it as a real user interaction
-    if (!hasUserSwiped) {
-      setHasUserSwiped(true);
-      return;
-    }
-
-    // ✅ Ensure the hint is allowed (prevents triggering on initial load)
-    if (!allowHint) return;
-
-    const today = new Date().toISOString().split("T")[0];
-
-    // ✅ Show hint only if it's the first real swipe & hasn't been shown today
-    if (!firstSwipeDetected && !localStorage.getItem("swipeBackHintShown")) {
-      console.log("🎯 First user swipe detected! Showing hint.");
-      setShowSwipeBackHint(true);
-      localStorage.setItem("swipeBackHintShown", today);
-      setFirstSwipeDetected(true);
-
-      setTimeout(() => setShowSwipeBackHint(false), 2000); // Hide after 2s
+    // Show the swipe overlay only when the first selection is made
+    if (!showSwipeOverlay && updatedSelections.filter(Boolean).length === 1) {
+      setShowSwipeOverlay(true);
+      setTimeout(() => setShowSwipeOverlay(false), 2000); // Auto-hide after 2 seconds
     }
   };
 
@@ -1079,6 +1022,9 @@ const Game = () => {
         completedSelections={completedSelections}
       />
 
+
+
+
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
@@ -1099,60 +1045,67 @@ const Game = () => {
 
           {/* Image Pairs */}
           {imagePairs && imagePairs.length > 0 ? (
-  <>
-    <Swiper
-      loop={true} // ✅ Infinite loop enabled
-      onSlideChange={handleSwipe}
-      onSwiper={(swiper) => {
-        swiperRef.current = swiper;
-      }}
-    >
-      {imagePairs.map((pair, index) => (
-        <SwiperSlide key={index}>
-          <div className="image-pair-container">
-            {pair.images.map((image, idx) => (
-              <div
-                key={idx}
-                className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
+            <>
+              {/* Swipe Overlay */}
+              {showSwipeOverlay && (
+                <div className="swipe-overlay">
+                  <span>Swipe to view the next image pair</span>
+                  <FaArrowRight className="swipe-arrow" />
+                </div>
+              )}
+
+              <Swiper
+                loop={true}
+                onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
+                onSwiper={(swiper) => {
+                  swiperRef.current = swiper;
+                  swiper.slideToLoop(0);
+                }}
               >
-                <img
-                  src={image}
-                  alt={`Painting ${idx + 1}`}
-                  onClick={() => handleSelection(image, image === pair.human)}
-                  draggable="false"
-                />
-              </div>
-            ))}
-          </div>
-        </SwiperSlide>
-      ))}
-    </Swiper>
+                {imagePairs.map((pair, index) => (
+                  <SwiperSlide key={index}>
+                    <div className="image-pair-container">
+                      {pair.images.map((image, idx) => (
+                        <div
+                          key={idx}
+                          className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
+                        >
+                          <img
+                            src={image}
+                            alt={`Painting ${idx + 1}`}
+                            onClick={(e) => {
+                              const currentTime = new Date().getTime();
+                              const timeSinceLastTap = currentTime - lastTapTime.current;
 
-    {/* ✅ Floating Swipe Back Hint */}
-    {showSwipeBackHint && (
-      <div className="swipe-back-hint-overlay">
-        <div className="swipe-back-hint-content">
-          <FaLongArrowAltLeft className="swipe-back-arrow" />
-          <p>Swipe back if needed</p>
-        </div>
-      </div>
-    )}
+                              if (timeSinceLastTap < 300) { // ✅ Double-tap detected
+                                clearTimeout(singleTapTimeout.current); // ✅ Cancel single tap selection
+                                if (!enlargedImage) { // ✅ Ensure enlargement only happens once
+                                  setEnlargedImage(null); // Ensure previous one is cleared
+                                  setTimeout(() => {
+                                    setEnlargedImage(image);
+                                    setEnlargedImageMode("game-screen");
+                                  }, 10); // Small delay prevents duplicate stacking
+                                }
+                              } else {
+                                singleTapTimeout.current = setTimeout(() => {
+                                  handleSelection(image, image === pair.human); // ✅ Select only if no double-tap
+                                }, 220);
+                              }
 
-    {/* ✅ Floating Swipe Hint (First-Time Only) */}
-    {showSwipeHint && (
-      <div className="swipe-hint-overlay">
-        <div className="swipe-hint-content">
-          <p>Swipe left or right to navigate between images!</p>
-        </div>
-      </div>
-    )}
-  </>
-) : (
-  <p>Loading...</p>
-)}
-
-
-
+                              lastTapTime.current = currentTime;
+                            }}
+                            draggable="false"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </>
+          ) : (
+            <p>Loading...</p>
+          )}
 
 
           {/* Status Bar (Clear Left, Navigation Center, Submit Right) */}

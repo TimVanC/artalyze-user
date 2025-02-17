@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaArrowRight } from 'react-icons/fa';
+import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaLongArrowAltRight } from 'react-icons/fa';
 import logo from '../assets/images/artalyze-logo.png';
 import SwiperCore, { Swiper, SwiperSlide } from 'swiper/react';
 import { getTodayInEST } from '../utils/dateUtils';
@@ -791,8 +791,8 @@ const Game = () => {
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
 
-    // Show the swipe overlay only when the first selection is made
-    if (!showSwipeOverlay && updatedSelections.filter(Boolean).length === 1) {
+    // Show the swipe overlay only when first selection is made on the first image pair
+    if (!showSwipeOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
       setShowSwipeOverlay(true);
       setTimeout(() => setShowSwipeOverlay(false), 2000); // Auto-hide after 2 seconds
     }
@@ -1044,13 +1044,15 @@ const Game = () => {
           </div>
 
           {/* Image Pairs */}
+          import {FaLongArrowAltRight} from 'react-icons/fa';
+
           {imagePairs && imagePairs.length > 0 ? (
             <>
-              {/* Swipe Overlay */}
-              {showSwipeOverlay && (
+              {/* Swipe Overlay (Only for first image pair) */}
+              {showSwipeOverlay && currentIndex === 0 && (
                 <div className="swipe-overlay">
                   <span>Swipe to view the next image pair</span>
-                  <FaArrowRight className="swipe-arrow" />
+                  <FaLongArrowAltRight className="swipe-arrow" />
                 </div>
               )}
 
@@ -1106,7 +1108,6 @@ const Game = () => {
           ) : (
             <p>Loading...</p>
           )}
-
 
           {/* Status Bar (Clear Left, Navigation Center, Submit Right) */}
           <div className="status-bar">

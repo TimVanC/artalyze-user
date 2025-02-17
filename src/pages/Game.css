@@ -566,22 +566,24 @@ h1 {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
+  padding: 14px 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 16px;
+  gap: 14px;
+  font-size: 18px;
   font-weight: bold;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 1000;
   animation: fadeInOut 2s ease-in-out;
+  white-space: nowrap;
 }
 
+/* Larger arrow */
 .swipe-arrow {
-  font-size: 18px;
+  font-size: 28px;
 }
 
 /* Fade-in and fade-out animation */
@@ -591,6 +593,7 @@ h1 {
   80% { opacity: 1; }
   100% { opacity: 0; }
 }
+
 
 /* ========================= */
 /*      MID-TURN OVERLAY     */

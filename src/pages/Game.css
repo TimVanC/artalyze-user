@@ -568,22 +568,22 @@ h1 {
   transform: translate(-50%, -50%);
   background: rgba(0, 0, 0, 0.85);
   color: white;
-  padding: 14px 40px;
-  border-radius: 10px;
+  padding: 16px 50px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 14px;
-  font-size: 18px;
+  gap: 16px;
+  font-size: 20px;
   font-weight: bold;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.3);
   z-index: 1000;
   animation: fadeInOut 2s ease-in-out;
   white-space: nowrap;
 }
 
-/* Larger arrow */
+/* Much larger arrow */
 .swipe-arrow {
-  font-size: 28px;
+  font-size: 40px;
 }
 
 /* Fade-in and fade-out animation */

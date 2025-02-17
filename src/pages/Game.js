@@ -1044,14 +1044,12 @@ const Game = () => {
           </div>
 
           {/* Image Pairs */}
-          import {FaLongArrowAltRight} from 'react-icons/fa';
-
           {imagePairs && imagePairs.length > 0 ? (
             <>
               {/* Swipe Overlay (Only for first image pair) */}
               {showSwipeOverlay && currentIndex === 0 && (
                 <div className="swipe-overlay">
-                  <span>Swipe to view the next image pair</span>
+                  <span>Swipe right</span>
                   <FaLongArrowAltRight className="swipe-arrow" />
                 </div>
               )}

@@ -560,30 +560,30 @@ h1 {
 /*      SWIPE OVERLAY        */
 /* ========================= */
 
-/* Swipe Overlay */
+/* Swipe Overlay (Smaller) */
 .swipe-overlay {
   position: fixed;
-  top: 50%;
+  top: 52%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.8);
   color: white;
-  padding: 16px 50px;
-  border-radius: 12px;
+  padding: 10px 30px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  font-size: 20px;
+  gap: 10px;
+  font-size: 16px;
   font-weight: bold;
-  box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   animation: fadeInOut 2s ease-in-out;
   white-space: nowrap;
 }
 
-/* Much larger arrow */
+/* Smaller arrow */
 .swipe-arrow {
-  font-size: 40px;
+  font-size: 26px;
 }
 
 /* Fade-in and fade-out animation */
@@ -593,7 +593,6 @@ h1 {
   80% { opacity: 1; }
   100% { opacity: 0; }
 }
-
 
 /* ========================= */
 /*      MID-TURN OVERLAY     */

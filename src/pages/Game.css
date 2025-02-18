@@ -649,28 +649,28 @@ body.dark-mode .info-overlay {
   color: black;
 }
 
-/* Swipe Right Overlay */
+/* Swipe Right Overlay (Stays the same) */
 .swipe-overlay {
   transform: translate(-50%, -60%);
   top: 52%;
 }
 
-/* Swipe Left Overlay */
+/* Swipe Left Overlay (5% higher) */
 .swipe-left-overlay {
   transform: translate(-50%, -65%);
+  top: 47%;
+}
+
+/* Double Tap Overlay (5% lower, now exactly where swipe overlay was) */
+.double-tap-overlay {
+  transform: translate(-50%, -60%);
   top: 52%;
 }
 
-/* Double Tap Overlay (Shows after second swipe) */
-.double-tap-overlay {
-  transform: translate(-50%, -30%);
-  top: 30%;
-}
-
-/* Info Overlay (Shows after fourth swipe) */
+/* Info Overlay (5% higher, now exactly where swipe left overlay was) */
 .info-overlay {
-  transform: translate(-50%, -20%);
-  top: 40%;
+  transform: translate(-50%, -65%);
+  top: 47%;
 }
 
 /* Larger Arrow */
@@ -683,6 +683,15 @@ body.dark-mode .info-overlay {
   font-size: 18px;
   vertical-align: middle;
 }
+
+/* Fade-in and fade-out animation */
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 
 /* Fade-in and fade-out animation */
 @keyframes fadeInOut {

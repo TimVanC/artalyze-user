@@ -481,7 +481,7 @@ h1 {
 
 
 /* ========================= */
-/*       IMAGE GRID FIX      */
+/*       IMAGE GRID          */
 /* ========================= */
 
 .horizontal-thumbnail-grid {
@@ -560,12 +560,12 @@ h1 {
 /*      SWIPE OVERLAY        */
 /* ========================= */
 
-/* Swipe Overlay (Smaller) */
+/* Swipe Overlay */
 .swipe-overlay {
   position: fixed;
   top: 52%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -65%);
   background: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 10px 30px;
@@ -581,7 +581,7 @@ h1 {
   white-space: nowrap;
 }
 
-/* Smaller arrow */
+/* Smaller arrows */
 .swipe-arrow {
   font-size: 26px;
 }
@@ -593,6 +593,7 @@ h1 {
   80% { opacity: 1; }
   100% { opacity: 0; }
 }
+
 
 /* ========================= */
 /*      MID-TURN OVERLAY     */

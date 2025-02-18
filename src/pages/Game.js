@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaLongArrowAltRight } from 'react-icons/fa';
+import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaLongArrowAltRight, FaLongArrowAltLeft } from 'react-icons/fa';
 import logo from '../assets/images/artalyze-logo.png';
 import SwiperCore, { Swiper, SwiperSlide } from 'swiper/react';
 import { getTodayInEST } from '../utils/dateUtils';
@@ -50,6 +50,11 @@ const Game = () => {
   const lastTapTime = useRef(0);
   const singleTapTimeout = useRef(null);
   const [showSwipeOverlay, setShowSwipeOverlay] = useState(false);
+  const [showSwipeRightOverlay, setShowSwipeRightOverlay] = useState(false);
+  const [showSwipeLeftOverlay, setShowSwipeLeftOverlay] = useState(false);
+  const [hasSeenSwipeOverlays, setHasSeenSwipeOverlays] = useState(() => {
+    return localStorage.getItem("hasSeenSwipeOverlays") === "true";
+  });
 
 
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
@@ -791,10 +796,30 @@ const Game = () => {
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
 
-    // Show the swipe overlay only when first selection is made on the first image pair
-    if (!showSwipeOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-      setShowSwipeOverlay(true);
-      setTimeout(() => setShowSwipeOverlay(false), 2000); // Auto-hide after 2 seconds
+    // Check if user has seen the swipe overlays before
+    const hasSeenSwipeOverlays = localStorage.getItem("hasSeenSwipeOverlays") === "true";
+
+    // Show "Swipe right" overlay only on first selection of first image pair & if user hasn't seen it before
+    if (!hasSeenSwipeOverlays && !showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+      setShowSwipeRightOverlay(true);
+      setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+    }
+  };
+
+  const handleSwipe = (swiper) => {
+    setCurrentIndex(swiper.realIndex);
+
+    // Check if user has seen swipe overlays before
+    const hasSeenSwipeOverlays = localStorage.getItem("hasSeenSwipeOverlays") === "true";
+
+    // Show "Swipe left to go back" overlay only after the first swipe
+    if (!hasSeenSwipeOverlays && !showSwipeLeftOverlay && swiper.realIndex > 0) {
+      setShowSwipeLeftOverlay(true);
+      setTimeout(() => {
+        setShowSwipeLeftOverlay(false);
+        // Mark overlays as seen after both have displayed
+        localStorage.setItem("hasSeenSwipeOverlays", "true");
+      }, 2000);
     }
   };
 
@@ -952,6 +977,23 @@ const Game = () => {
 
   return (
     <div className={`game-container ${darkMode ? "dark-mode" : ""}`}>
+
+      {/* Swipe Right Overlay */}
+      {showSwipeRightOverlay && (
+        <div className="swipe-overlay">
+          <span>Swipe right</span>
+          <FaLongArrowAltRight className="swipe-arrow" />
+        </div>
+      )}
+
+      {/* Swipe Left Overlay */}
+      {showSwipeLeftOverlay && (
+        <div className="swipe-overlay">
+          <FaLongArrowAltLeft className="swipe-arrow" />
+          <span>Swipe left to go back</span>
+        </div>
+      )}
+
       {/* Mobile Warning Overlay */}
       {showMobileWarning && (
         <div className="mobile-warning-overlay">
@@ -980,10 +1022,6 @@ const Game = () => {
           </div>
         </div>
       )}
-
-
-
-
 
       {/* Full Page Loading Screen */}
       {loading && (
@@ -1022,9 +1060,6 @@ const Game = () => {
         completedSelections={completedSelections}
       />
 
-
-
-
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
@@ -1046,17 +1081,9 @@ const Game = () => {
           {/* Image Pairs */}
           {imagePairs && imagePairs.length > 0 ? (
             <>
-              {/* Swipe Overlay (Only for first image pair) */}
-              {showSwipeOverlay && currentIndex === 0 && (
-                <div className="swipe-overlay">
-                  <span>Swipe right</span>
-                  <FaLongArrowAltRight className="swipe-arrow" />
-                </div>
-              )}
-
               <Swiper
                 loop={true}
-                onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
+                onSlideChange={handleSwipe} // ✅ Now using handleSwipe
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper;
                   swiper.slideToLoop(0);

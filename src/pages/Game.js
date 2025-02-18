@@ -52,6 +52,7 @@ const Game = () => {
   const [showSwipeOverlay, setShowSwipeOverlay] = useState(false);
   const [showSwipeRightOverlay, setShowSwipeRightOverlay] = useState(false);
   const [showSwipeLeftOverlay, setShowSwipeLeftOverlay] = useState(false);
+  const [showDoubleTapOverlay, setShowDoubleTapOverlay] = useState(false);
   const [hasSeenSwipeOverlays, setHasSeenSwipeOverlays] = useState(() => {
     return localStorage.getItem("hasSeenSwipeOverlays") === "true";
   });
@@ -787,23 +788,34 @@ const Game = () => {
 
     // Deselect if already selected
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
-      updatedSelections[currentIndex] = null;
+        updatedSelections[currentIndex] = null;
     } else {
-      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
+        updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
 
-    // Check if user has seen the swipe overlays before
-    const hasSeenSwipeOverlays = localStorage.getItem("hasSeenSwipeOverlays") === "true";
+    // Check if user has already seen the overlays before
+    const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
-    // Show "Swipe right" overlay only on first selection of first image pair & if user hasn't seen it before
-    if (!hasSeenSwipeOverlays && !showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-      setShowSwipeRightOverlay(true);
-      setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+    if (!hasSeenOverlays) {
+        // Show "Double tap to enlarge" overlay only on first selection
+        if (!showDoubleTapOverlay && updatedSelections.filter(Boolean).length === 1) {
+            setShowDoubleTapOverlay(true);
+            setTimeout(() => setShowDoubleTapOverlay(false), 2000);
+        }
+
+        // Show "Swipe right" overlay only on first selection of first image pair
+        if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+            setShowSwipeRightOverlay(true);
+            setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+        }
+
+        // Mark overlays as seen so they never show again
+        localStorage.setItem("hasSeenOverlays", "true");
     }
-  };
+};
 
   const handleSwipe = (swiper) => {
     setCurrentIndex(swiper.realIndex);
@@ -976,6 +988,13 @@ const Game = () => {
 
   return (
     <div className={`game-container ${darkMode ? "dark-mode" : ""}`}>
+
+      {/* Double Tap Overlay */}
+      {showDoubleTapOverlay && (
+        <div className="double-tap-overlay">
+          <span>Double tap to enlarge image</span>
+        </div>
+      )}
 
       {/* Swipe Right Overlay */}
       {showSwipeRightOverlay && (

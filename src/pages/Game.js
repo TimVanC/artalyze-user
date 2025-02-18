@@ -81,13 +81,13 @@ const Game = () => {
 
   const getMidTurnMessage = (correctCount) => {
     if (correctCount === 0 || correctCount === 1) {
-      return "None or only one is right";
+      return "None or only one is right.";
     } else if (correctCount === 2) {
-      return "You're three away";
+      return "You're three away.";
     } else if (correctCount === 3) {
-      return "You're two away";
+      return "You're two away.";
     } else if (correctCount === 4) {
-      return "Close! You're one away";
+      return "Close! You're one away.";
     } else {
       return "";
     }

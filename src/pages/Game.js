@@ -52,6 +52,7 @@ const Game = () => {
   const [showSwipeOverlay, setShowSwipeOverlay] = useState(false);
   const [showSwipeRightOverlay, setShowSwipeRightOverlay] = useState(false);
   const [showSwipeLeftOverlay, setShowSwipeLeftOverlay] = useState(false);
+  const [hasSeenSwipeLeft, setHasSeenSwipeLeft] = useState(false);
   const [showDoubleTapOverlay, setShowDoubleTapOverlay] = useState(false);
   const [showInfoOverlay, setShowInfoOverlay] = useState(false);
   const [hasSeenSwipeOverlays, setHasSeenSwipeOverlays] = useState(() => {
@@ -816,20 +817,21 @@ const Game = () => {
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
     if (!hasSeenOverlays) {
-      // Show "Swipe left to go back" after first swipe
-      if (!showSwipeLeftOverlay && swiper.realIndex > 0) {
+      // Show "Swipe left to go back" overlay after the first swipe (only once)
+      if (!hasSeenSwipeLeft && swiper.realIndex > 0) {
         setShowSwipeLeftOverlay(true);
         setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
+        setHasSeenSwipeLeft(true); // Prevent it from showing again
       }
 
-      // Show "Double tap to enlarge" overlay after the second swipe
+      // Show "Double tap to enlarge" overlay after the second swipe (only once)
       if (!showDoubleTapOverlay && swiper.realIndex > 1) {
         setShowDoubleTapOverlay(true);
         setTimeout(() => setShowDoubleTapOverlay(false), 2000);
       }
 
-      // Show "Tap info icon for more help" overlay after the fourth swipe
-      if (!showInfoOverlay && swiper.realIndex > 3) {
+      // Show "Tap info icon for more help" overlay after the fourth swipe (only once)
+      if (!showInfoOverlay && swiper.realIndex > 2) {
         setShowInfoOverlay(true);
         setTimeout(() => {
           setShowInfoOverlay(false);

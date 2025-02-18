@@ -791,57 +791,57 @@ const Game = () => {
 
     // Deselect if already selected
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
-      updatedSelections[currentIndex] = null;
+        updatedSelections[currentIndex] = null;
     } else {
-      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
+        updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
 
-    // Check if user has already seen the overlays before
-    const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
-
-    if (!hasSeenOverlays) {
-      // Show "Swipe right" overlay only on first selection of first image pair
-      if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-        setShowSwipeRightOverlay(true);
-        setTimeout(() => setShowSwipeRightOverlay(false), 2000);
-      }
-    }
-  };
-
-  const handleSwipe = (swiper) => {
-    setCurrentIndex(swiper.realIndex);
-
     // Check if user has seen overlays before
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
     if (!hasSeenOverlays) {
-        // Show "Swipe left to go back" overlay after the first swipe (only once)
-        if (!hasSeenSwipeLeft && swiper.realIndex > 0) {
-            setShowSwipeLeftOverlay(true);
-            setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
-            setHasSeenSwipeLeft(true); // Prevent it from showing again
-        }
-
-        // Show "Double tap to enlarge" overlay after the second swipe (only once)
-        if (!hasSeenDoubleTap && swiper.realIndex > 1) {
-            setShowDoubleTapOverlay(true);
-            setTimeout(() => setShowDoubleTapOverlay(false), 2000);
-            setHasSeenDoubleTap(true); // Prevent it from showing again
-        }
-
-        // Show "Tap info icon for more help" overlay after the fourth swipe (only once)
-        if (!showInfoOverlay && swiper.realIndex > 2) {
-            setShowInfoOverlay(true);
-            setTimeout(() => {
-                setShowInfoOverlay(false);
-                // Mark overlays as seen after all have displayed
-                localStorage.setItem("hasSeenOverlays", "true");
-            }, 2000);
+        // Show "Swipe right" overlay only on first selection of first image pair
+        if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+            setShowSwipeRightOverlay(true);
+            setTimeout(() => setShowSwipeRightOverlay(false), 2000);
         }
     }
+};
+
+const handleSwipe = (swiper) => {
+  setCurrentIndex(swiper.realIndex);
+
+  // Check if user has seen overlays before
+  const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
+
+  if (!hasSeenOverlays) {
+      // Show "Swipe left to go back" overlay after the first swipe (only once)
+      if (!hasSeenSwipeLeft && swiper.realIndex > 0) {
+          setShowSwipeLeftOverlay(true);
+          setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
+          setHasSeenSwipeLeft(true);
+      }
+
+      // Show "Double tap to enlarge" overlay after the second swipe (only once)
+      if (!hasSeenDoubleTap && swiper.realIndex > 1) {
+          setShowDoubleTapOverlay(true);
+          setTimeout(() => setShowDoubleTapOverlay(false), 2000);
+          setHasSeenDoubleTap(true);
+      }
+
+      // Show "Tap info icon for more help" overlay after the fourth swipe (only once)
+      if (!showInfoOverlay && swiper.realIndex > 2) {
+          setShowInfoOverlay(true);
+          setTimeout(() => {
+              setShowInfoOverlay(false);
+              // Mark overlays as seen after all have displayed
+              localStorage.setItem("hasSeenOverlays", "true");
+          }, 2000);
+      }
+  }
 };
 
   const handleCompletionShare = () => {

@@ -79,6 +79,19 @@ const Game = () => {
     lastPlayedDate: null,
   });
 
+  const getMidTurnMessage = (correctCount) => {
+    if (correctCount === 0 || correctCount === 1) {
+      return "None or only one is right";
+    } else if (correctCount === 2) {
+      return "You're three away";
+    } else if (correctCount === 3) {
+      return "You're two away";
+    } else if (correctCount === 4) {
+      return "Close! You're one away";
+    } else {
+      return "";
+    }
+  };
 
   // Helper function to save triesRemaining to localStorage
   const saveTriesToLocalStorage = (tries) => {
@@ -671,20 +684,6 @@ const Game = () => {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-
-  const encouragementMessages = [
-    "Keep it up!",
-    "You're doing great!",
-    "Almost there!",
-    "Keep pushing!",
-    "You're doing awesome!",
-  ];
-
-  const getRandomEncouragement = () => {
-    const randomIndex = Math.floor(Math.random() * encouragementMessages.length);
-    return encouragementMessages[randomIndex];
-  };
-
   const fetchAndSetStats = async (userId) => {
     if (!userId) {
       console.error("No userId found. Please log in again.");
@@ -1223,22 +1222,11 @@ const Game = () => {
         </>
       )}
 
-
-
       {showOverlay && (
         <div className="mid-turn-overlay">
           <div className="mid-turn-overlay-content">
-            {correctCount === imagePairs.length - 1 ? ( // ✅ Dynamically check "1 away"
-              <>
-                <h2 className="mid-turn-overlay-title">Close! You're 1 away</h2>
-                <p className="mid-turn-overlay-message">You have {triesLeft} tries left</p>  {/* ✅ Now correct */}
-              </>
-            ) : correctCount >= 0 && correctCount <= 3 ? (
-              <>
-                <h2 className="mid-turn-overlay-title">Not quite, try again!</h2>
-                <p className="mid-turn-overlay-message">You have {triesLeft} tries left</p>
-              </>
-            ) : null}
+            <h2 className="mid-turn-overlay-title">{getMidTurnMessage(correctCount)}</h2>
+            <p className="mid-turn-overlay-message">You have {triesLeft} tries left</p>
             <button
               onClick={() => setShowOverlay(false)}
               className="mid-turn-overlay-try-again-button"

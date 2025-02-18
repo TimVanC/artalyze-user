@@ -1103,7 +1103,7 @@ const handleSwipe = (swiper) => {
 
       {!isGameComplete && (
         <>
-          <h1 className="game-header">Guess the human painting from each pair!</h1>
+          <h1 className="game-header">Guess the human artwork from each pair!</h1>
 
           {/* Tries Left Section (Above Image Pairs) */}
           <div className="tries-left">

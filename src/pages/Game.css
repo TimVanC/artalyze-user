@@ -581,31 +581,22 @@ h1 {
     white-space: nowrap;
 }
 
+/* Double Tap Overlay - Lowered */
 .double-tap-overlay {
-  transform: translate(-50%, -65%);
-}
-
-.swipe-overlay {
-  transform: translate(-50%, -60%);
-}
-
-.swipe-left-overlay {
-  transform: translate(-50%, -65%);
+    transform: translate(-50%, -30%); /* Moved lower */
+    top: 30%; /* Adjusted from 10% */
 }
 
 /* Swipe Right Overlay */
 .swipe-overlay {
+    transform: translate(-50%, -60%);
     top: 52%;
 }
 
 /* Swipe Left Overlay */
 .swipe-left-overlay {
+    transform: translate(-50%, -65%);
     top: 52%;
-}
-
-/* Double Tap Overlay (Positioned Higher) */
-.double-tap-overlay {
-    top: 10%;
 }
 
 /* Larger Arrow */

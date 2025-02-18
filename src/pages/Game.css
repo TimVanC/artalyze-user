@@ -1204,3 +1204,11 @@ body.dark-mode .full-page-progress-bar {
 body.dark-mode .full-page-progress-fill {
   background-color: #4d73af;
 }
+
+/* Dark Mode Overrides */
+body.dark-mode .swipe-overlay,
+body.dark-mode .swipe-left-overlay,
+body.dark-mode .double-tap-overlay {
+    background: rgba(255, 255, 255, 0.8); /* Lighter background for dark mode */
+    color: black; /* Black text for better contrast */
+}

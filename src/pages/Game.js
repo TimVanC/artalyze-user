@@ -800,39 +800,40 @@ const Game = () => {
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
     if (!hasSeenOverlays) {
-        // Show "Double tap to enlarge" overlay only on first selection
-        if (!showDoubleTapOverlay && updatedSelections.filter(Boolean).length === 1) {
-            setShowDoubleTapOverlay(true);
-            setTimeout(() => setShowDoubleTapOverlay(false), 2000);
-        }
-
         // Show "Swipe right" overlay only on first selection of first image pair
         if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
             setShowSwipeRightOverlay(true);
             setTimeout(() => setShowSwipeRightOverlay(false), 2000);
         }
-
-        // Mark overlays as seen so they never show again
-        localStorage.setItem("hasSeenOverlays", "true");
     }
 };
 
   const handleSwipe = (swiper) => {
     setCurrentIndex(swiper.realIndex);
 
-    // Check if user has seen swipe overlays before
-    const hasSeenSwipeOverlays = localStorage.getItem("hasSeenSwipeOverlays") === "true";
+    // Check if user has seen overlays before
+    const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
-    // Show "Swipe left to go back" overlay only after the first swipe
-    if (!hasSeenSwipeOverlays && !showSwipeLeftOverlay && swiper.realIndex > 0) {
-      setShowSwipeLeftOverlay(true);
-      setTimeout(() => {
-        setShowSwipeLeftOverlay(false);
-        // Mark overlays as seen after both have displayed
-        localStorage.setItem("hasSeenSwipeOverlays", "true");
-      }, 2000);
+    if (!hasSeenOverlays) {
+      // Show "Swipe left to go back" after first swipe
+      if (!showSwipeLeftOverlay && swiper.realIndex > 0) {
+        setShowSwipeLeftOverlay(true);
+        setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
+      }
+
+      // Show "Double tap to enlarge" overlay after the second swipe
+      if (!showDoubleTapOverlay && swiper.realIndex > 1) {
+        setShowDoubleTapOverlay(true);
+        setTimeout(() => {
+          setShowDoubleTapOverlay(false);
+
+          // Mark overlays as seen after all have displayed
+          localStorage.setItem("hasSeenOverlays", "true");
+        }, 2000);
+      }
     }
   };
+
 
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available
@@ -989,13 +990,6 @@ const Game = () => {
   return (
     <div className={`game-container ${darkMode ? "dark-mode" : ""}`}>
 
-      {/* Double Tap Overlay */}
-      {showDoubleTapOverlay && (
-        <div className="double-tap-overlay">
-          <span>Double tap to enlarge image</span>
-        </div>
-      )}
-
       {/* Swipe Right Overlay */}
       {showSwipeRightOverlay && (
         <div className="swipe-overlay">
@@ -1009,6 +1003,13 @@ const Game = () => {
         <div className="swipe-overlay">
           <FaLongArrowAltLeft className="swipe-arrow" />
           <span>Swipe left to go back</span>
+        </div>
+      )}
+
+      {/* Double Tap Overlay */}
+      {showDoubleTapOverlay && (
+        <div className="double-tap-overlay">
+          <span>Double tap to enlarge image</span>
         </div>
       )}
 

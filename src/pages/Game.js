@@ -53,6 +53,7 @@ const Game = () => {
   const [showSwipeRightOverlay, setShowSwipeRightOverlay] = useState(false);
   const [showSwipeLeftOverlay, setShowSwipeLeftOverlay] = useState(false);
   const [showDoubleTapOverlay, setShowDoubleTapOverlay] = useState(false);
+  const [showInfoOverlay, setShowInfoOverlay] = useState(false);
   const [hasSeenSwipeOverlays, setHasSeenSwipeOverlays] = useState(() => {
     return localStorage.getItem("hasSeenSwipeOverlays") === "true";
   });
@@ -788,9 +789,9 @@ const Game = () => {
 
     // Deselect if already selected
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
-        updatedSelections[currentIndex] = null;
+      updatedSelections[currentIndex] = null;
     } else {
-        updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
+      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
     updateSelections(updatedSelections);
@@ -800,13 +801,13 @@ const Game = () => {
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
     if (!hasSeenOverlays) {
-        // Show "Swipe right" overlay only on first selection of first image pair
-        if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-            setShowSwipeRightOverlay(true);
-            setTimeout(() => setShowSwipeRightOverlay(false), 2000);
-        }
+      // Show "Swipe right" overlay only on first selection of first image pair
+      if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+        setShowSwipeRightOverlay(true);
+        setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+      }
     }
-};
+  };
 
   const handleSwipe = (swiper) => {
     setCurrentIndex(swiper.realIndex);
@@ -824,16 +825,20 @@ const Game = () => {
       // Show "Double tap to enlarge" overlay after the second swipe
       if (!showDoubleTapOverlay && swiper.realIndex > 1) {
         setShowDoubleTapOverlay(true);
-        setTimeout(() => {
-          setShowDoubleTapOverlay(false);
+        setTimeout(() => setShowDoubleTapOverlay(false), 2000);
+      }
 
+      // Show "Tap info icon for more help" overlay after the fourth swipe
+      if (!showInfoOverlay && swiper.realIndex > 3) {
+        setShowInfoOverlay(true);
+        setTimeout(() => {
+          setShowInfoOverlay(false);
           // Mark overlays as seen after all have displayed
           localStorage.setItem("hasSeenOverlays", "true");
         }, 2000);
       }
     }
   };
-
 
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available
@@ -1039,6 +1044,13 @@ const Game = () => {
           <div className="duplicate-overlay-content">
             <h2 className="duplicate-overlay-title">You already tried this guess!</h2>
           </div>
+        </div>
+      )}
+
+      {/* Info Overlay (Shows after fourth swipe) */}
+      {showInfoOverlay && (
+        <div className="info-overlay">
+          <span>Tap <FaInfoCircle className="info-icon" /> for more help</span>
         </div>
       )}
 

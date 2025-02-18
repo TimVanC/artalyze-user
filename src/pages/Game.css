@@ -6,9 +6,10 @@ body {
   box-sizing: border-box;
 }
 
-html, body {
-  background-color: #ffffff; 
-  touch-action: manipulation; 
+html,
+body {
+  background-color: #ffffff;
+  touch-action: manipulation;
   overflow-x: hidden;
 }
 
@@ -79,13 +80,15 @@ h1 {
   font-size: 15px;
   color: #333333;
   letter-spacing: 0.5px;
-  margin-bottom: 10px; /* Added margin to separate from images */
+  margin-bottom: 10px;
+  /* Added margin to separate from images */
 }
 
 .tries-circle {
   width: 13px;
   height: 13px;
-  background-color: #4A4A4A; /* Default filled */
+  background-color: #4A4A4A;
+  /* Default filled */
   border-radius: 50%;
   display: inline-block;
 }
@@ -100,8 +103,10 @@ h1 {
   align-items: center;
   padding: 8px 0;
   margin-top: -1vh;
-  width: 100%; /* Ensure full width */
-  overflow: hidden; /* Prevent horizontal overflow */
+  width: 100%;
+  /* Ensure full width */
+  overflow: hidden;
+  /* Prevent horizontal overflow */
 }
 
 /* Ensure image containers fully fill the screen width */
@@ -110,7 +115,8 @@ h1 {
   width: 29vh;
   height: 29vh;
   background-color: #f5f5f5;
-  border-radius: 8px; /* Ensures rounded corners */
+  border-radius: 8px;
+  /* Ensures rounded corners */
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -122,7 +128,8 @@ h1 {
   width: 101%;
   height: 101%;
   object-fit: cover;
-  border-radius: inherit; /* Ensures it matches parent container */
+  border-radius: inherit;
+  /* Ensures it matches parent container */
   display: block;
   image-rendering: -webkit-optimize-contrast;
 }
@@ -141,12 +148,17 @@ h1 {
 }
 
 .image-container.selected {
-  border: 5px solid #5f91e3; /* Thick border */
-  border-radius: 5px; /* Keeps corners tight */
-  box-shadow: 
-    inset 0 0 6px 2px rgba(95, 145, 227, 0.6), /* Inner glow to cover white gaps */
-    0 0 8px 2px rgba(95, 145, 227, 0.8); /* Outer glow for visibility */
-  overflow: hidden; /* Prevents any border leaking */
+  border: 5px solid #5f91e3;
+  /* Thick border */
+  border-radius: 5px;
+  /* Keeps corners tight */
+  box-shadow:
+    inset 0 0 6px 2px rgba(95, 145, 227, 0.6),
+    /* Inner glow to cover white gaps */
+    0 0 8px 2px rgba(95, 145, 227, 0.8);
+  /* Outer glow for visibility */
+  overflow: hidden;
+  /* Prevents any border leaking */
 }
 
 /* ========================= */
@@ -154,12 +166,16 @@ h1 {
 /* ========================= */
 .status-bar {
   display: flex;
-  justify-content: center; /* Center everything */
+  justify-content: center;
+  /* Center everything */
   align-items: center;
-  gap: 22px; /* Matches completion screen spacing */
-  flex-wrap: nowrap; /* Prevent wrapping */
+  gap: 22px;
+  /* Matches completion screen spacing */
+  flex-wrap: nowrap;
+  /* Prevent wrapping */
   width: 100%;
-  max-width: 350px; /* Keep it from spreading too wide */
+  max-width: 350px;
+  /* Keep it from spreading too wide */
   margin: 10px auto;
 }
 
@@ -169,20 +185,24 @@ h1 {
 .navigation-buttons {
   display: flex;
   justify-content: center;
-  flex-grow: 1; /* Ensures even spacing */
-  gap: 2vh; /* Keeps buttons evenly spaced */
+  flex-grow: 1;
+  /* Ensures even spacing */
+  gap: 2vh;
+  /* Keeps buttons evenly spaced */
 }
 
 .navigation-buttons .nav-button {
   background-color: #ccc;
-  width: 2.5vh; /* Small circles */
+  width: 2.5vh;
+  /* Small circles */
   height: 2.5vh;
   border-radius: 50%;
   border: none;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 0; /* Hide text */
+  font-size: 0;
+  /* Hide text */
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
@@ -262,17 +282,25 @@ h1 {
   0% {
     transform: translateX(0);
   }
+
   25% {
-    transform: translateX(-10px); /* Move left */
+    transform: translateX(-10px);
+    /* Move left */
   }
+
   50% {
-    transform: translateX(10px); /* Move right */
+    transform: translateX(10px);
+    /* Move right */
   }
+
   75% {
-    transform: translateX(-10px); /* Move left again */
+    transform: translateX(-10px);
+    /* Move left again */
   }
+
   100% {
-    transform: translateX(0); /* Return to original position */
+    transform: translateX(0);
+    /* Return to original position */
   }
 }
 
@@ -287,7 +315,8 @@ h1 {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.8); /* Dim background */
+  background: rgba(0, 0, 0, 0.8);
+  /* Dim background */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -299,8 +328,10 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 70vw;  /* Unified width across all screens */
-  max-height: 70vh; /* Unified height across all screens */
+  max-width: 70vw;
+  /* Unified width across all screens */
+  max-height: 70vh;
+  /* Unified height across all screens */
   overflow: hidden;
 }
 
@@ -308,8 +339,10 @@ h1 {
 .enlarged-image {
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain; /* Maintain aspect ratio */
-  border-radius: 8px; /* Match overall UI */
+  object-fit: contain;
+  /* Maintain aspect ratio */
+  border-radius: 8px;
+  /* Match overall UI */
   transform: scale(1);
   transition: transform 0.3s ease-in-out;
 }
@@ -317,7 +350,8 @@ h1 {
 /* Prevent unintended duplicate image stacking */
 .enlarge-modal img {
   position: relative;
-  z-index: 1001; /* Ensure it's above the background */
+  z-index: 1001;
+  /* Ensure it's above the background */
 }
 
 /* Background Overlay */
@@ -326,8 +360,10 @@ h1 {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7); /* Dim background */
-  z-index: 999; /* Keep it behind the image */
+  background: rgba(0, 0, 0, 0.7);
+  /* Dim background */
+  z-index: 999;
+  /* Keep it behind the image */
 }
 
 
@@ -344,7 +380,8 @@ h1 {
 .completion-message {
   font-size: 17px;
   font-weight: bold;
-  margin-bottom: 1.5vh; /* Added space below the message */
+  margin-bottom: 1.5vh;
+  /* Added space below the message */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -355,11 +392,15 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 22px; /* Reduce space between elements */
-  flex-wrap: nowrap; /* Prevent wrapping to a new line */
+  gap: 22px;
+  /* Reduce space between elements */
+  flex-wrap: nowrap;
+  /* Prevent wrapping to a new line */
   width: 100%;
-  max-width: 350px; /* Keep it from spreading too wide */
-  margin: 0 auto 15px; /* Adjusted margin */
+  max-width: 350px;
+  /* Keep it from spreading too wide */
+  margin: 0 auto 15px;
+  /* Adjusted margin */
 }
 
 /* ========================= */
@@ -368,42 +409,53 @@ h1 {
 
 .completion-score-badge {
   display: inline-block;
-  padding: 1.2vh 1vh; /* Increased height */
+  padding: 1.2vh 1vh;
+  /* Increased height */
   color: white;
-  background-color: #e0b54c; /* Default yellow */
-  font-size: 15px; /* Slightly larger text */
+  background-color: #e0b54c;
+  /* Default yellow */
+  font-size: 15px;
+  /* Slightly larger text */
   font-weight: bold;
   border-radius: 6px;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
   letter-spacing: .7px;
-  min-width: 100px; /* Slightly wider */
-  height: auto; /* Let it expand based on content */
+  min-width: 100px;
+  /* Slightly wider */
+  height: auto;
+  /* Let it expand based on content */
 }
 
 /* Score Badge Variants */
 .completion-score-badge.zero-correct {
-  background-color: #d04e5f; /* Red for 0/5 */
+  background-color: #d04e5f;
+  /* Red for 0/5 */
 }
 
 .completion-score-badge.one-correct {
-  background-color: #c56a56; /* Red-orange for 1/5 */
+  background-color: #c56a56;
+  /* Red-orange for 1/5 */
 }
 
 .completion-score-badge.two-correct {
-  background-color: #d08852; /* Deep orange for 2/5 */
+  background-color: #d08852;
+  /* Deep orange for 2/5 */
 }
 
 .completion-score-badge.three-correct {
-  background-color: #c5a54e; /* Mustard yellow for 3/5 */
+  background-color: #c5a54e;
+  /* Mustard yellow for 3/5 */
 }
 
 .completion-score-badge.four-correct {
-  background-color: #89a45b; /* Yellow-green for 4/5 */
+  background-color: #89a45b;
+  /* Yellow-green for 4/5 */
 }
 
 .completion-score-badge.five-correct {
-  background-color: #5c9b62; /* Green for 5/5 */
+  background-color: #5c9b62;
+  /* Green for 5/5 */
 }
 
 /* ========================= */
@@ -411,7 +463,8 @@ h1 {
 /* ========================= */
 
 /* Compact Buttons */
-.stats-button.compact, .share-button.compact {
+.stats-button.compact,
+.share-button.compact {
   padding: 1.2vh 1vh;
   font-size: 15px;
   min-width: 65px;
@@ -437,7 +490,8 @@ h1 {
   border-radius: 1vh;
   font-size: 2vh;
   font-weight: bold;
-  color: white; /* Made button text white */
+  color: white;
+  /* Made button text white */
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -489,7 +543,8 @@ h1 {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 360px; /* Reduce max width slightly */
+  max-width: 360px;
+  /* Reduce max width slightly */
   margin: 0 auto;
 }
 
@@ -498,7 +553,8 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px; /* Slightly reduce space between images */
+  gap: 8px;
+  /* Slightly reduce space between images */
   width: 100%;
   max-width: 360px;
   margin-bottom: 8px;
@@ -507,9 +563,11 @@ h1 {
 /* ✅ Make Thumbnails Slightly Smaller */
 .thumbnail-container {
   flex: 1 1 50%;
-  width: 22vw !important; /* Reduce size slightly */
+  width: 22vw !important;
+  /* Reduce size slightly */
   height: 22vw !important;
-  max-width: 95px; /* Reduce max size slightly */
+  max-width: 95px;
+  /* Reduce max size slightly */
   max-height: 95px;
   border-radius: 2px;
   overflow: hidden;
@@ -563,54 +621,88 @@ h1 {
 /* General Overlay Styling */
 .swipe-overlay,
 .swipe-left-overlay,
-.double-tap-overlay {
-    position: fixed;
-    left: 50%;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 10px 30px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    animation: fadeInOut 2s ease-in-out;
-    white-space: nowrap;
+.double-tap-overlay,
+.info-overlay {
+  position: fixed;
+  left: 50%;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: fadeInOut 2s ease-in-out;
+  white-space: nowrap;
 }
 
-/* Double Tap Overlay - Lowered */
-.double-tap-overlay {
-    transform: translate(-50%, -30%); /* Moved lower */
-    top: 30%; /* Adjusted from 10% */
+/* Dark Mode - Light background with black text */
+body.dark-mode .swipe-overlay,
+body.dark-mode .swipe-left-overlay,
+body.dark-mode .double-tap-overlay,
+body.dark-mode .info-overlay {
+  background: rgba(255, 255, 255, 0.8);
+  color: black;
 }
 
 /* Swipe Right Overlay */
 .swipe-overlay {
-    transform: translate(-50%, -60%);
-    top: 52%;
+  transform: translate(-50%, -60%);
+  top: 52%;
 }
 
 /* Swipe Left Overlay */
 .swipe-left-overlay {
-    transform: translate(-50%, -65%);
-    top: 52%;
+  transform: translate(-50%, -65%);
+  top: 52%;
+}
+
+/* Double Tap Overlay (Shows after second swipe) */
+.double-tap-overlay {
+  transform: translate(-50%, -30%);
+  top: 30%;
+}
+
+/* Info Overlay (Shows after fourth swipe) */
+.info-overlay {
+  transform: translate(-50%, -20%);
+  top: 40%;
 }
 
 /* Larger Arrow */
 .swipe-arrow {
-    font-size: 26px;
+  font-size: 26px;
+}
+
+/* Info Icon Styling */
+.info-icon {
+  font-size: 18px;
+  vertical-align: middle;
 }
 
 /* Fade-in and fade-out animation */
 @keyframes fadeInOut {
-    0% { opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
+
 
 /* ========================= */
 /*      MID-TURN OVERLAY     */
@@ -800,6 +892,7 @@ h1 {
   0% {
     width: 0%;
   }
+
   100% {
     width: 100%;
   }
@@ -810,6 +903,7 @@ h1 {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -819,6 +913,7 @@ h1 {
   from {
     transform: scale(0.9);
   }
+
   to {
     transform: scale(1);
   }
@@ -828,6 +923,7 @@ h1 {
   from {
     opacity: 1;
   }
+
   to {
     opacity: 0;
   }
@@ -837,6 +933,7 @@ h1 {
   from {
     transform: scale(1);
   }
+
   to {
     transform: scale(0.9);
   }
@@ -849,10 +946,12 @@ h1 {
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.2);
     opacity: 0.8;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -861,13 +960,15 @@ h1 {
 
 .thumbnail-container.animate-pulse {
   animation: pulseEffect 0.6s ease-in-out;
-  animation-delay: var(--animation-delay, 0s); /* Staggered delay */
+  animation-delay: var(--animation-delay, 0s);
+  /* Staggered delay */
 }
 
 /* Media Queries */
 
 /* ✅ Large Tablets - iPad Pro 12.9", Surface Pro, Galaxy Tab S8 Ultra (1024px x 1366px) */
 @media (min-width: 850px) and (max-width: 1279px) and (max-height: 1366px) {
+
   /* Increase top bar text size */
   .app-title {
     font-size: 26px;
@@ -958,6 +1059,7 @@ h1 {
 
 /* ✅ Desktops & Large Screens */
 @media (min-width: 1280px) {
+
   /* Increase game header size */
   .game-header {
     font-size: 17px;
@@ -1084,8 +1186,10 @@ h1 {
 
 /* Dark Mode */
 body.dark-mode .top-bar {
-  background-color: #181818; /* Match dark mode background */
-  border-bottom: 2px solid #222; /* Slightly darker for contrast */
+  background-color: #181818;
+  /* Match dark mode background */
+  border-bottom: 2px solid #222;
+  /* Slightly darker for contrast */
 }
 
 body.dark-mode .app-title,
@@ -1118,7 +1222,8 @@ body.dark-mode .submit-button.disabled {
 
 /* Dark Mode: Mid-Turn Overlay */
 body.dark-mode .mid-turn-overlay {
-  background-color: rgba(0, 0, 0, 0.85); /* Darkened background */
+  background-color: rgba(0, 0, 0, 0.85);
+  /* Darkened background */
 }
 
 body.dark-mode .mid-turn-overlay-content {
@@ -1146,7 +1251,8 @@ body.dark-mode .mid-turn-overlay-try-again-button:hover {
 
 /* Dark Mode: Already Guessed Overlay */
 body.dark-mode .duplicate-overlay {
-  background-color: rgba(0, 0, 0, 0.85); /* Darker background */
+  background-color: rgba(0, 0, 0, 0.85);
+  /* Darker background */
 }
 
 body.dark-mode .duplicate-overlay-content {
@@ -1185,7 +1291,8 @@ body.dark-mode .full-page-loading-screen {
 }
 
 body.dark-mode .loading-logo {
-  filter: brightness(80%); /* Adjust logo brightness for dark mode */
+  filter: brightness(80%);
+  /* Adjust logo brightness for dark mode */
 }
 
 body.dark-mode .full-page-progress-bar {
@@ -1194,12 +1301,4 @@ body.dark-mode .full-page-progress-bar {
 
 body.dark-mode .full-page-progress-fill {
   background-color: #4d73af;
-}
-
-/* Dark Mode Overrides */
-body.dark-mode .swipe-overlay,
-body.dark-mode .swipe-left-overlay,
-body.dark-mode .double-tap-overlay {
-    background: rgba(255, 255, 255, 0.8); /* Lighter background for dark mode */
-    color: black; /* Black text for better contrast */
 }

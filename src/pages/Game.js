@@ -72,6 +72,9 @@ const Game = () => {
     return localStorage.getItem("darkMode") === "true";
   });
 
+  const getOptimizedImageUrl = (originalUrl) => {
+    return `${originalUrl.replace("/upload/", "/upload/f_webp,w_500/")}`;
+  };
 
   const [stats, setStats] = useState({
     gamesPlayed: 0,
@@ -348,16 +351,16 @@ const Game = () => {
 
       if (puzzleResponse.data?.imagePairs?.length > 0) {
         const pairs = puzzleResponse.data.imagePairs.map((pair) => ({
-          human: pair.humanImageURL,
-          ai: pair.aiImageURL,
+          human: getOptimizedImageUrl(pair.humanImageURL),
+          ai: getOptimizedImageUrl(pair.aiImageURL),
           images: Math.random() > 0.5
-            ? [pair.humanImageURL, pair.aiImageURL]
-            : [pair.aiImageURL, pair.humanImageURL],
+            ? [getOptimizedImageUrl(pair.humanImageURL), getOptimizedImageUrl(pair.aiImageURL)]
+            : [getOptimizedImageUrl(pair.aiImageURL), getOptimizedImageUrl(pair.humanImageURL)],
         }));
 
         console.log("🖼️ Setting imagePairs:", pairs);
         setImagePairs(pairs);
-        localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
+        localStorage.setItem("completedPairs", JSON.stringify(pairs));
       } else {
         console.warn("⚠️ No image pairs available for today.");
         setImagePairs([]);
@@ -369,7 +372,6 @@ const Game = () => {
       setLoading(false);
     }
   };
-
 
   // Restore game state function
   const restoreGameState = () => {
@@ -498,6 +500,19 @@ const Game = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (imagePairs.length > 0) {
+      imagePairs.forEach(pair => {
+        preloadImage(getOptimizedImageUrl(pair.human));
+        preloadImage(getOptimizedImageUrl(pair.ai));
+      });
+    }
+  }, [imagePairs]);
+
+  const preloadImage = (url) => {
+    const img = new Image();
+    img.src = url;
+  };
 
   // Persist isGameComplete state across refreshes
   useEffect(() => {
@@ -791,9 +806,9 @@ const Game = () => {
 
     // Deselect if already selected
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
-        updatedSelections[currentIndex] = null;
+      updatedSelections[currentIndex] = null;
     } else {
-        updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
+      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
     updateSelections(updatedSelections);
@@ -803,46 +818,46 @@ const Game = () => {
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
     if (!hasSeenOverlays) {
-        // Show "Swipe right" overlay only on first selection of first image pair
-        if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-            setShowSwipeRightOverlay(true);
-            setTimeout(() => setShowSwipeRightOverlay(false), 2000);
-        }
+      // Show "Swipe right" overlay only on first selection of first image pair
+      if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+        setShowSwipeRightOverlay(true);
+        setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+      }
     }
-};
+  };
 
-const handleSwipe = (swiper) => {
-  setCurrentIndex(swiper.realIndex);
+  const handleSwipe = (swiper) => {
+    setCurrentIndex(swiper.realIndex);
 
-  // Check if user has seen overlays before
-  const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
+    // Check if user has seen overlays before
+    const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
-  if (!hasSeenOverlays) {
+    if (!hasSeenOverlays) {
       // Show "Swipe left to go back" overlay after the first swipe (only once)
       if (!hasSeenSwipeLeft && swiper.realIndex > 0) {
-          setShowSwipeLeftOverlay(true);
-          setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
-          setHasSeenSwipeLeft(true);
+        setShowSwipeLeftOverlay(true);
+        setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
+        setHasSeenSwipeLeft(true);
       }
 
       // Show "Double tap to enlarge" overlay after the second swipe (only once)
       if (!hasSeenDoubleTap && swiper.realIndex > 1) {
-          setShowDoubleTapOverlay(true);
-          setTimeout(() => setShowDoubleTapOverlay(false), 2000);
-          setHasSeenDoubleTap(true);
+        setShowDoubleTapOverlay(true);
+        setTimeout(() => setShowDoubleTapOverlay(false), 2000);
+        setHasSeenDoubleTap(true);
       }
 
       // Show "Tap info icon for more help" overlay after the fourth swipe (only once)
       if (!showInfoOverlay && swiper.realIndex > 2) {
-          setShowInfoOverlay(true);
-          setTimeout(() => {
-              setShowInfoOverlay(false);
-              // Mark overlays as seen after all have displayed
-              localStorage.setItem("hasSeenOverlays", "true");
-          }, 2000);
+        setShowInfoOverlay(true);
+        setTimeout(() => {
+          setShowInfoOverlay(false);
+          // Mark overlays as seen after all have displayed
+          localStorage.setItem("hasSeenOverlays", "true");
+        }, 2000);
       }
-  }
-};
+    }
+  };
 
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available
@@ -1133,7 +1148,8 @@ const handleSwipe = (swiper) => {
                           className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
                         >
                           <img
-                            src={image}
+                            src={getOptimizedImageUrl(image)}
+                            loading="lazy"
                             alt={`Painting ${idx + 1}`}
                             onClick={(e) => {
                               const currentTime = new Date().getTime();
@@ -1234,7 +1250,8 @@ const handleSwipe = (swiper) => {
                       <SwiperSlide key={index}>
                         <div className="enlarged-image-container">
                           <img
-                            src={enlargedImage}
+                            src={getOptimizedImageUrl(enlargedImage)}
+                            loading="lazy"
                             alt="Enlarged view"
                             className="enlarged-image"
                             onClick={(e) => e.stopPropagation()} // Prevents modal from closing
@@ -1329,13 +1346,13 @@ const handleSwipe = (swiper) => {
                       className={`thumbnail-container human ${isCorrect ? "correct pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.human)}
                     >
-                      <img src={pair.human} alt={`Human ${index + 1}`} draggable="false" />
+                      <img src={getOptimizedImageUrl(pair.human)} loading="lazy" alt={`Human ${index + 1}`} draggable="false" />
                     </div>
                     <div
                       className={`thumbnail-container ai ${!isCorrect && selection ? "incorrect pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
-                      <img src={pair.ai} alt={`AI ${index + 1}`} draggable="false" />
+                      <img src={getOptimizedImageUrl(pair.ai)} loading="lazy" alt={`AI ${index + 1}`} draggable="false" />
                     </div>
                   </div>
                 );
@@ -1353,13 +1370,13 @@ const handleSwipe = (swiper) => {
                       className={`thumbnail-container human ${isCorrect ? "correct pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.human)}
                     >
-                      <img src={pair.human} alt={`Human ${index + 4}`} draggable="false" />
+                      <img src={getOptimizedImageUrl(pair.human)} loading="lazy" alt={`Human ${index + 4}`} draggable="false" />
                     </div>
                     <div
                       className={`thumbnail-container ai ${!isCorrect && selection ? "incorrect pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
-                      <img src={pair.ai} alt={`AI ${index + 4}`} draggable="false" />
+                      <img src={getOptimizedImageUrl(pair.ai)} loading="lazy" alt={`AI ${index + 4}`} draggable="false" />
                     </div>
                   </div>
                 );
@@ -1375,7 +1392,8 @@ const handleSwipe = (swiper) => {
         <div className={`enlarge-modal ${enlargedImageMode}`} onClick={closeEnlargedImage}>
           <div className="enlarged-image-container">
             <img
-              src={enlargedImage}
+              src={getOptimizedImageUrl(enlargedImage)}
+              loading="lazy"
               alt="Enlarged view"
               className="enlarged-image"
               onClick={(e) => e.stopPropagation()}

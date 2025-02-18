@@ -796,19 +796,24 @@ const Game = () => {
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
 
-    // Check if user has seen the overlays before
+    // Check if user has already seen the overlays before
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
-    // Show "Double tap to enlarge image" overlay only on first selection
-    if (!hasSeenOverlays && !showDoubleTapOverlay && updatedSelections.filter(Boolean).length === 1) {
-        setShowDoubleTapOverlay(true);
-        setTimeout(() => setShowDoubleTapOverlay(false), 2500);
-    }
+    if (!hasSeenOverlays) {
+        // Show "Double tap to enlarge" overlay only on first selection
+        if (!showDoubleTapOverlay && updatedSelections.filter(Boolean).length === 1) {
+            setShowDoubleTapOverlay(true);
+            setTimeout(() => setShowDoubleTapOverlay(false), 2600);
+        }
 
-    // Show "Swipe right" overlay only on first selection of first image pair
-    if (!hasSeenOverlays && !showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-        setShowSwipeRightOverlay(true);
-        setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+        // Show "Swipe right" overlay only on first selection of first image pair
+        if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+            setShowSwipeRightOverlay(true);
+            setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+        }
+
+        // Mark overlays as seen so they never show again
+        localStorage.setItem("hasSeenOverlays", "true");
     }
 };
 

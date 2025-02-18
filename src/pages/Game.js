@@ -683,19 +683,6 @@ const Game = () => {
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
-  
-  // Inside the overlay rendering section
-  {showOverlay && (
-    <div className="mid-turn-overlay">
-      <div className="mid-turn-overlay-content">
-        <h2 className="mid-turn-overlay-title">{getMidTurnMessage(correctCount)}</h2>
-        <p className="mid-turn-overlay-message">You have {triesLeft} tries left</p>
-        <button onClick={() => setShowOverlay(false)} className="mid-turn-overlay-try-again-button">
-          Try Again
-        </button>
-      </div>
-    </div>
-  )}
 
   const fetchAndSetStats = async (userId) => {
     if (!userId) {
@@ -1235,22 +1222,11 @@ const Game = () => {
         </>
       )}
 
-
-
       {showOverlay && (
         <div className="mid-turn-overlay">
           <div className="mid-turn-overlay-content">
-            {correctCount === imagePairs.length - 1 ? ( // ✅ Dynamically check "1 away"
-              <>
-                <h2 className="mid-turn-overlay-title">Close! You're 1 away</h2>
-                <p className="mid-turn-overlay-message">You have {triesLeft} tries left</p>  {/* ✅ Now correct */}
-              </>
-            ) : correctCount >= 0 && correctCount <= 3 ? (
-              <>
-                <h2 className="mid-turn-overlay-title">Not quite, try again!</h2>
-                <p className="mid-turn-overlay-message">You have {triesLeft} tries left</p>
-              </>
-            ) : null}
+            <h2 className="mid-turn-overlay-title">{getMidTurnMessage(correctCount)}</h2>
+            <p className="mid-turn-overlay-message">You have {triesLeft} tries left</p>
             <button
               onClick={() => setShowOverlay(false)}
               className="mid-turn-overlay-try-again-button"

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patch Notes - BETA Version 1.1</title>
+    <link rel="stylesheet" href="/css/patch-notes.css">
+</head>
+<body>
+    <h1>Artalyze - BETA Version 1.1 Patch Notes</h1>
+    <div class="content-wrapper">
+        <p class="last-updated">Release Date: Feb. 17th, 2025</p>
+
+        <h2>New Features & Improvements</h2>
+        <div class="section">
+            <h3>Swipe Overlays for New Players</h3>
+            <ul>
+                <li>First-time users now see a “Swipe right” overlay after their first selection.</li>
+                <li>After swiping, a “Swipe left to go back” overlay appears to guide navigation.</li>
+                <li>A “Double tap to enlarge image” overlay now appears after the second swipe.</li>
+                <li>After the fourth swipe, a “Tap info icon for more help” overlay displays.</li>
+                <li>These overlays only appear once per user to maintain a seamless experience.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3>Dark Mode Overlay Enhancements</h3>
+            <p>Overlays now have a lighter background with black text in dark mode for improved readability.</p>
+        </div>
+
+        <div class="section">
+            <h3>Mid-Turn Overlay Feedback Improvement</h3>
+            <p>Players now receive clearer, more specific feedback after submitting incorrect guesses:</p>
+            <ul>
+                <li><strong>0-1 correct:</strong> "None or only one is right. Rethink your picks."</li>
+                <li><strong>2 correct:</strong> "You're three away."</li>
+                <li><strong>3 correct:</strong> "You're two away."</li>
+                <li><strong>4 correct:</strong> "Close! You're one away."</li>
+            </ul>
+            <p>This provides better guidance and allows players to adjust their strategy accordingly.</p>
+        </div>
+
+        <h2>Bug Fixes & Optimizations</h2>
+        <div class="section">
+            <ul>
+                <li>Ensured overlays only trigger once per user and do not reappear after being dismissed.</li>
+                <li>Fixed an issue where <code>handleSwipe</code> was not correctly tracking first-time swipes.</li>
+                <li>Resolved a bug causing overlays to reappear on subsequent swipes.</li>
+                <li>Adjusted overlay spacing for improved readability and reduced visual clutter.</li>
+                <li>Minor UI adjustments to keep overlays compact and non-intrusive.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

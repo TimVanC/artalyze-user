@@ -696,12 +696,6 @@ const Game = () => {
       </div>
     </div>
   )}
-  
-
-  const getRandomEncouragement = () => {
-    const randomIndex = Math.floor(Math.random() * encouragementMessages.length);
-    return encouragementMessages[randomIndex];
-  };
 
   const fetchAndSetStats = async (userId) => {
     if (!userId) {

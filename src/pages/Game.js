@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaPalette } from 'react-icons/fa';
+import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaLongArrowAltRight, FaLongArrowAltLeft } from 'react-icons/fa';
 import logo from '../assets/images/artalyze-logo.png';
 import SwiperCore, { Swiper, SwiperSlide } from 'swiper/react';
 import { getTodayInEST } from '../utils/dateUtils';
@@ -49,6 +49,12 @@ const Game = () => {
   const swiperRef = useRef(null);
   const lastTapTime = useRef(0);
   const singleTapTimeout = useRef(null);
+  const [showSwipeOverlay, setShowSwipeOverlay] = useState(false);
+  const [showSwipeRightOverlay, setShowSwipeRightOverlay] = useState(false);
+  const [showSwipeLeftOverlay, setShowSwipeLeftOverlay] = useState(false);
+  const [hasSeenSwipeOverlays, setHasSeenSwipeOverlays] = useState(() => {
+    return localStorage.getItem("hasSeenSwipeOverlays") === "true";
+  });
 
 
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
@@ -779,32 +785,57 @@ const Game = () => {
 
   const handleSelection = (selectedImage, isHumanSelection) => {
     const updatedSelections = [...selections];
-  
+
     // Deselect if already selected
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
       updatedSelections[currentIndex] = null;
     } else {
       updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
-  
+
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
+
+    // Check if user has seen the swipe overlays before
+    const hasSeenSwipeOverlays = localStorage.getItem("hasSeenSwipeOverlays") === "true";
+
+    // Show "Swipe right" overlay only on first selection of first image pair & if user hasn't seen it before
+    if (!hasSeenSwipeOverlays && !showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+      setShowSwipeRightOverlay(true);
+      setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+    }
   };
-  
+
+  const handleSwipe = (swiper) => {
+    setCurrentIndex(swiper.realIndex);
+
+    // Check if user has seen swipe overlays before
+    const hasSeenSwipeOverlays = localStorage.getItem("hasSeenSwipeOverlays") === "true";
+
+    // Show "Swipe left to go back" overlay only after the first swipe
+    if (!hasSeenSwipeOverlays && !showSwipeLeftOverlay && swiper.realIndex > 0) {
+      setShowSwipeLeftOverlay(true);
+      setTimeout(() => {
+        setShowSwipeLeftOverlay(false);
+        // Mark overlays as seen after both have displayed
+        localStorage.setItem("hasSeenSwipeOverlays", "true");
+      }, 2000);
+    }
+  };
 
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available
     if (!completedSelections.length || !imagePairs.length) {
-        alert("No data available to share today's puzzle!");
-        return;
+      alert("No data available to share today's puzzle!");
+      return;
     }
 
     // Calculate the score based on completed selections
     const score = completedSelections.reduce((count, selection, index) => {
-        if (selection?.selected === imagePairs[index]?.human) {
-            return count + 1;
-        }
-        return count;
+      if (selection?.selected === imagePairs[index]?.human) {
+        return count + 1;
+      }
+      return count;
     }, 0);
 
     // Get the puzzle number dynamically
@@ -812,8 +843,8 @@ const Game = () => {
 
     // Build the visual representation of results
     const resultsVisual = completedSelections
-        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-        .join(" ");
+      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+      .join(" ");
 
     // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
@@ -823,24 +854,24 @@ const Game = () => {
 
     // Check if the device supports native sharing
     if (navigator.share) {
-        navigator
-            .share({
-                title: `Artalyze #${puzzleNumber}`,
-                text: shareableText,
-            })
-            .catch((error) => console.log("Error sharing:", error));
+      navigator
+        .share({
+          title: `Artalyze #${puzzleNumber}`,
+          text: shareableText,
+        })
+        .catch((error) => console.log("Error sharing:", error));
     } else {
-        // Fallback to clipboard copy if native sharing is unavailable
-        navigator.clipboard
-            .writeText(shareableText)
-            .then(() => {
-                alert("Results copied to clipboard! You can now paste it anywhere.");
-            })
-            .catch((error) => {
-                console.error("Failed to copy:", error);
-            });
+      // Fallback to clipboard copy if native sharing is unavailable
+      navigator.clipboard
+        .writeText(shareableText)
+        .then(() => {
+          alert("Results copied to clipboard! You can now paste it anywhere.");
+        })
+        .catch((error) => {
+          console.error("Failed to copy:", error);
+        });
     }
-};
+  };
 
   const handlePlayClick = () => {
     if (window.innerWidth > 768) { // Targeting laptop/desktop screens
@@ -946,6 +977,23 @@ const Game = () => {
 
   return (
     <div className={`game-container ${darkMode ? "dark-mode" : ""}`}>
+
+      {/* Swipe Right Overlay */}
+      {showSwipeRightOverlay && (
+        <div className="swipe-overlay">
+          <span>Swipe right</span>
+          <FaLongArrowAltRight className="swipe-arrow" />
+        </div>
+      )}
+
+      {/* Swipe Left Overlay */}
+      {showSwipeLeftOverlay && (
+        <div className="swipe-overlay">
+          <FaLongArrowAltLeft className="swipe-arrow" />
+          <span>Swipe left to go back</span>
+        </div>
+      )}
+
       {/* Mobile Warning Overlay */}
       {showMobileWarning && (
         <div className="mobile-warning-overlay">
@@ -974,10 +1022,6 @@ const Game = () => {
           </div>
         </div>
       )}
-
-
-
-
 
       {/* Full Page Loading Screen */}
       {loading && (
@@ -1016,9 +1060,6 @@ const Game = () => {
         completedSelections={completedSelections}
       />
 
-
-
-
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
@@ -1039,54 +1080,56 @@ const Game = () => {
 
           {/* Image Pairs */}
           {imagePairs && imagePairs.length > 0 ? (
-            <Swiper
-              loop={true}
-              onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
-              onSwiper={(swiper) => {
-                swiperRef.current = swiper;
-                swiper.slideToLoop(0);
-              }}
-            >
-              {imagePairs.map((pair, index) => (
-                <SwiperSlide key={index}>
-                  <div className="image-pair-container">
-                    {pair.images.map((image, idx) => (
-                      <div
-                        key={idx}
-                        className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
-                      >
-                        <img
-                          src={image}
-                          alt={`Painting ${idx + 1}`}
-                          onClick={(e) => {
-                            const currentTime = new Date().getTime();
-                            const timeSinceLastTap = currentTime - lastTapTime.current;
+            <>
+              <Swiper
+                loop={true}
+                onSlideChange={handleSwipe} // ✅ Now using handleSwipe
+                onSwiper={(swiper) => {
+                  swiperRef.current = swiper;
+                  swiper.slideToLoop(0);
+                }}
+              >
+                {imagePairs.map((pair, index) => (
+                  <SwiperSlide key={index}>
+                    <div className="image-pair-container">
+                      {pair.images.map((image, idx) => (
+                        <div
+                          key={idx}
+                          className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
+                        >
+                          <img
+                            src={image}
+                            alt={`Painting ${idx + 1}`}
+                            onClick={(e) => {
+                              const currentTime = new Date().getTime();
+                              const timeSinceLastTap = currentTime - lastTapTime.current;
 
-                            if (timeSinceLastTap < 300) { // ✅ Double-tap detected
-                              clearTimeout(singleTapTimeout.current); // ✅ Cancel single tap selection
-                              if (!enlargedImage) { // ✅ Ensure enlargement only happens once
-                                setEnlargedImage(null); // Ensure previous one is cleared
-                                setTimeout(() => {
-                                  setEnlargedImage(image);
-                                  setEnlargedImageMode("game-screen");
-                                }, 10); // Small delay prevents duplicate stacking
+                              if (timeSinceLastTap < 300) { // ✅ Double-tap detected
+                                clearTimeout(singleTapTimeout.current); // ✅ Cancel single tap selection
+                                if (!enlargedImage) { // ✅ Ensure enlargement only happens once
+                                  setEnlargedImage(null); // Ensure previous one is cleared
+                                  setTimeout(() => {
+                                    setEnlargedImage(image);
+                                    setEnlargedImageMode("game-screen");
+                                  }, 10); // Small delay prevents duplicate stacking
+                                }
+                              } else {
+                                singleTapTimeout.current = setTimeout(() => {
+                                  handleSelection(image, image === pair.human); // ✅ Select only if no double-tap
+                                }, 220);
                               }
-                            } else {
-                              singleTapTimeout.current = setTimeout(() => {
-                                handleSelection(image, image === pair.human); // ✅ Select only if no double-tap
-                              }, 220);
-                            }
 
-                            lastTapTime.current = currentTime;
-                          }}
-                          draggable="false"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                              lastTapTime.current = currentTime;
+                            }}
+                            draggable="false"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </>
           ) : (
             <p>Loading...</p>
           )}

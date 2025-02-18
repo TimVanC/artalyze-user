@@ -89,7 +89,7 @@ const Game = () => {
     } else if (correctCount === 4) {
       return "Close! You're one away";
     } else {
-      return ""; // Default case, should not occur
+      return "";
     }
   };
 

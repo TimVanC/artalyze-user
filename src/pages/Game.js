@@ -81,13 +81,13 @@ const Game = () => {
 
   const getMidTurnMessage = (correctCount) => {
     if (correctCount === 0 || correctCount === 1) {
-      return "None or only one is right. Rethink your picks.";
+      return "None or only one is right";
     } else if (correctCount === 2) {
-      return "You're making progress, but three still need fixing.";
+      return "You're three away";
     } else if (correctCount === 3) {
-      return "You're close! Two more to go.";
+      return "You're two away";
     } else if (correctCount === 4) {
-      return "So close! Just one more to fix.";
+      return "Close! You're one away";
     } else {
       return ""; // Default case, should not occur
     }

@@ -560,40 +560,66 @@ h1 {
 /*      SWIPE OVERLAY        */
 /* ========================= */
 
-/* Swipe Overlay */
-.swipe-overlay {
-  position: fixed;
-  top: 52%;
-  left: 50%;
-  transform: translate(-50%, -65%);
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 10px 30px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  animation: fadeInOut 2s ease-in-out;
-  white-space: nowrap;
+/* General Overlay Styling */
+.swipe-overlay,
+.swipe-left-overlay,
+.double-tap-overlay {
+    position: fixed;
+    left: 50%;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    animation: fadeInOut 2s ease-in-out;
+    white-space: nowrap;
 }
 
-/* Smaller arrows */
+.double-tap-overlay {
+  transform: translate(-50%, -80%);
+}
+
+.swipe-overlay {
+  transform: translate(-50%, -60%);
+}
+
+.swipe-left-overlay {
+  transform: translate(-50%, -65%);
+}
+
+/* Swipe Right Overlay */
+.swipe-overlay {
+    top: 52%;
+}
+
+/* Swipe Left Overlay */
+.swipe-left-overlay {
+    top: 52%;
+}
+
+/* Double Tap Overlay (Positioned Higher) */
+.double-tap-overlay {
+    top: 10%;
+}
+
+/* Larger Arrow */
 .swipe-arrow {
-  font-size: 26px;
+    font-size: 26px;
 }
 
 /* Fade-in and fade-out animation */
 @keyframes fadeInOut {
-  0% { opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { opacity: 0; }
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
 }
-
 
 /* ========================= */
 /*      MID-TURN OVERLAY     */

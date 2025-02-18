@@ -52,6 +52,7 @@ const Game = () => {
   const [showSwipeOverlay, setShowSwipeOverlay] = useState(false);
   const [showSwipeRightOverlay, setShowSwipeRightOverlay] = useState(false);
   const [showSwipeLeftOverlay, setShowSwipeLeftOverlay] = useState(false);
+  const [showDoubleTapOverlay, setShowDoubleTapOverlay] = useState(false);
   const [hasSeenSwipeOverlays, setHasSeenSwipeOverlays] = useState(() => {
     return localStorage.getItem("hasSeenSwipeOverlays") === "true";
   });
@@ -81,13 +82,13 @@ const Game = () => {
 
   const getMidTurnMessage = (correctCount) => {
     if (correctCount === 0 || correctCount === 1) {
-      return "None or only one is right";
+      return "None or only one is right.";
     } else if (correctCount === 2) {
-      return "You're three away";
+      return "You're three away.";
     } else if (correctCount === 3) {
-      return "You're two away";
+      return "You're two away.";
     } else if (correctCount === 4) {
-      return "Close! You're one away";
+      return "Close! You're one away.";
     } else {
       return "";
     }
@@ -787,23 +788,29 @@ const Game = () => {
 
     // Deselect if already selected
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
-      updatedSelections[currentIndex] = null;
+        updatedSelections[currentIndex] = null;
     } else {
-      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
+        updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
 
-    // Check if user has seen the swipe overlays before
-    const hasSeenSwipeOverlays = localStorage.getItem("hasSeenSwipeOverlays") === "true";
+    // Check if user has seen the overlays before
+    const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
-    // Show "Swipe right" overlay only on first selection of first image pair & if user hasn't seen it before
-    if (!hasSeenSwipeOverlays && !showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-      setShowSwipeRightOverlay(true);
-      setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+    // Show "Double tap to enlarge image" overlay only on first selection
+    if (!hasSeenOverlays && !showDoubleTapOverlay && updatedSelections.filter(Boolean).length === 1) {
+        setShowDoubleTapOverlay(true);
+        setTimeout(() => setShowDoubleTapOverlay(false), 2000);
     }
-  };
+
+    // Show "Swipe right" overlay only on first selection of first image pair
+    if (!hasSeenOverlays && !showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+        setShowSwipeRightOverlay(true);
+        setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+    }
+};
 
   const handleSwipe = (swiper) => {
     setCurrentIndex(swiper.realIndex);
@@ -976,6 +983,13 @@ const Game = () => {
 
   return (
     <div className={`game-container ${darkMode ? "dark-mode" : ""}`}>
+
+      {/* Double Tap Overlay */}
+      {showDoubleTapOverlay && (
+        <div className="double-tap-overlay">
+          <span>Double tap to enlarge image</span>
+        </div>
+      )}
 
       {/* Swipe Right Overlay */}
       {showSwipeRightOverlay && (

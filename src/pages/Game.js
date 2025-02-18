@@ -803,7 +803,7 @@ const Game = () => {
         // Show "Double tap to enlarge" overlay only on first selection
         if (!showDoubleTapOverlay && updatedSelections.filter(Boolean).length === 1) {
             setShowDoubleTapOverlay(true);
-            setTimeout(() => setShowDoubleTapOverlay(false), 2600);
+            setTimeout(() => setShowDoubleTapOverlay(false), 2000);
         }
 
         // Show "Swipe right" overlay only on first selection of first image pair

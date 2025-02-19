@@ -346,37 +346,53 @@ const Game = () => {
           const img = new Image();
           img.src = src;
           img.onload = resolve;
-          img.onerror = resolve; // Resolve on error to prevent hang-ups
+          img.onerror = resolve; // Resolve on error to prevent blocking
         });
       };
-
+      
       console.log("📡 Fetching daily puzzle...");
       const puzzleResponse = await axiosInstance.get("/game/daily-puzzle");
       console.log("📦 Puzzle Response:", puzzleResponse.data);
-
+      
       if (puzzleResponse.data?.imagePairs?.length > 0) {
-        const pairs = puzzleResponse.data.imagePairs.map((pair) => ({
+        let pairs = puzzleResponse.data.imagePairs.map((pair) => ({
           human: pair.humanImageURL,
           ai: pair.aiImageURL,
           images: Math.random() > 0.5
             ? [pair.humanImageURL, pair.aiImageURL]
             : [pair.aiImageURL, pair.humanImageURL],
+          isLoaded: false, // Track loading state per pair
         }));
-
-        console.log("🖼️ Preloading images...");
-        await Promise.all(pairs.flatMap(pair => [
-          preloadImage(pair.human),
-          preloadImage(pair.ai),
-        ]));
-
-        console.log("✅ Images preloaded successfully.");
-        setImagePairs(pairs);
+      
+        // ✅ PRIORITIZE FIRST PAIR LOADING
+        await Promise.all([
+          preloadImage(pairs[0].human),
+          preloadImage(pairs[0].ai),
+        ]);
+        pairs[0].isLoaded = true; // Mark first pair as loaded
+      
+        setImagePairs(pairs); // Render immediately with placeholders
+        setLoading(false); // ✅ SHOW GAME SCREEN ASAP
+      
+        // ✅ LAZY LOAD THE REST IN BACKGROUND
+        Promise.all(
+          pairs.slice(1).flatMap((pair) => [
+            preloadImage(pair.human),
+            preloadImage(pair.ai),
+          ])
+        ).then(() => {
+          console.log("✅ All images preloaded.");
+          setImagePairs((prev) =>
+            prev.map((pair) => ({ ...pair, isLoaded: true }))
+          );
+        });
+      
         localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
       } else {
         console.warn("⚠️ No image pairs available for today.");
         setImagePairs([]);
-      }
-
+        setLoading(false);
+      }      
     } catch (error) {
       console.error("❌ Error initializing game:", error.response?.data || error.message);
       setError("Failed to initialize the game. Please try again later.");
@@ -1254,9 +1270,12 @@ const Game = () => {
                       <SwiperSlide key={index}>
                         <div className="enlarged-image-container">
                           <img
-                            src={enlargedImage}
+                            src={enlargedImage || "placeholder.jpg"} // ✅ Show placeholder until loaded
                             alt="Enlarged view"
-                            className="enlarged-image"
+                            className={`enlarged-image ${enlargedImage ? "loaded" : "loading"}`} // ✅ Apply CSS effects
+                            loading="lazy"
+                            style={{ visibility: enlargedImage ? "visible" : "hidden" }} // ✅ Hide until fully loaded
+                            onLoad={(e) => e.target.style.visibility = "visible"} // ✅ Fade-in effect
                             onClick={(e) => e.stopPropagation()} // Prevents modal from closing
                             onContextMenu={(e) => e.preventDefault()} // Disable right-click
                             onTouchStart={(e) => {
@@ -1268,6 +1287,7 @@ const Game = () => {
                           />
                         </div>
                       </SwiperSlide>
+
                     ))}
                 </Swiper>
               </div>

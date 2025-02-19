@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaLongArrowAltRight, FaLongArrowAltLeft } from 'react-icons/fa';
-import logo from '../assets/images/artalyze-logo.png';
+import logo from '../assets/images/artalyze-logo.webp';
 import SwiperCore, { Swiper, SwiperSlide } from 'swiper/react';
 import { getTodayInEST } from '../utils/dateUtils';
 import { calculatePuzzleNumber } from '../utils/puzzleUtils';

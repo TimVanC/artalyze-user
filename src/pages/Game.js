@@ -72,6 +72,7 @@ const Game = () => {
     return localStorage.getItem("darkMode") === "true";
   });
 
+  const [cachedEnlargedImages, setCachedEnlargedImages] = useState({});
   const preloadImages = (urls) => {
     urls.forEach((url) => {
       const img = new Image();

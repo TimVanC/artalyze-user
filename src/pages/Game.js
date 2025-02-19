@@ -479,9 +479,9 @@ const Game = () => {
         }
       });
     });
-  
+
     return () => observerRef.current?.disconnect(); // ✅ Cleanup when unmounting
-  }, []);  
+  }, []);
 
   useEffect(() => {
     const disableZoom = (event) => {
@@ -1155,10 +1155,9 @@ const Game = () => {
                           className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
                         >
                           <img
-                            data-src={image} // Lazy loading with Intersection Observer
-                            className="swiper-lazy" // Enables Swiper.js lazy loading
+                            src={image} // ✅ Back to normal `src`
+                            className="swiper-lazy"
                             alt={`Painting ${idx + 1}`}
-                            ref={(el) => el && observerRef.observe(el)} // ✅ Ensures observer is attached
                             draggable="false"
                             onClick={(e) => {
                               const currentTime = new Date().getTime();
@@ -1182,7 +1181,7 @@ const Game = () => {
                               lastTapTime.current = currentTime;
                             }}
                           />
-                          <div className="swiper-lazy-preloader"></div>
+                          <div className="swiper-lazy-preloader"></div> // ✅ Preloader for Swiper Lazy Loading
                         </div>
                       ))}
                     </div>
@@ -1259,7 +1258,7 @@ const Game = () => {
                       <SwiperSlide key={index}>
                         <div className="enlarged-image-container">
                           <img
-                            data-src={enlargedImage} // Lazy loading for modal images
+                            src={enlargedImage}
                             className="enlarged-image"
                             ref={(el) => el && observerRef.observe(el)}
                             draggable="false"
@@ -1356,7 +1355,7 @@ const Game = () => {
                       onClick={() => setEnlargedImage(pair.human)}
                     >
                       <img
-                        data-src={pair.human} // Lazy load for thumbnails
+                        src={pair.human} // Lazy load for thumbnails
                         className="lazy-thumbnail"
                         ref={(el) => el && observerRef.observe(el)}
                         alt={`Human ${index + 1}`}
@@ -1368,7 +1367,7 @@ const Game = () => {
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
                       <img
-                        data-src={pair.ai} // Lazy load for thumbnails
+                        src={pair.ai} // Lazy load for thumbnails
                         className="lazy-thumbnail"
                         ref={(el) => el && observerRef.observe(el)}
                         alt={`AI ${index + 1}`}
@@ -1392,7 +1391,7 @@ const Game = () => {
                       onClick={() => setEnlargedImage(pair.human)}
                     >
                       <img
-                        data-src={pair.human} // Lazy load for thumbnails
+                        src={pair.human} // Lazy load for thumbnails
                         className="lazy-thumbnail"
                         ref={(el) => el && observerRef.observe(el)}
                         alt={`Human ${index + 4}`}
@@ -1403,7 +1402,7 @@ const Game = () => {
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
                       <img
-                        data-src={pair.ai} // Lazy load for thumbnails
+                        src={pair.ai} // Lazy load for thumbnails
                         className="lazy-thumbnail"
                         ref={(el) => el && observerRef.observe(el)}
                         alt={`AI ${index + 4}`}
@@ -1424,7 +1423,7 @@ const Game = () => {
         <div className={`enlarge-modal ${enlargedImageMode}`} onClick={closeEnlargedImage}>
           <div className="enlarged-image-container">
             <img
-              data-src={enlargedImage} // Lazy loading for modal images
+              src={enlargedImage} // Lazy loading for modal images
               className="enlarged-image"
               ref={(el) => el && observerRef.observe(el)}
               alt="Enlarged view"

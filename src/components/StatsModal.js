@@ -28,7 +28,9 @@ const StatsModal = ({
   correctCount = 0,
   isGameComplete = false,
   completedSelections = [],
+  alreadyGuessed = [],d
 }) => {
+
   const userId = localStorage.getItem('userId');
   const [stats, setStats] = useState(initialStats);
   const [animatedBars, setAnimatedBars] = useState({});

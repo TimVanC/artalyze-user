@@ -72,10 +72,7 @@ const Game = () => {
     return localStorage.getItem("darkMode") === "true";
   });
 
-  const getOptimizedImageUrl = (originalUrl) => {
-    if (!originalUrl) return ""; // Prevents `.replace()` from running on `undefined`
-    return originalUrl.replace("/upload/", "/upload/f_webp,w_500/");
-  };  
+  const getOptimizedImageUrl = (originalUrl) => originalUrl || "";
 
   const [stats, setStats] = useState({
     gamesPlayed: 0,

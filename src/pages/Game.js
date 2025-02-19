@@ -352,7 +352,7 @@ const Game = () => {
       console.log("📡 Fetching daily puzzle...");
       const puzzleResponse = await axiosInstance.get("/game/daily-puzzle");
       console.log("📦 Puzzle Response:", puzzleResponse.data);
-      
+
       if (puzzleResponse.data?.imagePairs?.length > 0) {
         const pairs = puzzleResponse.data.imagePairs.map((pair) => ({
           human: pair.humanImageURL,
@@ -361,11 +361,11 @@ const Game = () => {
             ? [pair.humanImageURL, pair.aiImageURL]
             : [pair.aiImageURL, pair.humanImageURL],
         }));
-      
+
         console.log("🖼️ Preloading images...");
         const imageUrls = pairs.flatMap((pair) => [pair.human, pair.ai]);
         preloadImages(imageUrls); // ✅ Preload images before setting state
-      
+
         console.log("🖼️ Caching images for enlarged view...");
         const cachedImages = {};
         imageUrls.forEach((url) => {
@@ -373,7 +373,7 @@ const Game = () => {
           img.src = url;
           cachedImages[url] = img; // ✅ Store cached version
         });
-      
+
         setImagePairs(pairs);
         setCachedEnlargedImages(cachedImages); // ✅ Store in state to prevent reloading on double-tap
         localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
@@ -381,7 +381,7 @@ const Game = () => {
         console.warn("⚠️ No image pairs available for today.");
         setImagePairs([]);
       }
-      
+
     } catch (error) {
       console.error("❌ Error initializing game:", error.response?.data || error.message);
       setError("Failed to initialize the game. Please try again later.");
@@ -1356,13 +1356,29 @@ const Game = () => {
                       className={`thumbnail-container human ${isCorrect ? "correct pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.human)}
                     >
-                      <img src={pair.human} alt={`Human ${index + 1}`} draggable="false" />
+                      <img
+                        src={pair.human}
+                        alt={`Human ${index + 1}`}
+                        className="lazy-thumbnail"
+                        onLoad={(e) => e.target.parentElement.classList.add("loaded")}
+                        loading="lazy"
+                        draggable="false"
+                      />
+                      <div className="thumbnail-loader"></div> {/* Loader */}
                     </div>
                     <div
                       className={`thumbnail-container ai ${!isCorrect && selection ? "incorrect pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
-                      <img src={pair.ai} alt={`AI ${index + 1}`} draggable="false" />
+                      <img
+                        src={pair.ai}
+                        alt={`AI ${index + 1}`}
+                        className="lazy-thumbnail"
+                        onLoad={(e) => e.target.parentElement.classList.add("loaded")}
+                        loading="lazy"
+                        draggable="false"
+                      />
+                      <div className="thumbnail-loader"></div> {/* Loader */}
                     </div>
                   </div>
                 );
@@ -1380,21 +1396,35 @@ const Game = () => {
                       className={`thumbnail-container human ${isCorrect ? "correct pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.human)}
                     >
-                      <img src={pair.human} alt={`Human ${index + 4}`} draggable="false" />
+                      <img
+                        src={pair.human}
+                        alt={`Human ${index + 4}`}
+                        className="lazy-thumbnail"
+                        onLoad={(e) => e.target.parentElement.classList.add("loaded")}
+                        loading="lazy"
+                        draggable="false"
+                      />
+                      <div className="thumbnail-loader"></div> {/* Loader */}
                     </div>
                     <div
                       className={`thumbnail-container ai ${!isCorrect && selection ? "incorrect pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
-                      <img src={pair.ai} alt={`AI ${index + 4}`} draggable="false" />
+                      <img
+                        src={pair.ai}
+                        alt={`AI ${index + 4}`}
+                        className="lazy-thumbnail"
+                        onLoad={(e) => e.target.parentElement.classList.add("loaded")}
+                        loading="lazy"
+                        draggable="false"
+                      />
+                      <div className="thumbnail-loader"></div> {/* Loader */}
                     </div>
                   </div>
                 );
               })}
             </div>
           </div>
-
-
         </div>
       )}
 

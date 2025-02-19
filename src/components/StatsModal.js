@@ -125,27 +125,34 @@ const StatsModal = ({
   };
 
   const handleCompletionShare = () => {
-    // Allow sharing only after the game is completed
-    if (isGameComplete) {
-      shareResults(completedSelections); // Pass finalized selections
-      return;
+    if (!alreadyGuessed.length || !imagePairs.length) {
+        alert("No data available to share today's puzzle!");
+        return;
     }
 
-    // If the overlay is already active, do nothing
-    if (showShareWarning) return;
+    const puzzleNumber = calculatePuzzleNumber();
 
-    // Show a warning if the user tries to share before completing today's puzzle
-    setShowShareWarning(true);
+    // ✅ Format all attempts
+    let shareText = `Artalyze #${puzzleNumber}\n`;
 
-    if (shareWarningTimeoutRef.current) {
-      clearTimeout(shareWarningTimeoutRef.current);
+    alreadyGuessed.forEach(attempt => {
+        const attemptResult = attempt.map((selection, index) => 
+            selection === imagePairs[index].human ? "🟢" : "🔴"
+        ).join("");
+        shareText += `${attemptResult}\n`;
+    });
+
+    shareText += "🖼️🖼️🖼️🖼️🖼️\nCheck it out here:\nhttps://artalyze.app";
+
+    if (navigator.share) {
+        navigator.share({ title: `Artalyze #${puzzleNumber}`, text: shareText })
+            .catch((error) => console.log("Error sharing:", error));
+    } else {
+        navigator.clipboard.writeText(shareText)
+            .then(() => alert("Results copied to clipboard!"))
+            .catch((error) => console.error("Failed to copy:", error));
     }
-
-    shareWarningTimeoutRef.current = setTimeout(() => {
-      setShowShareWarning(false);
-      shareWarningTimeoutRef.current = null;
-    }, 1000); // Show warning for 1 second
-  };
+};
 
   // Helper function for sharing results
   const shareResults = (usedSelections) => {

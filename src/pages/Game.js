@@ -72,6 +72,12 @@ const Game = () => {
     return localStorage.getItem("darkMode") === "true";
   });
 
+  const preloadImages = (urls) => {
+    urls.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+  };
 
   const [stats, setStats] = useState({
     gamesPlayed: 0,
@@ -345,7 +351,7 @@ const Game = () => {
       console.log("📡 Fetching daily puzzle...");
       const puzzleResponse = await axiosInstance.get("/game/daily-puzzle");
       console.log("📦 Puzzle Response:", puzzleResponse.data);
-
+      
       if (puzzleResponse.data?.imagePairs?.length > 0) {
         const pairs = puzzleResponse.data.imagePairs.map((pair) => ({
           human: pair.humanImageURL,
@@ -354,14 +360,27 @@ const Game = () => {
             ? [pair.humanImageURL, pair.aiImageURL]
             : [pair.aiImageURL, pair.humanImageURL],
         }));
-
-        console.log("🖼️ Setting imagePairs:", pairs);
+      
+        console.log("🖼️ Preloading images...");
+        const imageUrls = pairs.flatMap((pair) => [pair.human, pair.ai]);
+        preloadImages(imageUrls); // ✅ Preload images before setting state
+      
+        console.log("🖼️ Caching images for enlarged view...");
+        const cachedImages = {};
+        imageUrls.forEach((url) => {
+          const img = new Image();
+          img.src = url;
+          cachedImages[url] = img; // ✅ Store cached version
+        });
+      
         setImagePairs(pairs);
+        setCachedEnlargedImages(cachedImages); // ✅ Store in state to prevent reloading on double-tap
         localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
       } else {
         console.warn("⚠️ No image pairs available for today.");
         setImagePairs([]);
       }
+      
     } catch (error) {
       console.error("❌ Error initializing game:", error.response?.data || error.message);
       setError("Failed to initialize the game. Please try again later.");

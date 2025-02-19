@@ -363,11 +363,19 @@ const Game = () => {
       const puzzleResponse = await axiosInstance.get("/game/daily-puzzle");
 
       if (puzzleResponse.data?.imagePairs?.length > 0) {
-        const pairs = puzzleResponse.data.imagePairs.map((pair) => ({
-          human: pair.humanImageURL,
-          ai: pair.aiImageURL,
-          images: [pair.humanImageURL, pair.aiImageURL] // No unnecessary randomization
-        }));
+        const pairs = puzzleResponse.data.imagePairs.map((pair) => {
+          // Randomly decide whether to swap positions
+          const shuffledImages = Math.random() > 0.5
+            ? [pair.humanImageURL, pair.aiImageURL]
+            : [pair.aiImageURL, pair.humanImageURL];
+
+          return {
+            human: pair.humanImageURL,  // Keep track of correct answer
+            ai: pair.aiImageURL,
+            images: shuffledImages  // Randomized image order
+          };
+        });
+
 
         // **Cache today's puzzle to prevent reloading on refresh**
         localStorage.setItem("dailyPuzzle", JSON.stringify(pairs));

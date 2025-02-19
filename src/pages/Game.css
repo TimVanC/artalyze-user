@@ -776,6 +776,36 @@ body.dark-mode .info-overlay {
 }
 
 /* ========================= */
+/*  Image Pre-loader         */
+/* ========================= */
+
+
+/* Swiper Lazy Loading Preloader */
+.swiper-lazy-preloader {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top-color: #ffffff;
+  animation: spin 1s linear infinite;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Preloader Animation */
+@keyframes spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+
+/* ========================= */
 /*  FULL PAGE LOADING SCREEN */
 /* ========================= */
 

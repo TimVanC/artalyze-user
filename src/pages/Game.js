@@ -466,6 +466,20 @@ const Game = () => {
   }, [userId, isGameComplete, imagePairs.length]);
 
   useEffect(() => {
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.src = img.dataset.src; // ✅ Swap data-src to src
+          observer.unobserve(img); // ✅ Stop observing once loaded
+        }
+      });
+    });
+
+    document.querySelectorAll("img[data-src]").forEach(img => observer.observe(img));
+  }, []);
+
+  useEffect(() => {
     const disableZoom = (event) => {
       if (event.ctrlKey || event.metaKey || event.deltaY) {
         event.preventDefault();
@@ -791,9 +805,9 @@ const Game = () => {
 
     // Deselect if already selected
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
-        updatedSelections[currentIndex] = null;
+      updatedSelections[currentIndex] = null;
     } else {
-        updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
+      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
     updateSelections(updatedSelections);
@@ -803,46 +817,46 @@ const Game = () => {
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
     if (!hasSeenOverlays) {
-        // Show "Swipe right" overlay only on first selection of first image pair
-        if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-            setShowSwipeRightOverlay(true);
-            setTimeout(() => setShowSwipeRightOverlay(false), 2000);
-        }
+      // Show "Swipe right" overlay only on first selection of first image pair
+      if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+        setShowSwipeRightOverlay(true);
+        setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+      }
     }
-};
+  };
 
-const handleSwipe = (swiper) => {
-  setCurrentIndex(swiper.realIndex);
+  const handleSwipe = (swiper) => {
+    setCurrentIndex(swiper.realIndex);
 
-  // Check if user has seen overlays before
-  const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
+    // Check if user has seen overlays before
+    const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
-  if (!hasSeenOverlays) {
+    if (!hasSeenOverlays) {
       // Show "Swipe left to go back" overlay after the first swipe (only once)
       if (!hasSeenSwipeLeft && swiper.realIndex > 0) {
-          setShowSwipeLeftOverlay(true);
-          setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
-          setHasSeenSwipeLeft(true);
+        setShowSwipeLeftOverlay(true);
+        setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
+        setHasSeenSwipeLeft(true);
       }
 
       // Show "Double tap to enlarge" overlay after the second swipe (only once)
       if (!hasSeenDoubleTap && swiper.realIndex > 1) {
-          setShowDoubleTapOverlay(true);
-          setTimeout(() => setShowDoubleTapOverlay(false), 2000);
-          setHasSeenDoubleTap(true);
+        setShowDoubleTapOverlay(true);
+        setTimeout(() => setShowDoubleTapOverlay(false), 2000);
+        setHasSeenDoubleTap(true);
       }
 
       // Show "Tap info icon for more help" overlay after the fourth swipe (only once)
       if (!showInfoOverlay && swiper.realIndex > 2) {
-          setShowInfoOverlay(true);
-          setTimeout(() => {
-              setShowInfoOverlay(false);
-              // Mark overlays as seen after all have displayed
-              localStorage.setItem("hasSeenOverlays", "true");
-          }, 2000);
+        setShowInfoOverlay(true);
+        setTimeout(() => {
+          setShowInfoOverlay(false);
+          // Mark overlays as seen after all have displayed
+          localStorage.setItem("hasSeenOverlays", "true");
+        }, 2000);
       }
-  }
-};
+    }
+  };
 
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available
@@ -1118,11 +1132,15 @@ const handleSwipe = (swiper) => {
             <>
               <Swiper
                 loop={true}
-                onSlideChange={handleSwipe} // ✅ Now using handleSwipe
+                onSlideChange={handleSwipe}
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper;
                   swiper.slideToLoop(0);
                 }}
+                lazy={true} // 🔹 Enables lazy loading in Swiper
+                preloadImages={false} // 🔹 Prevents preloading all images at once
+                watchSlidesVisibility={true} // 🔹 Ensures only visible slides are loaded
+                watchSlidesProgress={true}
               >
                 {imagePairs.map((pair, index) => (
                   <SwiperSlide key={index}>
@@ -1133,7 +1151,8 @@ const handleSwipe = (swiper) => {
                           className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
                         >
                           <img
-                            src={image}
+                            data-src={image} // Lazy loading with Intersection Observer
+                            className="swiper-lazy" // Enables Swiper.js lazy loading
                             alt={`Painting ${idx + 1}`}
                             onClick={(e) => {
                               const currentTime = new Date().getTime();
@@ -1158,6 +1177,7 @@ const handleSwipe = (swiper) => {
                             }}
                             draggable="false"
                           />
+                          <div className="swiper-lazy-preloader"></div>
                         </div>
                       ))}
                     </div>
@@ -1234,9 +1254,9 @@ const handleSwipe = (swiper) => {
                       <SwiperSlide key={index}>
                         <div className="enlarged-image-container">
                           <img
-                            src={enlargedImage}
-                            alt="Enlarged view"
+                            data-src={enlargedImage} // Lazy loading for modal images
                             className="enlarged-image"
+                            alt="Enlarged view"
                             onClick={(e) => e.stopPropagation()} // Prevents modal from closing
                             onContextMenu={(e) => e.preventDefault()} // Disable right-click
                             onTouchStart={(e) => {
@@ -1329,13 +1349,23 @@ const handleSwipe = (swiper) => {
                       className={`thumbnail-container human ${isCorrect ? "correct pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.human)}
                     >
-                      <img src={pair.human} alt={`Human ${index + 1}`} draggable="false" />
+                      <img
+                        data-src={pair.human} // Lazy load for thumbnails
+                        className="lazy-thumbnail"
+                        alt={`Human ${index + 1}`}
+                        draggable="false"
+                      />
                     </div>
                     <div
                       className={`thumbnail-container ai ${!isCorrect && selection ? "incorrect pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
-                      <img src={pair.ai} alt={`AI ${index + 1}`} draggable="false" />
+                      <img
+                        data-src={pair.ai} // Lazy load for thumbnails
+                        className="lazy-thumbnail"
+                        alt={`AI ${index + 1}`}
+                        draggable="false"
+                      />
                     </div>
                   </div>
                 );
@@ -1353,13 +1383,22 @@ const handleSwipe = (swiper) => {
                       className={`thumbnail-container human ${isCorrect ? "correct pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.human)}
                     >
-                      <img src={pair.human} alt={`Human ${index + 4}`} draggable="false" />
-                    </div>
+                      <img
+                        data-src={pair.human} // Lazy load for thumbnails
+                        className="lazy-thumbnail"
+                        alt={`Human ${index + 4}`}
+                        draggable="false"
+                      />                    </div>
                     <div
                       className={`thumbnail-container ai ${!isCorrect && selection ? "incorrect pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
-                      <img src={pair.ai} alt={`AI ${index + 4}`} draggable="false" />
+                      <img
+                        data-src={pair.ai} // Lazy load for thumbnails
+                        className="lazy-thumbnail"
+                        alt={`AI ${index + 4}`}
+                        draggable="false"
+                      />
                     </div>
                   </div>
                 );
@@ -1375,13 +1414,17 @@ const handleSwipe = (swiper) => {
         <div className={`enlarge-modal ${enlargedImageMode}`} onClick={closeEnlargedImage}>
           <div className="enlarged-image-container">
             <img
-              src={enlargedImage}
-              alt="Enlarged view"
+              data-src={enlargedImage} // Lazy loading for modal images
               className="enlarged-image"
-              onClick={(e) => e.stopPropagation()}
-              onContextMenu={(e) => e.preventDefault()}
-              onTouchStart={(e) => e.preventDefault()}
-              onMouseDown={(e) => e.preventDefault()}
+              alt="Enlarged view"
+              onClick={(e) => e.stopPropagation()} // Prevents modal from closing
+              onContextMenu={(e) => e.preventDefault()} // Disable right-click
+              onTouchStart={(e) => {
+                e.preventDefault(); // ✅ Block iOS menu
+                e.stopPropagation();
+              }}
+              onMouseDown={(e) => e.preventDefault()} // Block dragging
+              draggable="false"
             />
           </div>
         </div>

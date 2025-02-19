@@ -72,6 +72,7 @@ const Game = () => {
     return localStorage.getItem("darkMode") === "true";
   });
 
+
   const [stats, setStats] = useState({
     gamesPlayed: 0,
     winPercentage: 0,
@@ -341,58 +342,26 @@ const Game = () => {
         setAlreadyGuessed(alreadyGuessed);
       }, 100); // Delay to ensure state updates correctly
 
-      const preloadImage = (src) => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.src = src;
-          img.onload = resolve;
-          img.onerror = resolve; // Resolve on error to prevent blocking
-        });
-      };
-      
       console.log("📡 Fetching daily puzzle...");
       const puzzleResponse = await axiosInstance.get("/game/daily-puzzle");
       console.log("📦 Puzzle Response:", puzzleResponse.data);
-      
+
       if (puzzleResponse.data?.imagePairs?.length > 0) {
-        let pairs = puzzleResponse.data.imagePairs.map((pair) => ({
+        const pairs = puzzleResponse.data.imagePairs.map((pair) => ({
           human: pair.humanImageURL,
           ai: pair.aiImageURL,
           images: Math.random() > 0.5
             ? [pair.humanImageURL, pair.aiImageURL]
             : [pair.aiImageURL, pair.humanImageURL],
-          isLoaded: false, // Track loading state per pair
         }));
-      
-        // ✅ PRIORITIZE FIRST PAIR LOADING
-        await Promise.all([
-          preloadImage(pairs[0].human),
-          preloadImage(pairs[0].ai),
-        ]);
-        pairs[0].isLoaded = true; // Mark first pair as loaded
-      
-        setImagePairs(pairs); // Render immediately with placeholders
-        setLoading(false); // ✅ SHOW GAME SCREEN ASAP
-      
-        // ✅ LAZY LOAD THE REST IN BACKGROUND
-        Promise.all(
-          pairs.slice(1).flatMap((pair) => [
-            preloadImage(pair.human),
-            preloadImage(pair.ai),
-          ])
-        ).then(() => {
-          console.log("✅ All images preloaded.");
-          setImagePairs((prev) =>
-            prev.map((pair) => ({ ...pair, isLoaded: true }))
-          );
-        });
-      
+
+        console.log("🖼️ Setting imagePairs:", pairs);
+        setImagePairs(pairs);
         localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
       } else {
         console.warn("⚠️ No image pairs available for today.");
         setImagePairs([]);
-        setLoading(false);
-      }      
+      }
     } catch (error) {
       console.error("❌ Error initializing game:", error.response?.data || error.message);
       setError("Failed to initialize the game. Please try again later.");
@@ -1149,7 +1118,7 @@ const Game = () => {
             <>
               <Swiper
                 loop={true}
-                onSlideChange={handleSwipe} // ✅ Now using handleSwipe
+                onSlideChange={handleSwipe}
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper;
                   swiper.slideToLoop(0);
@@ -1158,46 +1127,48 @@ const Game = () => {
                 {imagePairs.map((pair, index) => (
                   <SwiperSlide key={index}>
                     <div className="image-pair-container">
-                      {pair.images.map((image, idx) => (
-                        <div
-                          key={idx}
-                          className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
-                        >
-                          <img
-                            src={image}
-                            alt={`Painting ${idx + 1}`}
-                            loading="lazy"
-                            className="game-image"
-                            style={{ visibility: "hidden" }} // Hide until fully loaded
-                            onLoad={(e) => e.target.style.visibility = "visible"} // Show after loading
-                            onClick={(e) => {
-                              const currentTime = new Date().getTime();
-                              const timeSinceLastTap = currentTime - lastTapTime.current;
+                      {pair.images.map((image, idx) => {
+                        const isSelected = selections[index]?.selected === image;
 
-                              if (timeSinceLastTap < 300) { // ✅ Double-tap detected
-                                clearTimeout(singleTapTimeout.current); // ✅ Cancel single tap selection
-                                if (!enlargedImage) { // ✅ Ensure enlargement only happens once
-                                  setEnlargedImage(null); // Ensure previous one is cleared
-                                  setTimeout(() => {
-                                    setEnlargedImage(image);
-                                    setEnlargedImageMode("game-screen");
-                                  }, 10); // Small delay prevents duplicate stacking
-                                }
-                              } else {
-                                singleTapTimeout.current = setTimeout(() => {
-                                  handleSelection(image, image === pair.human); // ✅ Select only if no double-tap
-                                }, 220);
-                              }
+                        return (
+                          <div key={idx} className={`image-container ${isSelected ? "selected" : ""}`}>
+                            <div className="image-wrapper">
+                              <img
+                                src={image}
+                                alt={`Painting ${idx + 1}`}
+                                loading="lazy"
+                                className="lazy-img"
+                                onClick={(e) => {
+                                  const currentTime = new Date().getTime();
+                                  const timeSinceLastTap = currentTime - lastTapTime.current;
 
-                              lastTapTime.current = currentTime;
-                            }}
-                            draggable="false"
-                          />
-                        </div>
-                      ))}
+                                  if (timeSinceLastTap < 300) { // ✅ Double-tap detected
+                                    clearTimeout(singleTapTimeout.current);
+                                    if (!enlargedImage) {
+                                      setEnlargedImage(null);
+                                      setTimeout(() => {
+                                        setEnlargedImage(image);
+                                        setEnlargedImageMode("game-screen");
+                                      }, 10);
+                                    }
+                                  } else {
+                                    singleTapTimeout.current = setTimeout(() => {
+                                      handleSelection(image, image === pair.human);
+                                    }, 220);
+                                  }
+
+                                  lastTapTime.current = currentTime;
+                                }}
+                                onLoad={(e) => e.target.parentElement.classList.add("loaded")}
+                                draggable="false"
+                              />
+                              <div className="image-loader"></div> {/* ✅ Spinner while loading */}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </SwiperSlide>
-
                 ))}
               </Swiper>
             </>
@@ -1270,12 +1241,9 @@ const Game = () => {
                       <SwiperSlide key={index}>
                         <div className="enlarged-image-container">
                           <img
-                            src={enlargedImage || "placeholder.jpg"} // ✅ Show placeholder until loaded
+                            src={enlargedImage}
                             alt="Enlarged view"
-                            className={`enlarged-image ${enlargedImage ? "loaded" : "loading"}`} // ✅ Apply CSS effects
-                            loading="lazy"
-                            style={{ visibility: enlargedImage ? "visible" : "hidden" }} // ✅ Hide until fully loaded
-                            onLoad={(e) => e.target.style.visibility = "visible"} // ✅ Fade-in effect
+                            className="enlarged-image"
                             onClick={(e) => e.stopPropagation()} // Prevents modal from closing
                             onContextMenu={(e) => e.preventDefault()} // Disable right-click
                             onTouchStart={(e) => {
@@ -1287,7 +1255,6 @@ const Game = () => {
                           />
                         </div>
                       </SwiperSlide>
-
                     ))}
                 </Swiper>
               </div>

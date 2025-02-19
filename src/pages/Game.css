@@ -780,30 +780,41 @@ body.dark-mode .info-overlay {
 /* ========================= */
 
 
-/* Swiper Lazy Loading Preloader */
-.swiper-lazy-preloader {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  border-top-color: #ffffff;
-  animation: spin 1s linear infinite;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+/* ✅ Wrapper to position the spinner */
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Preloader Animation */
+/* ✅ Hide spinner once the image loads */
+.image-wrapper.loaded .image-loader {
+  display: none;
+}
+
+/* ✅ Basic Loading Spinner */
+.image-loader {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* ✅ Keyframes for Spinning Animation */
 @keyframes spin {
   0% {
-    transform: translate(-50%, -50%) rotate(0deg);
+    transform: rotate(0deg);
   }
   100% {
-    transform: translate(-50%, -50%) rotate(360deg);
+    transform: rotate(360deg);
   }
 }
-
 
 /* ========================= */
 /*  FULL PAGE LOADING SCREEN */

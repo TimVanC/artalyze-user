@@ -948,61 +948,65 @@ const Game = () => {
     if (isSubmitting) return; // ✅ Prevent multiple rapid submissions
     setIsSubmitting(true);
 
-    const currentSubmission = selections.map((selection) => selection.selected);
+    if (!selections || selections.length === 0) {
+        console.error("❌ No selections found. Aborting submission.");
+        setIsSubmitting(false);
+        return;
+    }
+
+    // ✅ Ensure selections contain no null values
+    const sanitizedSelections = selections.map((selection) => selection ? selection.selected : null);
 
     // ✅ Check if this exact submission was already made
     const isDuplicateSubmission = alreadyGuessed.some(
-      (pastSubmission) => JSON.stringify(pastSubmission) === JSON.stringify(currentSubmission)
+        (pastSubmission) => JSON.stringify(pastSubmission) === JSON.stringify(sanitizedSelections)
     );
 
     if (isDuplicateSubmission) {
-      console.log("⛔ Duplicate full submission detected! Showing overlay.");
-      setShowDuplicateOverlay(true);
-      setTimeout(() => setShowDuplicateOverlay(false), 1000);
-      setIsSubmitting(false);
-      return;
+        console.log("⛔ Duplicate full submission detected! Showing overlay.");
+        setShowDuplicateOverlay(true);
+        setTimeout(() => setShowDuplicateOverlay(false), 1000);
+        setIsSubmitting(false);
+        return;
     }
 
     // ✅ Store new guess in `alreadyGuessed`
-    const updatedGuesses = [...alreadyGuessed, currentSubmission];
+    const updatedGuesses = [...alreadyGuessed, sanitizedSelections];
     setAlreadyGuessed(updatedGuesses);
     localStorage.setItem("alreadyGuessed", JSON.stringify(updatedGuesses));
 
     console.log("✅ Submission stored in alreadyGuessed:", updatedGuesses);
 
     if (isUserLoggedIn()) {
-      try {
-        await axiosInstance.put("/stats/already-guessed", { alreadyGuessed: updatedGuesses });
-        console.log("✅ alreadyGuessed updated in backend.");
-      } catch (error) {
-        console.error("❌ Error updating alreadyGuessed:", error);
-      }
+        try {
+            await axiosInstance.put("/stats/already-guessed", { alreadyGuessed: updatedGuesses });
+            console.log("✅ alreadyGuessed updated in backend.");
+        } catch (error) {
+            console.error("❌ Error updating alreadyGuessed:", error);
+        }
     }
 
     // ✅ Calculate correct guesses
     let correct = selections.reduce((count, selection, index) => {
-      return selection.isHumanSelection && selection.selected === imagePairs[index].human
-        ? count + 1
-        : count;
+        return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
     }, 0);
 
     setCorrectCount(correct);
 
     // ✅ Check game completion or decrement tries
     if (correct === imagePairs.length || triesLeft === 1) {
-      console.log("🏁 Game completed! Correct answers:", correct);
-      setIsGameComplete(true);
-      setShowOverlay(false);
-      handleGameComplete();
+        console.log("🏁 Game completed! Correct answers:", correct);
+        setIsGameComplete(true);
+        setShowOverlay(false);
+        handleGameComplete();
     } else {
-      console.log("🔄 Guess submitted, but game is NOT complete yet. Showing mid-turn overlay...");
-      setShowOverlay(true);
-      await decrementTries();
+        console.log("🔄 Guess submitted, but game is NOT complete yet. Showing mid-turn overlay...");
+        setShowOverlay(true);
+        await decrementTries();
     }
 
     setIsSubmitting(false);
-  };
-
+};
 
   const handleStatsModalClose = () => {
     setIsStatsOpen(false);

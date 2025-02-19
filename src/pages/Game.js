@@ -73,8 +73,9 @@ const Game = () => {
   });
 
   const getOptimizedImageUrl = (originalUrl) => {
-    return `${originalUrl.replace("/upload/", "/upload/f_webp,w_500/")}`;
-  };
+    if (!originalUrl) return ""; // Prevents `.replace()` from running on `undefined`
+    return originalUrl.replace("/upload/", "/upload/f_webp,w_500/");
+  };  
 
   const [stats, setStats] = useState({
     gamesPlayed: 0,

@@ -349,39 +349,35 @@ const Game = () => {
         setAlreadyGuessed(alreadyGuessed);
       }, 100); // Delay to ensure state updates correctly
 
-      console.log("📡 Fetching daily puzzle...");
+      let storedPuzzle = localStorage.getItem("dailyPuzzle");
+      let lastPuzzleDate = localStorage.getItem("lastPuzzleDate");
+
+      // **Check if we already have today's puzzle stored**
+      if (storedPuzzle && lastPuzzleDate === today) {
+        console.log("📦 Restoring puzzle from localStorage...");
+        setImagePairs(JSON.parse(storedPuzzle));
+        return;
+      }
+
+      console.log("📡 Fetching new puzzle from server...");
       const puzzleResponse = await axiosInstance.get("/game/daily-puzzle");
-      console.log("📦 Puzzle Response:", puzzleResponse.data);
 
       if (puzzleResponse.data?.imagePairs?.length > 0) {
         const pairs = puzzleResponse.data.imagePairs.map((pair) => ({
           human: pair.humanImageURL,
           ai: pair.aiImageURL,
-          images: Math.random() > 0.5
-            ? [pair.humanImageURL, pair.aiImageURL]
-            : [pair.aiImageURL, pair.humanImageURL],
+          images: [pair.humanImageURL, pair.aiImageURL] // No unnecessary randomization
         }));
 
-        console.log("🖼️ Preloading images...");
-        const imageUrls = pairs.flatMap((pair) => [pair.human, pair.ai]);
-        preloadImages(imageUrls); // ✅ Preload images before setting state
-
-        console.log("🖼️ Caching images for enlarged view...");
-        const cachedImages = {};
-        imageUrls.forEach((url) => {
-          const img = new Image();
-          img.src = url;
-          cachedImages[url] = img; // ✅ Store cached version
-        });
+        // **Cache today's puzzle to prevent reloading on refresh**
+        localStorage.setItem("dailyPuzzle", JSON.stringify(pairs));
+        localStorage.setItem("lastPuzzleDate", today);
 
         setImagePairs(pairs);
-        setCachedEnlargedImages(cachedImages); // ✅ Store in state to prevent reloading on double-tap
-        localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
       } else {
         console.warn("⚠️ No image pairs available for today.");
         setImagePairs([]);
       }
-
     } catch (error) {
       console.error("❌ Error initializing game:", error.response?.data || error.message);
       setError("Failed to initialize the game. Please try again later.");

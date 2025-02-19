@@ -470,14 +470,19 @@ const Game = () => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const img = entry.target;
-          img.src = img.dataset.src; // ✅ Swap data-src to src
-          observer.unobserve(img); // ✅ Stop observing once loaded
+          if (!img.src) {
+            img.src = img.dataset.src; // ✅ Swap data-src with actual src
+            img.removeAttribute("data-src"); // ✅ Cleanup
+          }
+          observer.unobserve(img); // ✅ Stop observing after loading
         }
       });
     });
-
+  
     document.querySelectorAll("img[data-src]").forEach(img => observer.observe(img));
-  }, []);
+  
+    return () => observer.disconnect();
+  }, []);  
 
   useEffect(() => {
     const disableZoom = (event) => {
@@ -1154,6 +1159,8 @@ const Game = () => {
                             data-src={image} // Lazy loading with Intersection Observer
                             className="swiper-lazy" // Enables Swiper.js lazy loading
                             alt={`Painting ${idx + 1}`}
+                            ref={(el) => el && observer.observe(el)} // ✅ Ensures observer is attached
+                            draggable="false"
                             onClick={(e) => {
                               const currentTime = new Date().getTime();
                               const timeSinceLastTap = currentTime - lastTapTime.current;
@@ -1175,7 +1182,6 @@ const Game = () => {
 
                               lastTapTime.current = currentTime;
                             }}
-                            draggable="false"
                           />
                           <div className="swiper-lazy-preloader"></div>
                         </div>
@@ -1256,6 +1262,8 @@ const Game = () => {
                           <img
                             data-src={enlargedImage} // Lazy loading for modal images
                             className="enlarged-image"
+                            ref={(el) => el && observer.observe(el)}
+                            draggable="false"
                             alt="Enlarged view"
                             onClick={(e) => e.stopPropagation()} // Prevents modal from closing
                             onContextMenu={(e) => e.preventDefault()} // Disable right-click
@@ -1264,7 +1272,6 @@ const Game = () => {
                               e.stopPropagation();
                             }}
                             onMouseDown={(e) => e.preventDefault()} // Block dragging
-                            draggable="false"
                           />
                         </div>
                       </SwiperSlide>
@@ -1352,6 +1359,7 @@ const Game = () => {
                       <img
                         data-src={pair.human} // Lazy load for thumbnails
                         className="lazy-thumbnail"
+                        ref={(el) => el && observer.observe(el)}
                         alt={`Human ${index + 1}`}
                         draggable="false"
                       />
@@ -1363,6 +1371,7 @@ const Game = () => {
                       <img
                         data-src={pair.ai} // Lazy load for thumbnails
                         className="lazy-thumbnail"
+                        ref={(el) => el && observer.observe(el)}
                         alt={`AI ${index + 1}`}
                         draggable="false"
                       />
@@ -1386,6 +1395,7 @@ const Game = () => {
                       <img
                         data-src={pair.human} // Lazy load for thumbnails
                         className="lazy-thumbnail"
+                        ref={(el) => el && observer.observe(el)}
                         alt={`Human ${index + 4}`}
                         draggable="false"
                       />                    </div>
@@ -1396,6 +1406,7 @@ const Game = () => {
                       <img
                         data-src={pair.ai} // Lazy load for thumbnails
                         className="lazy-thumbnail"
+                        ref={(el) => el && observer.observe(el)}
                         alt={`AI ${index + 4}`}
                         draggable="false"
                       />
@@ -1416,6 +1427,7 @@ const Game = () => {
             <img
               data-src={enlargedImage} // Lazy loading for modal images
               className="enlarged-image"
+              ref={(el) => el && observer.observe(el)}
               alt="Enlarged view"
               onClick={(e) => e.stopPropagation()} // Prevents modal from closing
               onContextMenu={(e) => e.preventDefault()} // Disable right-click

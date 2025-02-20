@@ -820,17 +820,14 @@ const Game = () => {
       updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
-    updateSelections([...updatedSelections]); // ✅ Force React to detect state change
+    updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
 
-    // Debugging logs to rule out submit button issue
-    console.log("🔍 Updated Selections:", updatedSelections);
-    console.log("🛠️ Valid Selections:", updatedSelections.filter(Boolean).length);
-    console.log("🛠️ Image Pairs Length:", imagePairs.length);
-    console.log("🛠️ Submit Button Enabled?", updatedSelections.filter(Boolean).length === imagePairs.length);
+    // Check if user has seen overlays before
+    const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
-    // Ensure overlays show only when needed
-    if (!localStorage.getItem("hasSeenOverlays")) {
+    if (!hasSeenOverlays) {
+      // Show "Swipe right" overlay only on first selection of first image pair
       if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
         setShowSwipeRightOverlay(true);
         setTimeout(() => setShowSwipeRightOverlay(false), 2000);
@@ -1021,7 +1018,7 @@ const Game = () => {
     setTimeout(() => setIsStatsModalDismissed(true), 300); // Trigger animation after modal close animation
   };
 
-  const isSubmitEnabled = selections.filter(Boolean).length === imagePairs.length;
+  const isSubmitEnabled = selections.length === imagePairs.length;
 
   return (
     <div className={`game-container ${darkMode ? "dark-mode" : ""}`}>

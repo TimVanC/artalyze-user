@@ -72,8 +72,7 @@ const Game = () => {
     return localStorage.getItem("darkMode") === "true";
   });
 
-  const [cachedEnlargedImages, setCachedEnlargedImages] = useState({});
-
+  const [imageLoading, setImageLoading] = useState({});
 
   const [stats, setStats] = useState({
     gamesPlayed: 0,
@@ -528,34 +527,33 @@ const Game = () => {
     }
   }, []);
 
-  // Preload images function
-  const preloadImages = (urls) => {
-    urls.forEach((url) => {
-      const img = new Image();
-      img.src = url;
-      img.onload = () => {
-        setCachedEnlargedImages((prev) => ({ ...prev, [url]: img.src }));
-      };
-    });
-  };
-
+  // Monitor updates to imagePairs
   useEffect(() => {
     console.log("Image pairs state updated:", imagePairs);
-
+    
     if (imagePairs.length > 0) {
-      // Preload images for better performance
-      const urls = imagePairs.flatMap(pair => [pair.human, pair.ai]);
-      preloadImages(urls);
+        // Existing logic for updating Swiper
+        setTimeout(() => {
+            if (swiperRef.current) {
+                console.log("Updating Swiper to current index:", currentIndex);
+                swiperRef.current.slideToLoop(currentIndex, 0);
+            }
+        }, 100);
 
-      // Ensure swiper updates correctly
-      setTimeout(() => {
-        if (swiperRef.current) {
-          console.log("Updating Swiper to current index:", currentIndex);
-          swiperRef.current.slideToLoop(currentIndex, 0);
-        }
-      }, 100);
+        // 🔄 **New Image Preloading Logic**
+        const loadingState = {};
+        imagePairs.forEach((pair, index) => {
+            pair.images.forEach((image, position) => {
+                loadingState[`${index}-${position}`] = true; // Mark as loading
+                const img = new Image();
+                img.src = image;
+                img.onload = () => handleImageLoad(index, position);
+                img.onerror = () => handleImageError(index, position);
+            });
+        });
+        setImageLoading((prev) => ({ ...prev, ...loadingState }));
     }
-  }, [currentIndex, imagePairs]);
+}, [currentIndex, imagePairs]);
 
   // Apply animations to thumbnails when the stats modal is dismissed
   useEffect(() => {
@@ -931,24 +929,34 @@ const Game = () => {
   };
 
   const handleImageClick = (imageUrl) => {
-    console.log("Opening enlarged image:", imageUrl);
+    if (!imageLoading[imageUrl]) {  // Only open if it's fully loaded
+        console.log("Opening enlarged image:", imageUrl);
+        setEnlargedImage(imageUrl);
+        setEnlargedImageMode("game-screen");
+    }
+};
 
-    // Use cached image if available
-    setEnlargedImage(cachedEnlargedImages[imageUrl] || imageUrl);
-    setEnlargedImageMode("game-screen");
+  const handleImageLoad = (index, position) => {
+    setImageLoading((prev) => ({ ...prev, [`${index}-${position}`]: false }));
   };
 
-  const [imageLoadStates, setImageLoadStates] = useState(
-    Array(imagePairs.length).fill([false, false]) // Initialize as an array of `[false, false]` for each pair
-  );
-  
-  const handleImageLoad = (pairIndex, imgIndex) => {
-    setImageLoadStates((prev) => {
-      const updated = [...prev];
-      updated[pairIndex] = [...updated[pairIndex]];
-      updated[pairIndex][imgIndex] = true; // Set the specific image to loaded
-      return updated;
+  const handleImageError = (index, position) => {
+    console.error(`Failed to load image at index ${index}, position ${position}`);
+    setImageLoading((prev) => ({ ...prev, [`${index}-${position}`]: false }));
+  };
+
+  const preloadImages = (imagePairs) => {
+    const loadingState = {};
+    imagePairs.forEach((pair, index) => {
+      pair.images.forEach((image, position) => {
+        loadingState[`${index}-${position}`] = true; // Mark as loading
+        const img = new Image();
+        img.src = image;
+        img.onload = () => handleImageLoad(index, position);
+        img.onerror = () => handleImageError(index, position);
+      });
     });
+    setImageLoading((prev) => ({ ...prev, ...loadingState }));
   };
 
   const closeEnlargedImage = () => {
@@ -958,7 +966,6 @@ const Game = () => {
   const handleRelease = () => {
     clearTimeout(longPressTimer.current);
   };
-
 
   const handleSubmit = async () => {
     console.log("📡 Submit button pressed!");
@@ -1157,52 +1164,49 @@ const Game = () => {
                   swiper.slideToLoop(0);
                 }}
               >
-{imagePairs.map((pair, index) => (
-  <SwiperSlide key={index}>
-    <div className="image-pair-container">
-      {pair.images.map((image, idx) => {
-        const isSelected = selections[index]?.selected === image;
-        const isLoaded = imageLoadStates[index]?.[idx] || false; // Get loading state
+                {imagePairs.map((pair, index) => (
+                  <SwiperSlide key={index}>
+                    <div className="image-pair-container">
+                      {pair.images.map((image, idx) => (
+                        <div
+                          key={idx}
+                          className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
+                        >
+                          {imageLoading[`${index}-${idx}`] && <div className="image-loader"></div>}
+                          <img
+                            src={image}
+                            alt={`Painting ${idx + 1}`}
+                            onClick={(e) => {
+                              const currentTime = new Date().getTime();
+                              const timeSinceLastTap = currentTime - lastTapTime.current;
 
-        return (
-          <div key={idx} className={`image-container ${isSelected ? "selected" : ""}`}>
-            <div className={`image-wrapper ${isLoaded ? "loaded" : ""}`}>
-              <img
-                src={image}
-                alt={`Painting ${idx + 1}`}
-                className="lazy-img"
-                onLoad={() => handleImageLoad(index, idx)} // ✅ Update state when image loads
-                onClick={(e) => {
-                  const currentTime = new Date().getTime();
-                  const timeSinceLastTap = currentTime - lastTapTime.current;
+                              if (timeSinceLastTap < 300) { // ✅ Double-tap detected
+                                clearTimeout(singleTapTimeout.current); // ✅ Cancel single tap selection
+                                if (!enlargedImage) { // ✅ Ensure enlargement only happens once
+                                  setEnlargedImage(null); // Ensure previous one is cleared
+                                  setTimeout(() => {
+                                    setEnlargedImage(image);
+                                    setEnlargedImageMode("game-screen");
+                                  }, 10); // Small delay prevents duplicate stacking
+                                }
+                              } else {
+                                singleTapTimeout.current = setTimeout(() => {
+                                  handleSelection(image, image === pair.human); // ✅ Select only if no double-tap
+                                }, 220);
+                              }
 
-                  if (timeSinceLastTap < 300) { // ✅ Double-tap detected
-                    clearTimeout(singleTapTimeout.current);
-                    if (!enlargedImage) {
-                      setEnlargedImage(null);
-                      setTimeout(() => {
-                        setEnlargedImage(image);
-                        setEnlargedImageMode("game-screen");
-                      }, 10);
-                    }
-                  } else {
-                    singleTapTimeout.current = setTimeout(() => {
-                      handleSelection(image, image === pair.human);
-                    }, 220);
-                  }
-
-                  lastTapTime.current = currentTime;
-                }}
-                draggable="false"
-              />
-              {!isLoaded && <div className="image-loader"></div>} {/* ✅ Spinner while loading */}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  </SwiperSlide>
-))}
+                              lastTapTime.current = currentTime;
+                            }}
+                            draggable="false"
+                            onLoad={() => handleImageLoad(index, idx)}
+                            onError={() => handleImageError(index, idx)}
+                            style={{ visibility: imageLoading[`${index}-${idx}`] ? "hidden" : "visible" }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </SwiperSlide>
+                ))}
               </Swiper>
             </>
           ) : (

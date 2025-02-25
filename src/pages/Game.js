@@ -72,6 +72,8 @@ const Game = () => {
     return localStorage.getItem("darkMode") === "true";
   });
 
+  const [cachedEnlargedImages, setCachedEnlargedImages] = useState({});
+
 
   const [stats, setStats] = useState({
     gamesPlayed: 0,
@@ -526,10 +528,26 @@ const Game = () => {
     }
   }, []);
 
-  // Monitor updates to imagePairs
+  // Preload images function
+  const preloadImages = (urls) => {
+    urls.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+      img.onload = () => {
+        setCachedEnlargedImages((prev) => ({ ...prev, [url]: img.src }));
+      };
+    });
+  };
+
   useEffect(() => {
     console.log("Image pairs state updated:", imagePairs);
+
     if (imagePairs.length > 0) {
+      // Preload images for better performance
+      const urls = imagePairs.flatMap(pair => [pair.human, pair.ai]);
+      preloadImages(urls);
+
+      // Ensure swiper updates correctly
       setTimeout(() => {
         if (swiperRef.current) {
           console.log("Updating Swiper to current index:", currentIndex);
@@ -791,9 +809,9 @@ const Game = () => {
 
     // Deselect if already selected
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
-        updatedSelections[currentIndex] = null;
+      updatedSelections[currentIndex] = null;
     } else {
-        updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
+      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
     updateSelections(updatedSelections);
@@ -803,46 +821,46 @@ const Game = () => {
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
     if (!hasSeenOverlays) {
-        // Show "Swipe right" overlay only on first selection of first image pair
-        if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-            setShowSwipeRightOverlay(true);
-            setTimeout(() => setShowSwipeRightOverlay(false), 2000);
-        }
+      // Show "Swipe right" overlay only on first selection of first image pair
+      if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+        setShowSwipeRightOverlay(true);
+        setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+      }
     }
-};
+  };
 
-const handleSwipe = (swiper) => {
-  setCurrentIndex(swiper.realIndex);
+  const handleSwipe = (swiper) => {
+    setCurrentIndex(swiper.realIndex);
 
-  // Check if user has seen overlays before
-  const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
+    // Check if user has seen overlays before
+    const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
-  if (!hasSeenOverlays) {
+    if (!hasSeenOverlays) {
       // Show "Swipe left to go back" overlay after the first swipe (only once)
       if (!hasSeenSwipeLeft && swiper.realIndex > 0) {
-          setShowSwipeLeftOverlay(true);
-          setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
-          setHasSeenSwipeLeft(true);
+        setShowSwipeLeftOverlay(true);
+        setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
+        setHasSeenSwipeLeft(true);
       }
 
       // Show "Double tap to enlarge" overlay after the second swipe (only once)
       if (!hasSeenDoubleTap && swiper.realIndex > 1) {
-          setShowDoubleTapOverlay(true);
-          setTimeout(() => setShowDoubleTapOverlay(false), 2000);
-          setHasSeenDoubleTap(true);
+        setShowDoubleTapOverlay(true);
+        setTimeout(() => setShowDoubleTapOverlay(false), 2000);
+        setHasSeenDoubleTap(true);
       }
 
       // Show "Tap info icon for more help" overlay after the fourth swipe (only once)
       if (!showInfoOverlay && swiper.realIndex > 2) {
-          setShowInfoOverlay(true);
-          setTimeout(() => {
-              setShowInfoOverlay(false);
-              // Mark overlays as seen after all have displayed
-              localStorage.setItem("hasSeenOverlays", "true");
-          }, 2000);
+        setShowInfoOverlay(true);
+        setTimeout(() => {
+          setShowInfoOverlay(false);
+          // Mark overlays as seen after all have displayed
+          localStorage.setItem("hasSeenOverlays", "true");
+        }, 2000);
       }
-  }
-};
+    }
+  };
 
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available
@@ -914,8 +932,10 @@ const handleSwipe = (swiper) => {
 
   const handleImageClick = (imageUrl) => {
     console.log("Opening enlarged image:", imageUrl);
-    setEnlargedImage(imageUrl);
-    setEnlargedImageMode("game-screen"); // Change to default to game-screen
+
+    // Use cached image if available
+    setEnlargedImage(cachedEnlargedImages[imageUrl] || imageUrl);
+    setEnlargedImageMode("game-screen");
   };
 
   const closeEnlargedImage = () => {
@@ -1127,42 +1147,50 @@ const handleSwipe = (swiper) => {
                 {imagePairs.map((pair, index) => (
                   <SwiperSlide key={index}>
                     <div className="image-pair-container">
-                      {pair.images.map((image, idx) => (
-                        <div
-                          key={idx}
-                          className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
-                        >
-                          <img
-                            src={image}
-                            alt={`Painting ${idx + 1}`}
-                            onClick={(e) => {
-                              const currentTime = new Date().getTime();
-                              const timeSinceLastTap = currentTime - lastTapTime.current;
+                      {pair.images.map((image, idx) => {
+                        const [isLoaded, setIsLoaded] = useState(false);
+                        const isSelected = selections[index]?.selected === image;
 
-                              if (timeSinceLastTap < 300) { // ✅ Double-tap detected
-                                clearTimeout(singleTapTimeout.current); // ✅ Cancel single tap selection
-                                if (!enlargedImage) { // ✅ Ensure enlargement only happens once
-                                  setEnlargedImage(null); // Ensure previous one is cleared
-                                  setTimeout(() => {
-                                    setEnlargedImage(image);
-                                    setEnlargedImageMode("game-screen");
-                                  }, 10); // Small delay prevents duplicate stacking
-                                }
-                              } else {
-                                singleTapTimeout.current = setTimeout(() => {
-                                  handleSelection(image, image === pair.human); // ✅ Select only if no double-tap
-                                }, 220);
-                              }
+                        return (
+                          <div key={idx} className={`image-container ${isSelected ? "selected" : ""}`}>
+                            <div className={`image-wrapper ${isLoaded ? "loaded" : ""}`}>
+                              <img
+                                src={image}
+                                alt={`Painting ${idx + 1}`}
+                                className="lazy-img"
+                                onLoad={() => setIsLoaded(true)}
+                                onClick={(e) => {
+                                  const currentTime = new Date().getTime();
+                                  const timeSinceLastTap = currentTime - lastTapTime.current;
 
-                              lastTapTime.current = currentTime;
-                            }}
-                            draggable="false"
-                          />
-                        </div>
-                      ))}
+                                  if (timeSinceLastTap < 300) { // ✅ Double-tap detected
+                                    clearTimeout(singleTapTimeout.current); // ✅ Cancel single tap selection
+                                    if (!enlargedImage) { // ✅ Ensure enlargement only happens once
+                                      setEnlargedImage(null); // Ensure previous one is cleared
+                                      setTimeout(() => {
+                                        setEnlargedImage(image);
+                                        setEnlargedImageMode("game-screen");
+                                      }, 10); // Small delay prevents duplicate stacking
+                                    }
+                                  } else {
+                                    singleTapTimeout.current = setTimeout(() => {
+                                      handleSelection(image, image === pair.human); // ✅ Select only if no double-tap
+                                    }, 220);
+                                  }
+
+                                  lastTapTime.current = currentTime;
+                                }}
+                                draggable="false"
+                              />
+                              {!isLoaded && <div className="image-loader"></div>} {/* ✅ Spinner while loading */}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </SwiperSlide>
                 ))}
+
               </Swiper>
             </>
           ) : (

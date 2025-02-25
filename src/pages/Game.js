@@ -910,21 +910,23 @@ const Game = () => {
     // Get the puzzle number dynamically
     const puzzleNumber = calculatePuzzleNumber();
 
-    // Build the visual representation of results from all attempts
+    // Build the visual representation of results from ALL ATTEMPTS (fixing the missing prior attempts)
     const formattedGuesses = alreadyGuessed
-        .map(guess => guess.map(selection => selection?.selected === imagePairs[alreadyGuessed.indexOf(guess)]?.human ? "🟢" : "🔴").join(" "))
-        .join("\n");
+        .map(guess => guess
+            .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+            .join(" ")
+        ).join("\n"); // Ensure each previous attempt appears on a new line
 
-    // Build the final attempt result
-    const resultsVisual = completedSelections
+    // Build the final attempt separately
+    const finalAttempt = completedSelections
         .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
         .join(" ");
 
     // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
 
-    // Construct the shareable text with all attempts included
-    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${formattedGuesses}\n${resultsVisual}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
+    // Construct the shareable text with ALL ATTEMPTS properly included
+    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${formattedGuesses}\n${finalAttempt}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
 
     // Check if the device supports native sharing
     if (navigator.share) {
@@ -946,7 +948,6 @@ const Game = () => {
             });
     }
 };
-
 
   const handlePlayClick = () => {
     if (window.innerWidth > 768) { // Targeting laptop/desktop screens

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaLongArrowAltRight, FaLongArrowAltLeft } from 'react-icons/fa';
-import logo from '../assets/images/artalyze-logo.webp';
+import logo from '../assets/images/artalyze-logo.png';
 import SwiperCore, { Swiper, SwiperSlide } from 'swiper/react';
 import { getTodayInEST } from '../utils/dateUtils';
 import { calculatePuzzleNumber } from '../utils/puzzleUtils';
@@ -72,13 +72,6 @@ const Game = () => {
     return localStorage.getItem("darkMode") === "true";
   });
 
-  const [cachedEnlargedImages, setCachedEnlargedImages] = useState({});
-  const preloadImages = (urls) => {
-    urls.forEach((url) => {
-      const img = new Image();
-      img.src = url;
-    });
-  };
 
   const [stats, setStats] = useState({
     gamesPlayed: 0,
@@ -349,39 +342,22 @@ const Game = () => {
         setAlreadyGuessed(alreadyGuessed);
       }, 100); // Delay to ensure state updates correctly
 
-      let storedPuzzle = localStorage.getItem("dailyPuzzle");
-      let lastPuzzleDate = localStorage.getItem("lastPuzzleDate");
-
-      // **Check if we already have today's puzzle stored**
-      if (storedPuzzle && lastPuzzleDate === today) {
-        console.log("📦 Restoring puzzle from localStorage...");
-        setImagePairs(JSON.parse(storedPuzzle));
-        return;
-      }
-
-      console.log("📡 Fetching new puzzle from server...");
+      console.log("📡 Fetching daily puzzle...");
       const puzzleResponse = await axiosInstance.get("/game/daily-puzzle");
+      console.log("📦 Puzzle Response:", puzzleResponse.data);
 
       if (puzzleResponse.data?.imagePairs?.length > 0) {
-        const pairs = puzzleResponse.data.imagePairs.map((pair) => {
-          // Randomly decide whether to swap positions
-          const shuffledImages = Math.random() > 0.5
+        const pairs = puzzleResponse.data.imagePairs.map((pair) => ({
+          human: pair.humanImageURL,
+          ai: pair.aiImageURL,
+          images: Math.random() > 0.5
             ? [pair.humanImageURL, pair.aiImageURL]
-            : [pair.aiImageURL, pair.humanImageURL];
+            : [pair.aiImageURL, pair.humanImageURL],
+        }));
 
-          return {
-            human: pair.humanImageURL,  // Keep track of correct answer
-            ai: pair.aiImageURL,
-            images: shuffledImages  // Randomized image order
-          };
-        });
-
-
-        // **Cache today's puzzle to prevent reloading on refresh**
-        localStorage.setItem("dailyPuzzle", JSON.stringify(pairs));
-        localStorage.setItem("lastPuzzleDate", today);
-
+        console.log("🖼️ Setting imagePairs:", pairs);
         setImagePairs(pairs);
+        localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
       } else {
         console.warn("⚠️ No image pairs available for today.");
         setImagePairs([]);
@@ -815,9 +791,9 @@ const Game = () => {
 
     // Deselect if already selected
     if (updatedSelections[currentIndex]?.selected === selectedImage) {
-      updatedSelections[currentIndex] = null;
+        updatedSelections[currentIndex] = null;
     } else {
-      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
+        updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
     updateSelections(updatedSelections);
@@ -827,46 +803,46 @@ const Game = () => {
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
     if (!hasSeenOverlays) {
-      // Show "Swipe right" overlay only on first selection of first image pair
-      if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-        setShowSwipeRightOverlay(true);
-        setTimeout(() => setShowSwipeRightOverlay(false), 2000);
-      }
+        // Show "Swipe right" overlay only on first selection of first image pair
+        if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+            setShowSwipeRightOverlay(true);
+            setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+        }
     }
-  };
+};
 
-  const handleSwipe = (swiper) => {
-    setCurrentIndex(swiper.realIndex);
+const handleSwipe = (swiper) => {
+  setCurrentIndex(swiper.realIndex);
 
-    // Check if user has seen overlays before
-    const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
+  // Check if user has seen overlays before
+  const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
-    if (!hasSeenOverlays) {
+  if (!hasSeenOverlays) {
       // Show "Swipe left to go back" overlay after the first swipe (only once)
       if (!hasSeenSwipeLeft && swiper.realIndex > 0) {
-        setShowSwipeLeftOverlay(true);
-        setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
-        setHasSeenSwipeLeft(true);
+          setShowSwipeLeftOverlay(true);
+          setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
+          setHasSeenSwipeLeft(true);
       }
 
       // Show "Double tap to enlarge" overlay after the second swipe (only once)
       if (!hasSeenDoubleTap && swiper.realIndex > 1) {
-        setShowDoubleTapOverlay(true);
-        setTimeout(() => setShowDoubleTapOverlay(false), 2000);
-        setHasSeenDoubleTap(true);
+          setShowDoubleTapOverlay(true);
+          setTimeout(() => setShowDoubleTapOverlay(false), 2000);
+          setHasSeenDoubleTap(true);
       }
 
       // Show "Tap info icon for more help" overlay after the fourth swipe (only once)
       if (!showInfoOverlay && swiper.realIndex > 2) {
-        setShowInfoOverlay(true);
-        setTimeout(() => {
-          setShowInfoOverlay(false);
-          // Mark overlays as seen after all have displayed
-          localStorage.setItem("hasSeenOverlays", "true");
-        }, 2000);
+          setShowInfoOverlay(true);
+          setTimeout(() => {
+              setShowInfoOverlay(false);
+              // Mark overlays as seen after all have displayed
+              localStorage.setItem("hasSeenOverlays", "true");
+          }, 2000);
       }
-    }
-  };
+  }
+};
 
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available
@@ -1142,7 +1118,7 @@ const Game = () => {
             <>
               <Swiper
                 loop={true}
-                onSlideChange={handleSwipe}
+                onSlideChange={handleSwipe} // ✅ Now using handleSwipe
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper;
                   swiper.slideToLoop(0);
@@ -1151,46 +1127,39 @@ const Game = () => {
                 {imagePairs.map((pair, index) => (
                   <SwiperSlide key={index}>
                     <div className="image-pair-container">
-                      {pair.images.map((image, idx) => {
-                        const isSelected = selections[index]?.selected === image;
+                      {pair.images.map((image, idx) => (
+                        <div
+                          key={idx}
+                          className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
+                        >
+                          <img
+                            src={image}
+                            alt={`Painting ${idx + 1}`}
+                            onClick={(e) => {
+                              const currentTime = new Date().getTime();
+                              const timeSinceLastTap = currentTime - lastTapTime.current;
 
-                        return (
-                          <div key={idx} className={`image-container ${isSelected ? "selected" : ""}`}>
-                            <div className="image-wrapper">
-                              <img
-                                src={image}
-                                alt={`Painting ${idx + 1}`}
-                                loading="lazy"
-                                className="lazy-img"
-                                onClick={(e) => {
-                                  const currentTime = new Date().getTime();
-                                  const timeSinceLastTap = currentTime - lastTapTime.current;
+                              if (timeSinceLastTap < 300) { // ✅ Double-tap detected
+                                clearTimeout(singleTapTimeout.current); // ✅ Cancel single tap selection
+                                if (!enlargedImage) { // ✅ Ensure enlargement only happens once
+                                  setEnlargedImage(null); // Ensure previous one is cleared
+                                  setTimeout(() => {
+                                    setEnlargedImage(image);
+                                    setEnlargedImageMode("game-screen");
+                                  }, 10); // Small delay prevents duplicate stacking
+                                }
+                              } else {
+                                singleTapTimeout.current = setTimeout(() => {
+                                  handleSelection(image, image === pair.human); // ✅ Select only if no double-tap
+                                }, 220);
+                              }
 
-                                  if (timeSinceLastTap < 300) { // ✅ Double-tap detected
-                                    clearTimeout(singleTapTimeout.current);
-                                    if (!enlargedImage) {
-                                      setEnlargedImage(null);
-                                      setTimeout(() => {
-                                        setEnlargedImage(image);
-                                        setEnlargedImageMode("game-screen");
-                                      }, 10);
-                                    }
-                                  } else {
-                                    singleTapTimeout.current = setTimeout(() => {
-                                      handleSelection(image, image === pair.human);
-                                    }, 220);
-                                  }
-
-                                  lastTapTime.current = currentTime;
-                                }}
-                                onLoad={(e) => e.target.parentElement.classList.add("loaded")}
-                                draggable="false"
-                              />
-                              <div className="image-loader"></div> {/* ✅ Spinner while loading */}
-                            </div>
-                          </div>
-                        );
-                      })}
+                              lastTapTime.current = currentTime;
+                            }}
+                            draggable="false"
+                          />
+                        </div>
+                      ))}
                     </div>
                   </SwiperSlide>
                 ))}
@@ -1360,29 +1329,13 @@ const Game = () => {
                       className={`thumbnail-container human ${isCorrect ? "correct pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.human)}
                     >
-                      <img
-                        src={pair.human}
-                        alt={`Human ${index + 1}`}
-                        className="lazy-thumbnail"
-                        onLoad={(e) => e.target.parentElement.classList.add("loaded")}
-                        loading="lazy"
-                        draggable="false"
-                      />
-                      <div className="thumbnail-loader"></div> {/* Loader */}
+                      <img src={pair.human} alt={`Human ${index + 1}`} draggable="false" />
                     </div>
                     <div
                       className={`thumbnail-container ai ${!isCorrect && selection ? "incorrect pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
-                      <img
-                        src={pair.ai}
-                        alt={`AI ${index + 1}`}
-                        className="lazy-thumbnail"
-                        onLoad={(e) => e.target.parentElement.classList.add("loaded")}
-                        loading="lazy"
-                        draggable="false"
-                      />
-                      <div className="thumbnail-loader"></div> {/* Loader */}
+                      <img src={pair.ai} alt={`AI ${index + 1}`} draggable="false" />
                     </div>
                   </div>
                 );
@@ -1400,35 +1353,21 @@ const Game = () => {
                       className={`thumbnail-container human ${isCorrect ? "correct pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.human)}
                     >
-                      <img
-                        src={pair.human}
-                        alt={`Human ${index + 4}`}
-                        className="lazy-thumbnail"
-                        onLoad={(e) => e.target.parentElement.classList.add("loaded")}
-                        loading="lazy"
-                        draggable="false"
-                      />
-                      <div className="thumbnail-loader"></div> {/* Loader */}
+                      <img src={pair.human} alt={`Human ${index + 4}`} draggable="false" />
                     </div>
                     <div
                       className={`thumbnail-container ai ${!isCorrect && selection ? "incorrect pulse" : ""}`}
                       onClick={() => setEnlargedImage(pair.ai)}
                     >
-                      <img
-                        src={pair.ai}
-                        alt={`AI ${index + 4}`}
-                        className="lazy-thumbnail"
-                        onLoad={(e) => e.target.parentElement.classList.add("loaded")}
-                        loading="lazy"
-                        draggable="false"
-                      />
-                      <div className="thumbnail-loader"></div> {/* Loader */}
+                      <img src={pair.ai} alt={`AI ${index + 4}`} draggable="false" />
                     </div>
                   </div>
                 );
               })}
             </div>
           </div>
+
+
         </div>
       )}
 

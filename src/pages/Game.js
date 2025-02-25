@@ -348,21 +348,39 @@ const Game = () => {
       console.log("📦 Puzzle Response:", puzzleResponse.data);
 
       if (puzzleResponse.data?.imagePairs?.length > 0) {
-        const pairs = puzzleResponse.data.imagePairs.map((pair) => ({
-          human: pair.humanImageURL,
-          ai: pair.aiImageURL,
-          images: Math.random() > 0.5
-            ? [pair.humanImageURL, pair.aiImageURL]
-            : [pair.aiImageURL, pair.humanImageURL],
-        }));
-
+        const getRandomizedPairs = (pairs) => {
+          return pairs.map((pair) => ({
+            human: pair.humanImageURL,
+            ai: pair.aiImageURL,
+            images: Math.random() > 0.5
+              ? [pair.humanImageURL, pair.aiImageURL]
+              : [pair.aiImageURL, pair.humanImageURL],
+          }));
+        };
+      
+        const initializeImagePairs = (imagePairsData) => {
+          // Check if stored randomized pairs exist
+          const storedPairs = localStorage.getItem("randomizedImagePairs");
+          
+          if (storedPairs) {
+            console.log("🔄 Using stored image pairs from localStorage");
+            return JSON.parse(storedPairs);
+          } else {
+            console.log("🎲 Randomizing image pairs for the first time");
+            const randomizedPairs = getRandomizedPairs(imagePairsData);
+            localStorage.setItem("randomizedImagePairs", JSON.stringify(randomizedPairs));
+            return randomizedPairs;
+          }
+        };
+      
+        const pairs = initializeImagePairs(puzzleResponse.data.imagePairs);
         console.log("🖼️ Setting imagePairs:", pairs);
         setImagePairs(pairs);
         localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
       } else {
         console.warn("⚠️ No image pairs available for today.");
         setImagePairs([]);
-      }
+      }      
     } catch (error) {
       console.error("❌ Error initializing game:", error.response?.data || error.message);
       setError("Failed to initialize the game. Please try again later.");

@@ -64,7 +64,8 @@ const Game = () => {
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
   const { selections = [], updateSelections, isLoading, error: selectionsError } = useSelections(userId, isLoggedIn);
   const [completedSelections, setCompletedSelections] = useState([]);
-
+  const [attempts, setAttempts] = useState([]);
+  const [completedAttempts, setCompletedAttempts] = useState([]);
   const [alreadyGuessed, setAlreadyGuessed] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDuplicateOverlay, setShowDuplicateOverlay] = useState(false);
@@ -107,6 +108,28 @@ const Game = () => {
   const handleGameComplete = async () => {
     console.log("🏁 handleGameComplete called");
     setIsGameComplete(true);
+
+    // ✅ Move attempts to completedAttempts upon game completion
+    setCompletedAttempts([...completedAttempts, ...attempts]);
+    localStorage.setItem("completedAttempts", JSON.stringify([...completedAttempts, ...attempts]));
+
+    if (isUserLoggedIn()) {
+      try {
+        await axiosInstance.put("/stats/completed-attempts", { completedAttempts: [...completedAttempts, ...attempts] });
+        console.log("✅ Completed attempts saved in backend.");
+      } catch (error) {
+        console.error("❌ Error saving completed attempts:", error);
+      }
+    }
+
+    // ✅ Reset attempts for the next game
+    setAttempts([]);
+    localStorage.setItem("attempts", JSON.stringify([]));
+
+    if (isUserLoggedIn()) {
+      await axiosInstance.put("/stats/attempts", { attempts: [] });
+    }
+
 
     if (!Array.isArray(selections) || !Array.isArray(imagePairs)) {
       console.error("❌ Invalid data: selections or imagePairs are undefined.");
@@ -232,6 +255,18 @@ const Game = () => {
             setAlreadyGuessed(alreadyGuessed);
             localStorage.setItem("alreadyGuessed", JSON.stringify(alreadyGuessed));
           }
+
+          // ✅ **Restore attempts and completedAttempts**
+          if (statsResponse.data.attempts) {
+            setAttempts(statsResponse.data.attempts);
+            localStorage.setItem("attempts", JSON.stringify(statsResponse.data.attempts));
+          }
+
+          if (statsResponse.data.completedAttempts) {
+            setCompletedAttempts(statsResponse.data.completedAttempts);
+            localStorage.setItem("completedAttempts", JSON.stringify(statsResponse.data.completedAttempts));
+          }
+
         } else {
           console.log("Handling guest user selections...");
           const savedSelections = localStorage.getItem("selections");
@@ -825,14 +860,14 @@ const Game = () => {
 
     // Ensure index exists before updating
     if (!updatedSelections[currentIndex]) {
-        updatedSelections[currentIndex] = { selected: null, isHumanSelection: false };
+      updatedSelections[currentIndex] = { selected: null, isHumanSelection: false };
     }
 
     // Toggle selection (if clicked again, it removes selection)
     if (updatedSelections[currentIndex].selected === selectedImage) {
-        updatedSelections[currentIndex] = null;
+      updatedSelections[currentIndex] = null;
     } else {
-        updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
+      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
     updateSelections(updatedSelections);
@@ -841,22 +876,22 @@ const Game = () => {
     // ✅ Force Submit Button State Update
     const isAllSelected = updatedSelections.filter(Boolean).length === imagePairs.length;
     if (isAllSelected) {
-        document.querySelector(".submit-button").classList.add("enabled");
+      document.querySelector(".submit-button").classList.add("enabled");
     } else {
-        document.querySelector(".submit-button").classList.remove("enabled");
+      document.querySelector(".submit-button").classList.remove("enabled");
     }
 
     // Check if user has seen overlays before
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
     if (!hasSeenOverlays) {
-        // Show "Swipe right" overlay only on first selection of first image pair
-        if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-            setShowSwipeRightOverlay(true);
-            setTimeout(() => setShowSwipeRightOverlay(false), 2000);
-        }
+      // Show "Swipe right" overlay only on first selection of first image pair
+      if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+        setShowSwipeRightOverlay(true);
+        setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+      }
     }
-};
+  };
 
 
   const handleSwipe = (swiper) => {
@@ -895,32 +930,31 @@ const Game = () => {
   const handleCompletionShare = () => {
     // Ensure completedSelections, alreadyGuessed, and imagePairs are available
     if (!completedSelections.length || !imagePairs.length) {
-        alert("No data available to share today's puzzle!");
-        return;
+      alert("No data available to share today's puzzle!");
+      return;
     }
 
     // Calculate the score based on completed selections
     const score = completedSelections.reduce((count, selection, index) => {
-        if (selection?.selected === imagePairs[index]?.human) {
-            return count + 1;
-        }
-        return count;
+      if (selection?.selected === imagePairs[index]?.human) {
+        return count + 1;
+      }
+      return count;
     }, 0);
 
     // Get the puzzle number dynamically
     const puzzleNumber = calculatePuzzleNumber();
 
-    // Build the visual representation of results from ALL ATTEMPTS (fixing the missing prior attempts)
-    const formattedGuesses = alreadyGuessed
-        .map(guess => guess
-            .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-            .join(" ")
-        ).join("\n"); // Ensure each previous attempt appears on a new line
+    const formattedGuesses = [...alreadyGuessed, ...completedAttempts]
+      .map(attempt => attempt
+        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+        .join(" ")
+      ).join("\n");
 
     // Build the final attempt separately
     const finalAttempt = completedSelections
-        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-        .join(" ");
+      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+      .join(" ");
 
     // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
@@ -930,24 +964,24 @@ const Game = () => {
 
     // Check if the device supports native sharing
     if (navigator.share) {
-        navigator
-            .share({
-                title: `Artalyze #${puzzleNumber}`,
-                text: shareableText,
-            })
-            .catch((error) => console.log("Error sharing:", error));
+      navigator
+        .share({
+          title: `Artalyze #${puzzleNumber}`,
+          text: shareableText,
+        })
+        .catch((error) => console.log("Error sharing:", error));
     } else {
-        // Fallback to clipboard copy if native sharing is unavailable
-        navigator.clipboard
-            .writeText(shareableText)
-            .then(() => {
-                alert("Results copied to clipboard! You can now paste it anywhere.");
-            })
-            .catch((error) => {
-                console.error("Failed to copy:", error);
-            });
+      // Fallback to clipboard copy if native sharing is unavailable
+      navigator.clipboard
+        .writeText(shareableText)
+        .then(() => {
+          alert("Results copied to clipboard! You can now paste it anywhere.");
+        })
+        .catch((error) => {
+          console.error("Failed to copy:", error);
+        });
     }
-};
+  };
 
   const handlePlayClick = () => {
     if (window.innerWidth > 768) { // Targeting laptop/desktop screens
@@ -1015,8 +1049,8 @@ const Game = () => {
     const currentSubmission = selections.map((selection) => selection.selected);
 
     // ✅ Check if this exact submission was already made
-    const isDuplicateSubmission = alreadyGuessed.some(
-      (pastSubmission) => JSON.stringify(pastSubmission) === JSON.stringify(currentSubmission)
+    const isDuplicateSubmission = [...alreadyGuessed, ...attempts].some(
+      (pastAttempt) => JSON.stringify(pastAttempt) === JSON.stringify(currentSubmission)
     );
 
     if (isDuplicateSubmission) {
@@ -1027,19 +1061,25 @@ const Game = () => {
       return;
     }
 
-    // ✅ Store new guess in `alreadyGuessed`
+    // ✅ Store new guess in `alreadyGuessed` and `attempts`
     const updatedGuesses = [...alreadyGuessed, currentSubmission];
-    setAlreadyGuessed(updatedGuesses);
-    localStorage.setItem("alreadyGuessed", JSON.stringify(updatedGuesses));
+    const updatedAttempts = [...attempts, currentSubmission];
 
-    console.log("✅ Submission stored in alreadyGuessed:", updatedGuesses);
+    setAlreadyGuessed(updatedGuesses);
+    setAttempts(updatedAttempts);
+
+    localStorage.setItem("alreadyGuessed", JSON.stringify(updatedGuesses));
+    localStorage.setItem("attempts", JSON.stringify(updatedAttempts));
+
+    console.log("✅ Submission stored in alreadyGuessed and attempts:", updatedGuesses, updatedAttempts);
 
     if (isUserLoggedIn()) {
       try {
         await axiosInstance.put("/stats/already-guessed", { alreadyGuessed: updatedGuesses });
-        console.log("✅ alreadyGuessed updated in backend.");
+        await axiosInstance.put("/stats/attempts", { attempts: updatedAttempts });
+        console.log("✅ alreadyGuessed and attempts updated in backend.");
       } catch (error) {
-        console.error("❌ Error updating alreadyGuessed:", error);
+        console.error("❌ Error updating alreadyGuessed/attempts:", error);
       }
     }
 
@@ -1057,6 +1097,28 @@ const Game = () => {
       console.log("🏁 Game completed! Correct answers:", correct);
       setIsGameComplete(true);
       setShowOverlay(false);
+
+      // ✅ Move attempts to completedAttempts upon game completion
+      setCompletedAttempts([...completedAttempts, ...attempts]);
+      localStorage.setItem("completedAttempts", JSON.stringify([...completedAttempts, ...attempts]));
+
+      if (isUserLoggedIn()) {
+        try {
+          await axiosInstance.put("/stats/completed-attempts", { completedAttempts: [...completedAttempts, ...attempts] });
+          console.log("✅ Completed attempts saved in backend.");
+        } catch (error) {
+          console.error("❌ Error saving completed attempts:", error);
+        }
+      }
+
+      // ✅ Reset attempts for next game
+      setAttempts([]);
+      localStorage.setItem("attempts", JSON.stringify([]));
+
+      if (isUserLoggedIn()) {
+        await axiosInstance.put("/stats/attempts", { attempts: [] });
+      }
+
       handleGameComplete();
     } else {
       console.log("🔄 Guess submitted, but game is NOT complete yet. Showing mid-turn overlay...");
@@ -1066,7 +1128,6 @@ const Game = () => {
 
     setIsSubmitting(false);
   };
-
 
   const handleStatsModalClose = () => {
     setIsStatsOpen(false);

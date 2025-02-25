@@ -3,13 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patch Notes - BETA Version 1.1</title>
+    <title>Artalyze Patch Notes</title>
     <link rel="stylesheet" href="/css/patch-notes.css">
 </head>
 <body>
+    <h1>Artalyze - BETA Version 1.2 Patch Notes</h1>
+    <div class="content-wrapper">
+        <p class="last-updated">Release Date: February 25th, 2025</p>
+
+        <h2>New Features & Improvements</h2>
+        <div class="section">
+            <h3>Image Loading & Stability Enhancements</h3>
+            <ul>
+                <li><strong>Preloaded Enlarged Images:</strong> Enlarged images now load instantly instead of reloading every time they are viewed.</li>
+                <li><strong>Persistent Image Order:</strong> The randomization of human and AI images is now stored in localStorage, preventing images from switching positions after a refresh.</li>
+                <li><strong>Loading Indicators:</strong> Implemented a loader over image containers while images are loading, ensuring better feedback on slower connections.</li>
+            </ul>
+        </div>
+
+        <h2>Bug Fixes & Optimizations</h2>
+        <div class="section">
+            <h3>Image Pair Randomization & Flickering Fixes</h3>
+            <ul>
+                <li><strong>Fixed Position Switching on Refresh:</strong> Image pairs now maintain their initial order throughout the puzzle, eliminating flickering and re-randomization on reload.</li>
+                <li><strong>Cached Image Order:</strong> The daily puzzle is now saved in localStorage, ensuring that once an image order is set, it remains unchanged until the next puzzle.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3>Submit Button Activation Fixes</h3>
+            <ul>
+                <li><strong>Submit Button Only Activates When All Pairs Are Selected:</strong> Fixed an issue where selecting only the last image incorrectly enabled the submit button.</li>
+                <li><strong>Deselecting an Image Properly Disables the Submit Button:</strong> If a selection is removed, the submit button will now deactivate unless all pairs remain selected.</li>
+                <li><strong>Clearing Selections Resets Button State:</strong> Pressing "Clear" correctly disables the submit button and resets the selection state.</li>
+            </ul>
+        </div>
+    </div>
+
     <h1>Artalyze - BETA Version 1.1 Patch Notes</h1>
     <div class="content-wrapper">
-        <p class="last-updated">Release Date: Feb. 17th, 2025</p>
+        <p class="last-updated">Release Date: February 17th, 2025</p>
 
         <h2>New Features & Improvements</h2>
         <div class="section">

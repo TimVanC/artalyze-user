@@ -825,14 +825,14 @@ const Game = () => {
 
     // Ensure index exists before updating
     if (!updatedSelections[currentIndex]) {
-      updatedSelections[currentIndex] = { selected: null, isHumanSelection: false };
+        updatedSelections[currentIndex] = { selected: null, isHumanSelection: false };
     }
 
     // Toggle selection (if clicked again, it removes selection)
     if (updatedSelections[currentIndex].selected === selectedImage) {
-      updatedSelections[currentIndex] = null;
+        updatedSelections[currentIndex] = null;
     } else {
-      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
+        updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
     updateSelections(updatedSelections);
@@ -840,19 +840,24 @@ const Game = () => {
 
     // ✅ Force Submit Button State Update
     const isAllSelected = updatedSelections.filter(Boolean).length === imagePairs.length;
-    setIsSubmitEnabled(isAllSelected); // Ensure state updates properly
+    if (isAllSelected) {
+        document.querySelector(".submit-button").classList.add("enabled");
+    } else {
+        document.querySelector(".submit-button").classList.remove("enabled");
+    }
 
     // Check if user has seen overlays before
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
     if (!hasSeenOverlays) {
-      // Show "Swipe right" overlay only on first selection of first image pair
-      if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-        setShowSwipeRightOverlay(true);
-        setTimeout(() => setShowSwipeRightOverlay(false), 2000);
-      }
+        // Show "Swipe right" overlay only on first selection of first image pair
+        if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+            setShowSwipeRightOverlay(true);
+            setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+        }
     }
-  };
+};
+
 
   const handleSwipe = (swiper) => {
     setCurrentIndex(swiper.realIndex);

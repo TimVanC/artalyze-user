@@ -357,11 +357,11 @@ const Game = () => {
               : [pair.aiImageURL, pair.humanImageURL],
           }));
         };
-      
+
         const initializeImagePairs = (imagePairsData) => {
           // Check if stored randomized pairs exist
           const storedPairs = localStorage.getItem("randomizedImagePairs");
-          
+
           if (storedPairs) {
             console.log("🔄 Using stored image pairs from localStorage");
             return JSON.parse(storedPairs);
@@ -372,7 +372,7 @@ const Game = () => {
             return randomizedPairs;
           }
         };
-      
+
         const pairs = initializeImagePairs(puzzleResponse.data.imagePairs);
         console.log("🖼️ Setting imagePairs:", pairs);
         setImagePairs(pairs);
@@ -380,7 +380,7 @@ const Game = () => {
       } else {
         console.warn("⚠️ No image pairs available for today.");
         setImagePairs([]);
-      }      
+      }
     } catch (error) {
       console.error("❌ Error initializing game:", error.response?.data || error.message);
       setError("Failed to initialize the game. Please try again later.");
@@ -548,30 +548,30 @@ const Game = () => {
   // Monitor updates to imagePairs
   useEffect(() => {
     console.log("Image pairs state updated:", imagePairs);
-    
-    if (imagePairs.length > 0) {
-        // Existing logic for updating Swiper
-        setTimeout(() => {
-            if (swiperRef.current) {
-                console.log("Updating Swiper to current index:", currentIndex);
-                swiperRef.current.slideToLoop(currentIndex, 0);
-            }
-        }, 100);
 
-        // 🔄 **New Image Preloading Logic**
-        const loadingState = {};
-        imagePairs.forEach((pair, index) => {
-            pair.images.forEach((image, position) => {
-                loadingState[`${index}-${position}`] = true; // Mark as loading
-                const img = new Image();
-                img.src = image;
-                img.onload = () => handleImageLoad(index, position);
-                img.onerror = () => handleImageError(index, position);
-            });
+    if (imagePairs.length > 0) {
+      // Existing logic for updating Swiper
+      setTimeout(() => {
+        if (swiperRef.current) {
+          console.log("Updating Swiper to current index:", currentIndex);
+          swiperRef.current.slideToLoop(currentIndex, 0);
+        }
+      }, 100);
+
+      // 🔄 **New Image Preloading Logic**
+      const loadingState = {};
+      imagePairs.forEach((pair, index) => {
+        pair.images.forEach((image, position) => {
+          loadingState[`${index}-${position}`] = true; // Mark as loading
+          const img = new Image();
+          img.src = image;
+          img.onload = () => handleImageLoad(index, position);
+          img.onerror = () => handleImageError(index, position);
         });
-        setImageLoading((prev) => ({ ...prev, ...loadingState }));
+      });
+      setImageLoading((prev) => ({ ...prev, ...loadingState }));
     }
-}, [currentIndex, imagePairs]);
+  }, [currentIndex, imagePairs]);
 
   // Apply animations to thumbnails when the stats modal is dismissed
   useEffect(() => {
@@ -823,27 +823,41 @@ const Game = () => {
   const handleSelection = (selectedImage, isHumanSelection) => {
     const updatedSelections = [...selections];
 
-    // Deselect if already selected
-    if (updatedSelections[currentIndex]?.selected === selectedImage) {
-      updatedSelections[currentIndex] = null;
+    // Ensure index exists before updating
+    if (!updatedSelections[currentIndex]) {
+        updatedSelections[currentIndex] = { selected: null, isHumanSelection: false };
+    }
+
+    // Toggle selection (if clicked again, it removes selection)
+    if (updatedSelections[currentIndex].selected === selectedImage) {
+        updatedSelections[currentIndex] = null;
     } else {
-      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
+        updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
 
+    // ✅ Force Submit Button State Update
+    const isAllSelected = updatedSelections.filter(Boolean).length === imagePairs.length;
+    if (isAllSelected) {
+        document.querySelector(".submit-button").classList.add("enabled");
+    } else {
+        document.querySelector(".submit-button").classList.remove("enabled");
+    }
+
     // Check if user has seen overlays before
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
     if (!hasSeenOverlays) {
-      // Show "Swipe right" overlay only on first selection of first image pair
-      if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-        setShowSwipeRightOverlay(true);
-        setTimeout(() => setShowSwipeRightOverlay(false), 2000);
-      }
+        // Show "Swipe right" overlay only on first selection of first image pair
+        if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+            setShowSwipeRightOverlay(true);
+            setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+        }
     }
-  };
+};
+
 
   const handleSwipe = (swiper) => {
     setCurrentIndex(swiper.realIndex);
@@ -948,11 +962,11 @@ const Game = () => {
 
   const handleImageClick = (imageUrl) => {
     if (!imageLoading[imageUrl]) {  // Only open if it's fully loaded
-        console.log("Opening enlarged image:", imageUrl);
-        setEnlargedImage(imageUrl);
-        setEnlargedImageMode("game-screen");
+      console.log("Opening enlarged image:", imageUrl);
+      setEnlargedImage(imageUrl);
+      setEnlargedImageMode("game-screen");
     }
-};
+  };
 
   const handleImageLoad = (index, position) => {
     setImageLoading((prev) => ({ ...prev, [`${index}-${position}`]: false }));
@@ -1052,7 +1066,7 @@ const Game = () => {
     setTimeout(() => setIsStatsModalDismissed(true), 300); // Trigger animation after modal close animation
   };
 
-  const isSubmitEnabled = selections.length === imagePairs.length;
+  const isSubmitEnabled = imagePairs.length > 0 && selections.filter(Boolean).length === imagePairs.length;
 
   return (
     <div className={`game-container ${darkMode ? "dark-mode" : ""}`}>

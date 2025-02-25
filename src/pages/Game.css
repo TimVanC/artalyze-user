@@ -114,7 +114,7 @@ h1 {
   position: relative;
   width: 29vh;
   height: 29vh;
-  background-color: #f5f5f5;
+  background-color: #2a2a2a;
   border-radius: 8px;
   /* Ensures rounded corners */
   overflow: hidden;
@@ -544,7 +544,6 @@ h1 {
   align-items: center;
   width: 100%;
   max-width: 360px;
-  /* Reduce max width slightly */
   margin: 0 auto;
 }
 
@@ -554,7 +553,6 @@ h1 {
   justify-content: center;
   align-items: center;
   gap: 8px;
-  /* Slightly reduce space between images */
   width: 100%;
   max-width: 360px;
   margin-bottom: 8px;
@@ -564,17 +562,15 @@ h1 {
 .thumbnail-container {
   flex: 1 1 50%;
   width: 22vw !important;
-  /* Reduce size slightly */
   height: 22vw !important;
   max-width: 95px;
-  /* Reduce max size slightly */
   max-height: 95px;
   border-radius: 2px;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: transparent;
+  background-color: #2a2a2a; /* Darker grey for consistency */
   transition: transform 0.3s ease;
   position: relative;
 }
@@ -613,6 +609,29 @@ h1 {
   border: 3px solid #FF3D3D;
   box-shadow: 0 0 10px 4px rgba(255, 61, 61, 0.4);
 }
+
+/* ✅ Loader for images */
+.thumbnail-loader {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* ✅ Spinner Animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ✅ Hide loader once image is loaded */
+.thumbnail-container.loaded .thumbnail-loader {
+  display: none;
+}
+
 
 /* ========================= */
 /*      SWIPE OVERLAY        */
@@ -773,6 +792,47 @@ body.dark-mode .info-overlay {
 .mid-turn-overlay-try-again-button:hover {
   background-color: #388E3C;
   transform: scale(1.05);
+}
+
+/* ========================= */
+/*  Image Pre-loader         */
+/* ========================= */
+
+
+/* ✅ Wrapper to position the spinner */
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ✅ Hide spinner once the image loads */
+.image-wrapper.loaded .image-loader {
+  display: none;
+}
+
+/* ✅ Basic Loading Spinner */
+.image-loader {
+  position: absolute;
+  width: 35px; /* Slightly larger */
+  height: 35px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff; /* Bright white for visibility */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* ✅ Keyframes for Spinning Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* ========================= */

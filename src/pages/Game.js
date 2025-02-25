@@ -938,6 +938,19 @@ const Game = () => {
     setEnlargedImageMode("game-screen");
   };
 
+  const [imageLoadStates, setImageLoadStates] = useState(
+    Array(imagePairs.length).fill([false, false]) // Initialize as an array of `[false, false]` for each pair
+  );
+  
+  const handleImageLoad = (pairIndex, imgIndex) => {
+    setImageLoadStates((prev) => {
+      const updated = [...prev];
+      updated[pairIndex] = [...updated[pairIndex]];
+      updated[pairIndex][imgIndex] = true; // Set the specific image to loaded
+      return updated;
+    });
+  };
+
   const closeEnlargedImage = () => {
     setEnlargedImage(null);
   };
@@ -1144,53 +1157,52 @@ const Game = () => {
                   swiper.slideToLoop(0);
                 }}
               >
-                {imagePairs.map((pair, index) => (
-                  <SwiperSlide key={index}>
-                    <div className="image-pair-container">
-                      {pair.images.map((image, idx) => {
-                        const [isLoaded, setIsLoaded] = useState(false);
-                        const isSelected = selections[index]?.selected === image;
+{imagePairs.map((pair, index) => (
+  <SwiperSlide key={index}>
+    <div className="image-pair-container">
+      {pair.images.map((image, idx) => {
+        const isSelected = selections[index]?.selected === image;
+        const isLoaded = imageLoadStates[index]?.[idx] || false; // Get loading state
 
-                        return (
-                          <div key={idx} className={`image-container ${isSelected ? "selected" : ""}`}>
-                            <div className={`image-wrapper ${isLoaded ? "loaded" : ""}`}>
-                              <img
-                                src={image}
-                                alt={`Painting ${idx + 1}`}
-                                className="lazy-img"
-                                onLoad={() => setIsLoaded(true)}
-                                onClick={(e) => {
-                                  const currentTime = new Date().getTime();
-                                  const timeSinceLastTap = currentTime - lastTapTime.current;
+        return (
+          <div key={idx} className={`image-container ${isSelected ? "selected" : ""}`}>
+            <div className={`image-wrapper ${isLoaded ? "loaded" : ""}`}>
+              <img
+                src={image}
+                alt={`Painting ${idx + 1}`}
+                className="lazy-img"
+                onLoad={() => handleImageLoad(index, idx)} // ✅ Update state when image loads
+                onClick={(e) => {
+                  const currentTime = new Date().getTime();
+                  const timeSinceLastTap = currentTime - lastTapTime.current;
 
-                                  if (timeSinceLastTap < 300) { // ✅ Double-tap detected
-                                    clearTimeout(singleTapTimeout.current); // ✅ Cancel single tap selection
-                                    if (!enlargedImage) { // ✅ Ensure enlargement only happens once
-                                      setEnlargedImage(null); // Ensure previous one is cleared
-                                      setTimeout(() => {
-                                        setEnlargedImage(image);
-                                        setEnlargedImageMode("game-screen");
-                                      }, 10); // Small delay prevents duplicate stacking
-                                    }
-                                  } else {
-                                    singleTapTimeout.current = setTimeout(() => {
-                                      handleSelection(image, image === pair.human); // ✅ Select only if no double-tap
-                                    }, 220);
-                                  }
+                  if (timeSinceLastTap < 300) { // ✅ Double-tap detected
+                    clearTimeout(singleTapTimeout.current);
+                    if (!enlargedImage) {
+                      setEnlargedImage(null);
+                      setTimeout(() => {
+                        setEnlargedImage(image);
+                        setEnlargedImageMode("game-screen");
+                      }, 10);
+                    }
+                  } else {
+                    singleTapTimeout.current = setTimeout(() => {
+                      handleSelection(image, image === pair.human);
+                    }, 220);
+                  }
 
-                                  lastTapTime.current = currentTime;
-                                }}
-                                draggable="false"
-                              />
-                              {!isLoaded && <div className="image-loader"></div>} {/* ✅ Spinner while loading */}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </SwiperSlide>
-                ))}
-
+                  lastTapTime.current = currentTime;
+                }}
+                draggable="false"
+              />
+              {!isLoaded && <div className="image-loader"></div>} {/* ✅ Spinner while loading */}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </SwiperSlide>
+))}
               </Swiper>
             </>
           ) : (

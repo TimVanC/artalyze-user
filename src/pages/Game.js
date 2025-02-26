@@ -666,29 +666,35 @@ useEffect(() => {
   const today = getTodayInEST();
   const lastPlayedDate = localStorage.getItem("lastPlayedDate");
 
-  if (!isGameComplete && lastPlayedDate !== today) {
-      console.log("New day detected. Resetting completedSelections and completedAttempts.");
+  if (lastPlayedDate !== today) {
+    console.log("🌅 New day detected. Resetting completedSelections, completedAttempts, and updating lastPlayedDate.");
 
-      // ✅ Reset completedSelections
-      setCompletedSelections([]);
-      localStorage.removeItem("completedSelections");
+    // ✅ Reset completedSelections
+    setCompletedSelections([]);
+    localStorage.removeItem("completedSelections");
 
-      // ✅ Reset completedAttempts
-      setCompletedAttempts([]);
-      localStorage.removeItem("completedAttempts");
+    // ✅ Reset completedAttempts
+    setCompletedAttempts([]);
+    localStorage.removeItem("completedAttempts");
 
-      if (isUserLoggedIn()) {
-          console.log("📡 Resetting completedSelections and completedAttempts in the backend...");
-          axiosInstance.put(`/stats/completed-selections/${userId}`, { completedSelections: [] })
-              .then(() => console.log("✅ completedSelections reset in backend"))
-              .catch(error => console.error("❌ Error resetting completedSelections in backend:", error));
+    // ✅ Update lastPlayedDate to prevent redundant resets
+    localStorage.setItem("lastPlayedDate", today);
 
-          axiosInstance.put(`/stats/completed-attempts`, { completedAttempts: [] })
-              .then(() => console.log("✅ completedAttempts reset in backend"))
-              .catch(error => console.error("❌ Error resetting completedAttempts in backend:", error));
-      }
+    if (isUserLoggedIn()) {
+      console.log("📡 Resetting completedSelections and completedAttempts in the backend...");
+
+      // ✅ Reset completedSelections in the backend
+      axiosInstance.put(`/stats/completed-selections/${userId}`, { completedSelections: [] })
+        .then(() => console.log("✅ completedSelections reset in backend"))
+        .catch(error => console.error("❌ Error resetting completedSelections in backend:", error));
+
+      // ✅ Reset completedAttempts in the backend
+      axiosInstance.put(`/stats/completed-attempts`, { completedAttempts: [] })
+        .then(() => console.log("✅ completedAttempts reset in backend"))
+        .catch(error => console.error("❌ Error resetting completedAttempts in backend:", error));
+    }
   }
-}, [isGameComplete]);
+}, [userId, isGameComplete]); // ✅ Ensure it updates when the user logs in or the game is completed
 
   // ✅ Now, update `lastPlayedDate` **only when the user actually completes a game**
   useEffect(() => {
@@ -967,11 +973,11 @@ useEffect(() => {
     // Get the puzzle number dynamically
     const puzzleNumber = calculatePuzzleNumber();
 
-    const formattedGuesses = [...alreadyGuessed, ...completedAttempts]
-      .map(attempt => attempt
-        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-        .join(" ")
-      ).join("\n");
+    const formattedGuesses = completedAttempts
+    .map(attempt => attempt
+      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+      .join(" ")
+    ).join("\n");  
 
     // Build the final attempt separately
     const finalAttempt = completedSelections
@@ -1120,10 +1126,22 @@ useEffect(() => {
       setIsGameComplete(true);
       setShowOverlay(false);
   
-      // ✅ Move attempts to completedAttempts upon game completion
-      const updatedCompletedAttempts = [...completedAttempts, ...attempts];
+      const formattedAttempts = attempts.map((attempt) =>
+        attempt.map((selection) => ({ selected: selection }))
+      );
+      
+      const updatedCompletedAttempts = [...completedAttempts, ...formattedAttempts];
       setCompletedAttempts(updatedCompletedAttempts);
       localStorage.setItem("completedAttempts", JSON.stringify(updatedCompletedAttempts));
+      
+      if (isUserLoggedIn()) {
+        try {
+          await axiosInstance.put("/stats/completed-attempts", { completedAttempts: updatedCompletedAttempts });
+          console.log("✅ Completed attempts saved in backend.");
+        } catch (error) {
+          console.error("❌ Error saving completed attempts:", error);
+        }
+      }      
   
       if (isUserLoggedIn()) {
         try {

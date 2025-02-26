@@ -1072,7 +1072,7 @@ const Game = () => {
     if (isSubmitting) return; // ✅ Prevent multiple rapid submissions
     setIsSubmitting(true);
   
-    // ✅ Convert current submission into a boolean array (true for human, false for AI)
+    // ✅ Convert current submission into booleans for `attempts`, but keep `alreadyGuessed[]` unchanged
     const currentSubmission = selections.map((selection, index) => selection.selected === imagePairs[index].human);
   
     // ✅ Check if this exact submission was already made
@@ -1088,9 +1088,9 @@ const Game = () => {
       return;
     }
   
-    // ✅ Store new guess in `alreadyGuessed` and `attempts`
-    const updatedGuesses = [...alreadyGuessed, currentSubmission];
-    const updatedAttempts = [...attempts, currentSubmission];
+    // ✅ Store `currentSubmission` in `attempts` as booleans but leave `alreadyGuessed[]` unchanged
+    const updatedGuesses = [...alreadyGuessed, selections.map(selection => selection.selected)]; // ✅ Keeps original format
+    const updatedAttempts = [...attempts, currentSubmission]; // ✅ Stores booleans
   
     setAlreadyGuessed(updatedGuesses);
     setAttempts(updatedAttempts);
@@ -1103,7 +1103,7 @@ const Game = () => {
     if (isUserLoggedIn()) {
       try {
         await axiosInstance.put("/stats/already-guessed", { alreadyGuessed: updatedGuesses });
-        await axiosInstance.put("/stats/attempts", { attempts: updatedAttempts });
+        await axiosInstance.put("/stats/attempts", { attempts: updatedAttempts.map(attempt => attempt.map(Boolean)) });
         console.log("✅ alreadyGuessed and attempts updated in backend.");
       } catch (error) {
         console.error("❌ Error updating alreadyGuessed/attempts:", error);
@@ -1126,13 +1126,16 @@ const Game = () => {
       setShowOverlay(false);
   
       // ✅ Move attempts to completedAttempts upon game completion
-      const updatedCompletedAttempts = [...completedAttempts, ...attempts];
+      const updatedCompletedAttempts = [...completedAttempts, ...attempts.map(attempt =>
+        attempt.map(selected => !!selected) // ✅ Ensures booleans are stored
+      )];
+      
       setCompletedAttempts(updatedCompletedAttempts);
       localStorage.setItem("completedAttempts", JSON.stringify(updatedCompletedAttempts));
   
       if (isUserLoggedIn()) {
         try {
-          await axiosInstance.put("/stats/completed-attempts", { completedAttempts: updatedCompletedAttempts });
+          await axiosInstance.put("/stats/completed-attempts", { completedAttempts: updatedCompletedAttempts.map(attempt => attempt.map(Boolean)) });
           console.log("✅ Completed attempts saved in backend.");
         } catch (error) {
           console.error("❌ Error saving completed attempts:", error);
@@ -1156,7 +1159,6 @@ const Game = () => {
   
     setIsSubmitting(false);
   };
-
 
   const handleStatsModalClose = () => {
     setIsStatsOpen(false);

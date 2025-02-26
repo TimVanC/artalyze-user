@@ -18,29 +18,29 @@ const useSelections = (userId, isLoggedIn) => {
           headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
         });
         console.log('Fetched selections, attempts, and alreadyGuessed from backend:', data);
-
+    
         const today = getTodayInEST();
         if (data.lastSelectionMadeDate !== today) {
-          console.log("Last selection made on a previous day. Clearing outdated selections.");
+          console.log("Last selection made on a previous day. Clearing outdated selections and attempts.");
           setSelections([]);
-          setAttempts([]); 
-          setAlreadyGuessed([]); 
-          await axiosInstance.put("/stats/selections", { selections: [], lastSelectionMadeDate: today });
+          setAttempts([]); // ✅ Reset attempts to prevent leaking from old game
+          setAlreadyGuessed([]); // ✅ Reset alreadyGuessed to ensure fresh tracking
+          await axiosInstance.put("/stats/selections", { selections: [], attempts: [], lastSelectionMadeDate: today });
         } else {
           setSelections(data.selections || []);
-          setAttempts(data.attempts?.map(attempt => attempt.map(selected => !!selected)) || []); 
-          setAlreadyGuessed(data.alreadyGuessed || []); 
+          setAttempts(data.attempts?.map(attempt => attempt.map(selected => !!selected)) || []);
+          setAlreadyGuessed(data.alreadyGuessed || []);
           localStorage.setItem("attempts", JSON.stringify(data.attempts || []));
           localStorage.setItem("alreadyGuessed", JSON.stringify(data.alreadyGuessed || []));
         }
       } catch (err) {
         console.error('Error fetching selections:', err);
         setError('Failed to fetch selections. Please try again later.');
-        setSelections([]); 
+        setSelections([]);
       } finally {
         setIsLoading(false);
       }
-    };    
+    };      
 
     if (isLoggedIn) {
       fetchSelections();

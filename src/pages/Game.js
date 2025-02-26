@@ -412,9 +412,19 @@ const Game = () => {
         };
 
         const initializeImagePairs = (imagePairsData) => {
-          // Check if stored randomized pairs exist
+          const today = getTodayInEST();
+          const lastPlayedDate = localStorage.getItem("lastPlayedDate");
+        
+          // ✅ Reset randomizedImagePairs if it's a new day
+          if (lastPlayedDate !== today) {
+            console.log("🌅 New day detected! Resetting randomizedImagePairs.");
+            localStorage.removeItem("randomizedImagePairs");
+            localStorage.setItem("lastPlayedDate", today);
+          }
+        
+          // Retrieve from localStorage after potential reset
           const storedPairs = localStorage.getItem("randomizedImagePairs");
-
+        
           if (storedPairs) {
             console.log("🔄 Using stored image pairs from localStorage");
             return JSON.parse(storedPairs);
@@ -424,7 +434,7 @@ const Game = () => {
             localStorage.setItem("randomizedImagePairs", JSON.stringify(randomizedPairs));
             return randomizedPairs;
           }
-        };
+        };        
 
         const pairs = initializeImagePairs(puzzleResponse.data.imagePairs);
         console.log("🖼️ Setting imagePairs:", pairs);

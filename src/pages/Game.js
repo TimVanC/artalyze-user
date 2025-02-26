@@ -276,16 +276,26 @@ const Game = () => {
 
           if (statsResponse.data.attempts) {
             console.log("✅ Restoring attempts from backend.");
-            const parsedAttempts = statsResponse.data.attempts.map(attempt => attempt.map(selected => !!selected));
+            
+            const parsedAttempts = statsResponse.data.attempts.map(attempt => 
+              Array.isArray(attempt) ? attempt.map(selected => selected === true || selected === "true") : []
+            ); // ✅ Ensure values remain booleans
+            
             setAttempts(parsedAttempts);
             localStorage.setItem("attempts", JSON.stringify(parsedAttempts));
           } else {
             console.log("⚠️ No attempts found, keeping previous state.");
+            
             const storedAttempts = localStorage.getItem("attempts");
             if (storedAttempts) {
-              setAttempts(JSON.parse(storedAttempts)); // ✅ Restore from localStorage if backend lacks attempts
+              try {
+                setAttempts(JSON.parse(storedAttempts));
+              } catch (error) {
+                console.error("⚠️ Error parsing stored attempts, resetting to empty:", error);
+                setAttempts([]);
+              }
             }
-          }          
+          }                   
 
           if (statsResponse.data.completedAttempts) {
             setCompletedAttempts(statsResponse.data.completedAttempts);
@@ -1098,18 +1108,25 @@ const Game = () => {
 
   const handleSubmit = async () => {
     console.log("📡 Submit button pressed!");
-
+  
     if (isSubmitting) return; // ✅ Prevent multiple rapid submissions
     setIsSubmitting(true);
-
+  
     // ✅ Convert current submission into booleans
     const currentSubmission = selections.map((selection, index) => selection.selected === imagePairs[index].human);
-
+  
+    // ✅ Ensure attempts and alreadyGuessed are correctly restored and checked
+    const storedAttempts = localStorage.getItem("attempts");
+    const storedAlreadyGuessed = localStorage.getItem("alreadyGuessed");
+  
+    const parsedAttempts = storedAttempts ? JSON.parse(storedAttempts) : attempts;
+    const parsedAlreadyGuessed = storedAlreadyGuessed ? JSON.parse(storedAlreadyGuessed) : alreadyGuessed;
+  
     // ✅ Ensure the duplicate check correctly references restored attempts
-    const isDuplicateSubmission = [...alreadyGuessed, ...(attempts || [])].some(
+    const isDuplicateSubmission = [...parsedAlreadyGuessed, ...parsedAttempts].some(
       (pastAttempt) => JSON.stringify(pastAttempt.map(Boolean)) === JSON.stringify(currentSubmission.map(Boolean))
     );
-
+  
     if (isDuplicateSubmission) {
       console.log("⛔ Duplicate full submission detected! Showing overlay.");
       setShowDuplicateOverlay(true);
@@ -1117,78 +1134,76 @@ const Game = () => {
       setIsSubmitting(false);
       return;
     }
-
+  
     // ✅ Store `currentSubmission` in `attempts` as booleans but leave `alreadyGuessed[]` unchanged
-    const updatedGuesses = [...alreadyGuessed, selections.map(selection => selection.selected)]; // ✅ Keeps original format
-    const updatedAttempts = [...attempts, currentSubmission]; // ✅ Stores booleans
-
+    const updatedGuesses = [...parsedAlreadyGuessed, selections.map(selection => selection.selected)];
+    const updatedAttempts = [...parsedAttempts, currentSubmission.map(Boolean)]; // ✅ Ensures booleans are stored
+  
     setAlreadyGuessed(updatedGuesses);
     setAttempts(updatedAttempts);
-
+  
     localStorage.setItem("alreadyGuessed", JSON.stringify(updatedGuesses));
-    localStorage.setItem("attempts", JSON.stringify(updatedAttempts.map(attempt => attempt.map(Boolean))));
-
+    localStorage.setItem("attempts", JSON.stringify(updatedAttempts));
+  
     console.log("✅ Submission stored in alreadyGuessed and attempts:", updatedGuesses, updatedAttempts);
-
+  
     if (isUserLoggedIn()) {
       try {
         await axiosInstance.put("/stats/already-guessed", { alreadyGuessed: updatedGuesses });
-        await axiosInstance.put("/stats/attempts", { attempts: updatedAttempts.map(attempt => attempt.map(Boolean)) });
+        await axiosInstance.put("/stats/attempts", { attempts: updatedAttempts });
         console.log("✅ alreadyGuessed and attempts updated in backend.");
       } catch (error) {
         console.error("❌ Error updating alreadyGuessed/attempts:", error);
       }
     }
-
+  
     // ✅ Calculate correct guesses
     let correct = selections.reduce((count, selection, index) => {
       return selection.isHumanSelection && selection.selected === imagePairs[index].human
         ? count + 1
         : count;
     }, 0);
-
+  
     setCorrectCount(correct);
-
+  
     // ✅ Check game completion or decrement tries
     if (correct === imagePairs.length || triesLeft === 1) {
       console.log("🏁 Game completed! Correct answers:", correct);
       setIsGameComplete(true);
       setShowOverlay(false);
-
+  
       // ✅ Move attempts to completedAttempts upon game completion
-      const updatedCompletedAttempts = [...completedAttempts, ...attempts.map(attempt =>
-        attempt.map(selected => !!selected) // ✅ Ensures booleans are stored
-      )];
-
+      const updatedCompletedAttempts = [...completedAttempts, ...updatedAttempts];
+  
       setCompletedAttempts(updatedCompletedAttempts);
       localStorage.setItem("completedAttempts", JSON.stringify(updatedCompletedAttempts));
-
+  
       if (isUserLoggedIn()) {
         try {
-          await axiosInstance.put("/stats/completed-attempts", { completedAttempts: updatedCompletedAttempts.map(attempt => attempt.map(Boolean)) });
+          await axiosInstance.put("/stats/completed-attempts", { completedAttempts: updatedCompletedAttempts });
           console.log("✅ Completed attempts saved in backend.");
         } catch (error) {
           console.error("❌ Error saving completed attempts:", error);
         }
       }
-
+  
       // ✅ Reset attempts for next game
       setAttempts([]);
       localStorage.setItem("attempts", JSON.stringify([]));
-
+  
       if (isUserLoggedIn()) {
         await axiosInstance.put("/stats/attempts", { attempts: [] });
       }
-
+  
       handleGameComplete();
     } else {
       console.log("🔄 Guess submitted, but game is NOT complete yet. Showing mid-turn overlay...");
       setShowOverlay(true);
       await decrementTries();
     }
-
+  
     setIsSubmitting(false);
-  };
+  };  
 
   const handleStatsModalClose = () => {
     setIsStatsOpen(false);

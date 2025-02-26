@@ -16,18 +16,21 @@ const useSelections = (userId, isLoggedIn) => {
         const { data } = await axiosInstance.get('/stats/selections', {
           headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
         });
-        console.log('Fetched selections and attempts from backend:', data);
-
+        console.log('Fetched selections, attempts, and alreadyGuessed from backend:', data);
+    
         const today = getTodayInEST();
         if (data.lastSelectionMadeDate !== today) {
           console.log("Last selection made on a previous day. Clearing outdated selections.");
           setSelections([]);
           setAttempts([]); // ✅ Reset attempts only when a new day starts
+          setAlreadyGuessed([]); // ✅ Reset alreadyGuessed to prevent duplicate submissions
           await axiosInstance.put("/stats/selections", { selections: [], lastSelectionMadeDate: today });
         } else {
           setSelections(data.selections || []);
-          setAttempts(data.attempts || []); // ✅ Ensure attempts persist
-          localStorage.setItem("attempts", JSON.stringify(data.attempts || [])); // ✅ Save attempts to localStorage
+          setAttempts(data.attempts?.map(attempt => attempt.map(selected => !!selected)) || []); // ✅ Ensure booleans persist
+          setAlreadyGuessed(data.alreadyGuessed || []); // ✅ Ensure alreadyGuessed syncs properly
+          localStorage.setItem("attempts", JSON.stringify(data.attempts || [])); // ✅ Persist attempts
+          localStorage.setItem("alreadyGuessed", JSON.stringify(data.alreadyGuessed || [])); // ✅ Persist alreadyGuessed
         }
       } catch (err) {
         console.error('Error fetching selections:', err);
@@ -36,7 +39,7 @@ const useSelections = (userId, isLoggedIn) => {
       } finally {
         setIsLoading(false);
       }
-    };
+    };    
 
     if (isLoggedIn) {
       fetchSelections();

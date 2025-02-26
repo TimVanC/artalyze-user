@@ -785,14 +785,14 @@ const handleGameComplete = async () => {
     const today = getTodayInEST();
     const lastTriesMadeDate = localStorage.getItem("lastTriesMadeDate");
   
-    // ✅ If it's a new day, reset attempts[] for guest users
-    if (lastTriesMadeDate !== today) {
+    // ✅ If it's a new day OR lastTriesMadeDate is missing, reset attempts[] for guest users
+    if (!lastTriesMadeDate || lastTriesMadeDate !== today) {
       console.log("🌅 New day detected. Resetting attempts for guest user.");
       setAttempts([]);
       localStorage.setItem("attempts", JSON.stringify([]));
       localStorage.setItem("lastTriesMadeDate", today);
     }
-  }, []);  
+  }, [isGameComplete]); // ✅ Added `isGameComplete` dependency to trigger re-run after game completion   
 
   // Debugging: Log triesRemaining state updates
   useEffect(() => {

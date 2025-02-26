@@ -16,17 +16,18 @@ const useSelections = (userId, isLoggedIn) => {
         const { data } = await axiosInstance.get('/stats/selections', {
           headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
         });
-        console.log('Fetched selections from backend:', data.selections);
+        console.log('Fetched selections and attempts from backend:', data);
 
         const today = getTodayInEST();
         if (data.lastSelectionMadeDate !== today) {
-          console.log("Last selection made on a previous day. Clearing outdated selections and attempts.");
+          console.log("Last selection made on a previous day. Clearing outdated selections.");
           setSelections([]);
-          setAttempts([]); // ✅ Reset attempts
+          setAttempts([]); // ✅ Reset attempts only when a new day starts
           await axiosInstance.put("/stats/selections", { selections: [], lastSelectionMadeDate: today });
-          await axiosInstance.put("/stats/attempts", { attempts: [] }); // Ensure backend resets attempts
         } else {
           setSelections(data.selections || []);
+          setAttempts(data.attempts || []); // ✅ Ensure attempts persist
+          localStorage.setItem("attempts", JSON.stringify(data.attempts || [])); // ✅ Save attempts to localStorage
         }
       } catch (err) {
         console.error('Error fetching selections:', err);
@@ -47,7 +48,7 @@ const useSelections = (userId, isLoggedIn) => {
 
       if (lastSelectionMadeDate !== today) {
         console.log("Last selection made on a previous day. Clearing outdated selections and attempts.");
-        
+
         // ✅ Reset selections and attempts in localStorage
         localStorage.setItem('selections', JSON.stringify([]));
         localStorage.setItem('attempts', JSON.stringify([])); // Reset attempts for guests

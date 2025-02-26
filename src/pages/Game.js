@@ -276,14 +276,16 @@ const Game = () => {
 
           if (statsResponse.data.attempts) {
             console.log("✅ Restoring attempts from backend.");
-
-            const parsedAttempts = statsResponse.data.attempts.map(attempt => attempt.map(selected => !!selected)); // Ensure booleans
+            const parsedAttempts = statsResponse.data.attempts.map(attempt => attempt.map(selected => !!selected));
             setAttempts(parsedAttempts);
             localStorage.setItem("attempts", JSON.stringify(parsedAttempts));
           } else {
-            console.log("⚠️ No attempts found, initializing empty array.");
-            setAttempts([]); // Ensure attempts don't reset if missing
-          }
+            console.log("⚠️ No attempts found, keeping previous state.");
+            const storedAttempts = localStorage.getItem("attempts");
+            if (storedAttempts) {
+              setAttempts(JSON.parse(storedAttempts)); // ✅ Restore from localStorage if backend lacks attempts
+            }
+          }          
 
           if (statsResponse.data.completedAttempts) {
             setCompletedAttempts(statsResponse.data.completedAttempts);

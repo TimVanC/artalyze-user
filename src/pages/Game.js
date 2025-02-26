@@ -109,13 +109,17 @@ const Game = () => {
     console.log("🏁 handleGameComplete called");
     setIsGameComplete(true);
 
-    // ✅ Move attempts to completedAttempts upon game completion
-    setCompletedAttempts([...completedAttempts, ...attempts]);
-    localStorage.setItem("completedAttempts", JSON.stringify([...completedAttempts, ...attempts]));
+    const formattedAttempts = attempts.map(attempt =>
+      attempt.map(selected => selected === true) // Ensures correct boolean values
+    );
+
+    const updatedCompletedAttempts = [...completedAttempts, ...formattedAttempts];
+    setCompletedAttempts(updatedCompletedAttempts);
+    localStorage.setItem("completedAttempts", JSON.stringify(updatedCompletedAttempts));
 
     if (isUserLoggedIn()) {
       try {
-        await axiosInstance.put("/stats/completed-attempts", { completedAttempts: [...completedAttempts, ...attempts] });
+        await axiosInstance.put("/stats/completed-attempts", { completedAttempts: updatedCompletedAttempts });
         console.log("✅ Completed attempts saved in backend.");
       } catch (error) {
         console.error("❌ Error saving completed attempts:", error);
@@ -321,19 +325,12 @@ const Game = () => {
         }
       }
 
+      // ✅ **Lock users on the completion screen if they already finished today's game**
       if (gameCompletedToday) {
-        console.log("✅ User already completed today's game. Checking if selections need reset.");
-      
-        // ✅ Ensure completedSelections and completedAttempts are reset properly
-        if (!completedSelections.length || !completedAttempts.length) {
-          console.log("🔄 No completed attempts found, resetting for a new game.");
-          setIsGameComplete(false);
-        } else {
-          setIsGameComplete(true);
-        }
-      
+        console.log("✅ User already completed today's game. Staying on completion screen.");
+        setIsGameComplete(true);
         return;
-      }      
+      }
 
       // ✅ **Reset triesRemaining if lastPlayedDate is today (game completed)**
       if (lastPlayedDate === today || lastTriesMadeDate !== today) {
@@ -668,42 +665,34 @@ const Game = () => {
     }
   }, [completedSelections, isLoggedIn, isGameComplete]); // ✅ Ensures proper sync when game is complete 
 
+  // ✅ Existing useEffect that resets completedSelections when a new day starts
   useEffect(() => {
     const today = getTodayInEST();
     const lastPlayedDate = localStorage.getItem("lastPlayedDate");
-  
-    if (lastPlayedDate !== today) {
-      console.log("🌅 New day detected. Resetting completedSelections, completedAttempts, isGameComplete, and updating lastPlayedDate.");
-  
+
+    if (!isGameComplete && lastPlayedDate !== today) {
+      console.log("New day detected. Resetting completedSelections and completedAttempts.");
+
       // ✅ Reset completedSelections
       setCompletedSelections([]);
       localStorage.removeItem("completedSelections");
-  
+
       // ✅ Reset completedAttempts
       setCompletedAttempts([]);
       localStorage.removeItem("completedAttempts");
-  
-      // ✅ Reset isGameComplete to allow a new game to start
-      setIsGameComplete(false);
-      localStorage.removeItem("isGameComplete");
-  
-      // ✅ Update lastPlayedDate to prevent redundant resets
-      localStorage.setItem("lastPlayedDate", today);
-  
+
       if (isUserLoggedIn()) {
         console.log("📡 Resetting completedSelections and completedAttempts in the backend...");
-  
         axiosInstance.put(`/stats/completed-selections/${userId}`, { completedSelections: [] })
           .then(() => console.log("✅ completedSelections reset in backend"))
           .catch(error => console.error("❌ Error resetting completedSelections in backend:", error));
-  
+
         axiosInstance.put(`/stats/completed-attempts`, { completedAttempts: [] })
           .then(() => console.log("✅ completedAttempts reset in backend"))
           .catch(error => console.error("❌ Error resetting completedAttempts in backend:", error));
       }
     }
-  }, [userId, isGameComplete]); // ✅ Ensures reset logic updates when the user logs in or the game completes
-  
+  }, [isGameComplete]);
 
   // ✅ Now, update `lastPlayedDate` **only when the user actually completes a game**
   useEffect(() => {
@@ -984,7 +973,7 @@ const Game = () => {
 
     const formattedGuesses = completedAttempts
     .map(attempt => attempt
-      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+      .map((selected) => (selected ? "🟢" : "🔴"))
       .join(" ")
     ).join("\n");  
 
@@ -1083,7 +1072,8 @@ const Game = () => {
     if (isSubmitting) return; // ✅ Prevent multiple rapid submissions
     setIsSubmitting(true);
   
-    const currentSubmission = selections.map((selection) => selection.selected);
+    // ✅ Convert current submission into a boolean array (true for human, false for AI)
+    const currentSubmission = selections.map((selection, index) => selection.selected === imagePairs[index].human);
   
     // ✅ Check if this exact submission was already made
     const isDuplicateSubmission = [...alreadyGuessed, ...attempts].some(
@@ -1135,22 +1125,10 @@ const Game = () => {
       setIsGameComplete(true);
       setShowOverlay(false);
   
-      const formattedAttempts = attempts.map((attempt) =>
-        attempt.map((selection) => ({ selected: selection }))
-      );
-      
-      const updatedCompletedAttempts = [...completedAttempts, ...formattedAttempts];
+      // ✅ Move attempts to completedAttempts upon game completion
+      const updatedCompletedAttempts = [...completedAttempts, ...attempts];
       setCompletedAttempts(updatedCompletedAttempts);
       localStorage.setItem("completedAttempts", JSON.stringify(updatedCompletedAttempts));
-      
-      if (isUserLoggedIn()) {
-        try {
-          await axiosInstance.put("/stats/completed-attempts", { completedAttempts: updatedCompletedAttempts });
-          console.log("✅ Completed attempts saved in backend.");
-        } catch (error) {
-          console.error("❌ Error saving completed attempts:", error);
-        }
-      }      
   
       if (isUserLoggedIn()) {
         try {
@@ -1178,6 +1156,7 @@ const Game = () => {
   
     setIsSubmitting(false);
   };
+
 
   const handleStatsModalClose = () => {
     setIsStatsOpen(false);

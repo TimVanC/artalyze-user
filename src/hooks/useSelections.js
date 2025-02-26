@@ -4,6 +4,7 @@ import { getTodayInEST } from '../utils/dateUtils';
 
 const useSelections = (userId, isLoggedIn) => {
   const [selections, setSelections] = useState([]);
+  const [attempts, setAttempts] = useState([]); // ✅ Added missing state
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -21,7 +22,7 @@ const useSelections = (userId, isLoggedIn) => {
         if (data.lastSelectionMadeDate !== today) {
           console.log("Last selection made on a previous day. Clearing outdated selections and attempts.");
           setSelections([]);
-          setAttempts([]); // Reset attempts
+          setAttempts([]); // ✅ Reset attempts
           await axiosInstance.put("/stats/selections", { selections: [], lastSelectionMadeDate: today });
           await axiosInstance.put("/stats/attempts", { attempts: [] }); // Ensure backend resets attempts
         } else {
@@ -53,7 +54,7 @@ const useSelections = (userId, isLoggedIn) => {
         localStorage.setItem('lastSelectionMadeDate', today);
 
         setSelections([]);
-        setAttempts([]); // Reset attempts in state
+        setAttempts([]); // ✅ Reset attempts in state
       } else {
         setSelections(savedSelections ? JSON.parse(savedSelections) : []);
         setAttempts(savedAttempts ? JSON.parse(savedAttempts) : []);
@@ -90,7 +91,7 @@ const useSelections = (userId, isLoggedIn) => {
     }
   };
 
-  return { selections, updateSelections, isLoading, error };
+  return { selections, updateSelections, attempts, setAttempts, isLoading, error };
 };
 
 export default useSelections;

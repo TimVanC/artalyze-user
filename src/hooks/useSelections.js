@@ -4,10 +4,12 @@ import { getTodayInEST } from '../utils/dateUtils';
 
 const useSelections = (userId, isLoggedIn) => {
   const [selections, setSelections] = useState([]);
+  const [attempts, setAttempts] = useState([]); 
+  const [alreadyGuessed, setAlreadyGuessed] = useState([]); // ✅ Added missing state
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch selections from the backend or localStorage
+  // Fetch selections, attempts, and alreadyGuessed from the backend or localStorage
   useEffect(() => {
     const fetchSelections = async () => {
       try {
@@ -15,39 +17,55 @@ const useSelections = (userId, isLoggedIn) => {
         const { data } = await axiosInstance.get('/stats/selections', {
           headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
         });
-        console.log('Fetched selections from backend:', data.selections);
-
+        console.log('Fetched selections, attempts, and alreadyGuessed from backend:', data);
+    
         const today = getTodayInEST();
         if (data.lastSelectionMadeDate !== today) {
-          console.log("Last selection made on a previous day. Clearing outdated selections.");
+          console.log("Last selection made on a previous day. Clearing outdated selections and attempts.");
           setSelections([]);
-          await axiosInstance.put("/stats/selections", { selections: [], lastSelectionMadeDate: today });
+          setAttempts([]); // ✅ Reset attempts to prevent leaking from old game
+          setAlreadyGuessed([]); // ✅ Reset alreadyGuessed to ensure fresh tracking
+          await axiosInstance.put("/stats/selections", { selections: [], attempts: [], lastSelectionMadeDate: today });
         } else {
           setSelections(data.selections || []);
+          setAttempts(data.attempts?.map(attempt => attempt.map(selected => !!selected)) || []);
+          setAlreadyGuessed(data.alreadyGuessed || []);
+          localStorage.setItem("attempts", JSON.stringify(data.attempts || []));
+          localStorage.setItem("alreadyGuessed", JSON.stringify(data.alreadyGuessed || []));
         }
       } catch (err) {
         console.error('Error fetching selections:', err);
         setError('Failed to fetch selections. Please try again later.');
-        setSelections([]); // Fallback to empty selections
+        setSelections([]);
       } finally {
         setIsLoading(false);
       }
-    };
+    };      
 
     if (isLoggedIn) {
       fetchSelections();
     } else {
       const savedSelections = localStorage.getItem('selections');
+      const savedAttempts = localStorage.getItem('attempts');
+      const savedAlreadyGuessed = localStorage.getItem('alreadyGuessed');
       const lastSelectionMadeDate = localStorage.getItem('lastSelectionMadeDate');
       const today = getTodayInEST();
 
       if (lastSelectionMadeDate !== today) {
-        console.log("Last selection made on a previous day. Clearing outdated selections.");
+        console.log("Last selection made on a previous day. Clearing outdated selections, attempts, and alreadyGuessed.");
+
         localStorage.setItem('selections', JSON.stringify([]));
+        localStorage.setItem('attempts', JSON.stringify([])); 
+        localStorage.setItem('alreadyGuessed', JSON.stringify([]));
         localStorage.setItem('lastSelectionMadeDate', today);
+
         setSelections([]);
+        setAttempts([]); 
+        setAlreadyGuessed([]);
       } else {
         setSelections(savedSelections ? JSON.parse(savedSelections) : []);
+        setAttempts(savedAttempts ? JSON.parse(savedAttempts) : []);
+        setAlreadyGuessed(savedAlreadyGuessed ? JSON.parse(savedAlreadyGuessed) : []);
       }
       setIsLoading(false);
     }
@@ -81,7 +99,7 @@ const useSelections = (userId, isLoggedIn) => {
     }
   };
 
-  return { selections, updateSelections, isLoading, error };
+  return { selections, updateSelections, attempts, setAttempts, alreadyGuessed, setAlreadyGuessed, isLoading, error };
 };
 
 export default useSelections;

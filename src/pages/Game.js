@@ -64,7 +64,8 @@ const Game = () => {
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
   const { selections = [], updateSelections, isLoading, error: selectionsError } = useSelections(userId, isLoggedIn);
   const [completedSelections, setCompletedSelections] = useState([]);
-
+  const [attempts, setAttempts] = useState([]);
+  const [completedAttempts, setCompletedAttempts] = useState([]);
   const [alreadyGuessed, setAlreadyGuessed] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDuplicateOverlay, setShowDuplicateOverlay] = useState(false);
@@ -72,6 +73,7 @@ const Game = () => {
     return localStorage.getItem("darkMode") === "true";
   });
 
+  const [imageLoading, setImageLoading] = useState({});
 
   const [stats, setStats] = useState({
     gamesPlayed: 0,
@@ -106,6 +108,32 @@ const Game = () => {
   const handleGameComplete = async () => {
     console.log("🏁 handleGameComplete called");
     setIsGameComplete(true);
+
+    const formattedAttempts = attempts.map(attempt =>
+      attempt.map(selected => selected === true) // Ensures correct boolean values
+    );
+
+    const updatedCompletedAttempts = [...completedAttempts, ...formattedAttempts];
+    setCompletedAttempts(updatedCompletedAttempts);
+    localStorage.setItem("completedAttempts", JSON.stringify(updatedCompletedAttempts));
+
+    if (isUserLoggedIn()) {
+      try {
+        await axiosInstance.put("/stats/completed-attempts", { completedAttempts: updatedCompletedAttempts });
+        console.log("✅ Completed attempts saved in backend.");
+      } catch (error) {
+        console.error("❌ Error saving completed attempts:", error);
+      }
+    }
+
+    // ✅ Reset attempts for the next game
+    setAttempts([]);
+    localStorage.setItem("attempts", JSON.stringify([]));
+
+    if (isUserLoggedIn()) {
+      await axiosInstance.put("/stats/attempts", { attempts: [] });
+    }
+
 
     if (!Array.isArray(selections) || !Array.isArray(imagePairs)) {
       console.error("❌ Invalid data: selections or imagePairs are undefined.");
@@ -212,6 +240,20 @@ const Game = () => {
         setAlreadyGuessed(alreadyGuessed);
       }
 
+      // ✅ Restore attempts and completedAttempts for guest users
+      if (!isUserLoggedIn()) {
+        const storedAttempts = localStorage.getItem("attempts");
+        const storedCompletedAttempts = localStorage.getItem("completedAttempts");
+
+        if (storedAttempts) {
+          setAttempts(JSON.parse(storedAttempts));
+        }
+
+        if (storedCompletedAttempts) {
+          setCompletedAttempts(JSON.parse(storedCompletedAttempts));
+        }
+      }
+
       try {
         if (isLoggedIn) {
           console.log("Fetching user selections, tries, and completed selections...");
@@ -231,6 +273,35 @@ const Game = () => {
             setAlreadyGuessed(alreadyGuessed);
             localStorage.setItem("alreadyGuessed", JSON.stringify(alreadyGuessed));
           }
+
+          if (statsResponse.data.attempts) {
+            console.log("✅ Restoring attempts from backend.");
+
+            const parsedAttempts = statsResponse.data.attempts.map(attempt =>
+              Array.isArray(attempt) ? attempt.map(selected => selected === true || selected === "true") : []
+            ); // ✅ Ensure values remain booleans
+
+            setAttempts(parsedAttempts);
+            localStorage.setItem("attempts", JSON.stringify(parsedAttempts));
+          } else {
+            console.log("⚠️ No attempts found, keeping previous state.");
+
+            const storedAttempts = localStorage.getItem("attempts");
+            if (storedAttempts) {
+              try {
+                setAttempts(JSON.parse(storedAttempts));
+              } catch (error) {
+                console.error("⚠️ Error parsing stored attempts, resetting to empty:", error);
+                setAttempts([]);
+              }
+            }
+          }
+
+          if (statsResponse.data.completedAttempts) {
+            setCompletedAttempts(statsResponse.data.completedAttempts);
+            localStorage.setItem("completedAttempts", JSON.stringify(statsResponse.data.completedAttempts));
+          }
+
         } else {
           console.log("Handling guest user selections...");
           const savedSelections = localStorage.getItem("selections");
@@ -290,29 +361,35 @@ const Game = () => {
         }
       }
 
-      // ✅ **Ensure selections reset properly if LSMD is outdated**
+      // ✅ **Ensure selections and attempts reset properly if LSMD is outdated**
       if (!lastSelectionMadeDate || lastSelectionMadeDate !== today) {
-        console.log("🆕 New puzzle detected. Resetting selections BEFORE updating LSMD.");
+        console.log("🆕 New puzzle detected. Resetting selections and attempts BEFORE updating LSMD.");
 
         // **Clear localStorage before making API call**
         localStorage.removeItem("selections");
         localStorage.removeItem("completedSelections");
+        localStorage.removeItem("attempts"); // ✅ Reset attempts for new day
+        localStorage.removeItem("alreadyGuessed"); // ✅ Reset alreadyGuessed to prevent duplicate submissions
 
         userSelections = [];
         userCompletedSelections = [];
+        setAttempts([]); // ✅ Reset attempts in state
+        setAlreadyGuessed([]); // ✅ Reset alreadyGuessed in state
 
-        console.log("🗑️ Selections cleared:", userSelections);
+        console.log("🗑️ Selections and attempts cleared:", userSelections);
 
         if (isLoggedIn) {
-          await axiosInstance.put("/stats/selections", { selections: [], lastSelectionMadeDate: today });
+          await axiosInstance.put("/stats/selections", { selections: [], attempts: [], lastSelectionMadeDate: today });
         } else {
           localStorage.setItem("selections", JSON.stringify([]));
+          localStorage.setItem("attempts", JSON.stringify([])); // ✅ Reset attempts for guests
+          localStorage.setItem("alreadyGuessed", JSON.stringify([])); // ✅ Reset alreadyGuessed for guests
           localStorage.setItem("lastSelectionMadeDate", today);
         }
 
         console.log(`✅ LSMD Updated to ${today}`);
       } else {
-        console.log("✅ Persisting selections as LSMD matches today's date.");
+        console.log("✅ Persisting selections and attempts as LSMD matches today's date.");
       }
 
       // ✅ **Ensure selections persist across refreshes during active gameplay**
@@ -347,14 +424,42 @@ const Game = () => {
       console.log("📦 Puzzle Response:", puzzleResponse.data);
 
       if (puzzleResponse.data?.imagePairs?.length > 0) {
-        const pairs = puzzleResponse.data.imagePairs.map((pair) => ({
-          human: pair.humanImageURL,
-          ai: pair.aiImageURL,
-          images: Math.random() > 0.5
-            ? [pair.humanImageURL, pair.aiImageURL]
-            : [pair.aiImageURL, pair.humanImageURL],
-        }));
+        const getRandomizedPairs = (pairs) => {
+          return pairs.map((pair) => ({
+            human: pair.humanImageURL,
+            ai: pair.aiImageURL,
+            images: Math.random() > 0.5
+              ? [pair.humanImageURL, pair.aiImageURL]
+              : [pair.aiImageURL, pair.humanImageURL],
+          }));
+        };
 
+        const initializeImagePairs = (imagePairsData) => {
+          const today = getTodayInEST();
+          const lastUpdatedDate = localStorage.getItem("lastUpdatedDate");
+
+          // ✅ Reset only if a new day is detected
+          if (lastUpdatedDate !== today) {
+            console.log("🌅 New day detected! Resetting randomizedImagePairs.");
+            localStorage.removeItem("randomizedImagePairs");
+            localStorage.setItem("lastUpdatedDate", today);
+          }
+
+          let storedPairs = localStorage.getItem("randomizedImagePairs");
+
+          // ✅ Always fetch new image pairs if storedPairs is missing
+          if (!storedPairs || lastUpdatedDate !== today) {
+            console.log("🎲 Fetching and randomizing new image pairs.");
+            const randomizedPairs = getRandomizedPairs(imagePairsData);
+            localStorage.setItem("randomizedImagePairs", JSON.stringify(randomizedPairs));
+            return randomizedPairs;
+          }
+
+          console.log("🔄 Using cached image pairs from localStorage.");
+          return JSON.parse(storedPairs);
+        };
+
+        const pairs = initializeImagePairs(puzzleResponse.data.imagePairs);
         console.log("🖼️ Setting imagePairs:", pairs);
         setImagePairs(pairs);
         localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
@@ -529,13 +634,28 @@ const Game = () => {
   // Monitor updates to imagePairs
   useEffect(() => {
     console.log("Image pairs state updated:", imagePairs);
+
     if (imagePairs.length > 0) {
+      // Existing logic for updating Swiper
       setTimeout(() => {
         if (swiperRef.current) {
           console.log("Updating Swiper to current index:", currentIndex);
           swiperRef.current.slideToLoop(currentIndex, 0);
         }
       }, 100);
+
+      // 🔄 **New Image Preloading Logic**
+      const loadingState = {};
+      imagePairs.forEach((pair, index) => {
+        pair.images.forEach((image, position) => {
+          loadingState[`${index}-${position}`] = true; // Mark as loading
+          const img = new Image();
+          img.src = image;
+          img.onload = () => handleImageLoad(index, position);
+          img.onerror = () => handleImageError(index, position);
+        });
+      });
+      setImageLoading((prev) => ({ ...prev, ...loadingState }));
     }
   }, [currentIndex, imagePairs]);
 
@@ -578,26 +698,47 @@ const Game = () => {
     }
   }, [completedSelections, isLoggedIn, isGameComplete]); // ✅ Ensures proper sync when game is complete 
 
-  // Reset completedSelections when a new day starts
+  // ✅ Existing useEffect that resets completedSelections when a new day starts
   useEffect(() => {
     const today = getTodayInEST();
     const lastPlayedDate = localStorage.getItem("lastPlayedDate");
 
     if (!isGameComplete && lastPlayedDate !== today) {
-      console.log("New day detected. Resetting completedSelections.");
+      console.log("New day detected. Resetting completedSelections and completedAttempts.");
 
+      // ✅ Reset completedSelections
       setCompletedSelections([]);
       localStorage.removeItem("completedSelections");
 
-      if (isLoggedIn) {
-        console.log("📡 Resetting completedSelections in the backend...");
+      // ✅ Reset completedAttempts
+      setCompletedAttempts([]);
+      localStorage.removeItem("completedAttempts");
+
+      if (isUserLoggedIn()) {
+        console.log("📡 Resetting completedSelections and completedAttempts in the backend...");
         axiosInstance.put(`/stats/completed-selections/${userId}`, { completedSelections: [] })
           .then(() => console.log("✅ completedSelections reset in backend"))
           .catch(error => console.error("❌ Error resetting completedSelections in backend:", error));
+
+        axiosInstance.put(`/stats/completed-attempts`, { completedAttempts: [] })
+          .then(() => console.log("✅ completedAttempts reset in backend"))
+          .catch(error => console.error("❌ Error resetting completedAttempts in backend:", error));
       }
     }
   }, [isGameComplete]);
 
+  useEffect(() => {
+    const today = getTodayInEST();
+    const lastSelectionMadeDate = localStorage.getItem("lastSelectionMadeDate");
+
+    // ✅ Reset attempts[] if lastSelectionMadeDate is outdated
+    if (!lastSelectionMadeDate || lastSelectionMadeDate !== today) {
+      console.log("🌅 New day detected. Resetting attempts for guest user.");
+      setAttempts([]);
+      localStorage.setItem("attempts", JSON.stringify([]));
+      localStorage.setItem("lastSelectionMadeDate", today);
+    }
+  }, [isGameComplete]); // ✅ Ensure it re-triggers after a game completes  
 
   // ✅ Now, update `lastPlayedDate` **only when the user actually completes a game**
   useEffect(() => {
@@ -789,63 +930,77 @@ const Game = () => {
   const handleSelection = (selectedImage, isHumanSelection) => {
     const updatedSelections = [...selections];
 
-    // Deselect if already selected
-    if (updatedSelections[currentIndex]?.selected === selectedImage) {
-        updatedSelections[currentIndex] = null;
+    // Ensure index exists before updating
+    if (!updatedSelections[currentIndex]) {
+      updatedSelections[currentIndex] = { selected: null, isHumanSelection: false };
+    }
+
+    // Toggle selection (if clicked again, it removes selection)
+    if (updatedSelections[currentIndex].selected === selectedImage) {
+      updatedSelections[currentIndex] = null;
     } else {
-        updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
+      updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
     }
 
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
 
+    // ✅ Force Submit Button State Update
+    const isAllSelected = updatedSelections.filter(Boolean).length === imagePairs.length;
+    if (isAllSelected) {
+      document.querySelector(".submit-button").classList.add("enabled");
+    } else {
+      document.querySelector(".submit-button").classList.remove("enabled");
+    }
+
     // Check if user has seen overlays before
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
     if (!hasSeenOverlays) {
-        // Show "Swipe right" overlay only on first selection of first image pair
-        if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
-            setShowSwipeRightOverlay(true);
-            setTimeout(() => setShowSwipeRightOverlay(false), 2000);
-        }
+      // Show "Swipe right" overlay only on first selection of first image pair
+      if (!showSwipeRightOverlay && updatedSelections.filter(Boolean).length === 1 && currentIndex === 0) {
+        setShowSwipeRightOverlay(true);
+        setTimeout(() => setShowSwipeRightOverlay(false), 2000);
+      }
     }
-};
+  };
 
-const handleSwipe = (swiper) => {
-  setCurrentIndex(swiper.realIndex);
 
-  // Check if user has seen overlays before
-  const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
+  const handleSwipe = (swiper) => {
+    setCurrentIndex(swiper.realIndex);
 
-  if (!hasSeenOverlays) {
+    // Check if user has seen overlays before
+    const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
+
+    if (!hasSeenOverlays) {
       // Show "Swipe left to go back" overlay after the first swipe (only once)
       if (!hasSeenSwipeLeft && swiper.realIndex > 0) {
-          setShowSwipeLeftOverlay(true);
-          setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
-          setHasSeenSwipeLeft(true);
+        setShowSwipeLeftOverlay(true);
+        setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
+        setHasSeenSwipeLeft(true);
       }
 
       // Show "Double tap to enlarge" overlay after the second swipe (only once)
       if (!hasSeenDoubleTap && swiper.realIndex > 1) {
-          setShowDoubleTapOverlay(true);
-          setTimeout(() => setShowDoubleTapOverlay(false), 2000);
-          setHasSeenDoubleTap(true);
+        setShowDoubleTapOverlay(true);
+        setTimeout(() => setShowDoubleTapOverlay(false), 2000);
+        setHasSeenDoubleTap(true);
       }
 
       // Show "Tap info icon for more help" overlay after the fourth swipe (only once)
       if (!showInfoOverlay && swiper.realIndex > 2) {
-          setShowInfoOverlay(true);
-          setTimeout(() => {
-              setShowInfoOverlay(false);
-              // Mark overlays as seen after all have displayed
-              localStorage.setItem("hasSeenOverlays", "true");
-          }, 2000);
+        setShowInfoOverlay(true);
+        setTimeout(() => {
+          setShowInfoOverlay(false);
+          // Mark overlays as seen after all have displayed
+          localStorage.setItem("hasSeenOverlays", "true");
+        }, 2000);
       }
-  }
-};
+    }
+  };
 
   const handleCompletionShare = () => {
-    // Ensure completedSelections and imagePairs are available
+    // Ensure completedSelections, alreadyGuessed, and imagePairs are available
     if (!completedSelections.length || !imagePairs.length) {
       alert("No data available to share today's puzzle!");
       return;
@@ -862,16 +1017,22 @@ const handleSwipe = (swiper) => {
     // Get the puzzle number dynamically
     const puzzleNumber = calculatePuzzleNumber();
 
-    // Build the visual representation of results
-    const resultsVisual = completedSelections
+    const formattedGuesses = completedAttempts
+      .map(attempt => attempt
+        .map((selected) => (selected ? "🟢" : "🔴"))
+        .join(" ")
+      ).join("\n");
+
+    // Build the final attempt separately
+    const finalAttempt = completedSelections
       .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
       .join(" ");
 
     // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
 
-    // Construct the shareable text with better formatting
-    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${resultsVisual}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
+    // Construct the shareable text with ALL ATTEMPTS properly included
+    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${formattedGuesses}\n${finalAttempt}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
 
     // Check if the device supports native sharing
     if (navigator.share) {
@@ -913,9 +1074,34 @@ const handleSwipe = (swiper) => {
   };
 
   const handleImageClick = (imageUrl) => {
-    console.log("Opening enlarged image:", imageUrl);
-    setEnlargedImage(imageUrl);
-    setEnlargedImageMode("game-screen"); // Change to default to game-screen
+    if (!imageLoading[imageUrl]) {  // Only open if it's fully loaded
+      console.log("Opening enlarged image:", imageUrl);
+      setEnlargedImage(imageUrl);
+      setEnlargedImageMode("game-screen");
+    }
+  };
+
+  const handleImageLoad = (index, position) => {
+    setImageLoading((prev) => ({ ...prev, [`${index}-${position}`]: false }));
+  };
+
+  const handleImageError = (index, position) => {
+    console.error(`Failed to load image at index ${index}, position ${position}`);
+    setImageLoading((prev) => ({ ...prev, [`${index}-${position}`]: false }));
+  };
+
+  const preloadImages = (imagePairs) => {
+    const loadingState = {};
+    imagePairs.forEach((pair, index) => {
+      pair.images.forEach((image, position) => {
+        loadingState[`${index}-${position}`] = true; // Mark as loading
+        const img = new Image();
+        img.src = image;
+        img.onload = () => handleImageLoad(index, position);
+        img.onerror = () => handleImageError(index, position);
+      });
+    });
+    setImageLoading((prev) => ({ ...prev, ...loadingState }));
   };
 
   const closeEnlargedImage = () => {
@@ -926,18 +1112,25 @@ const handleSwipe = (swiper) => {
     clearTimeout(longPressTimer.current);
   };
 
-
   const handleSubmit = async () => {
     console.log("📡 Submit button pressed!");
 
     if (isSubmitting) return; // ✅ Prevent multiple rapid submissions
     setIsSubmitting(true);
 
-    const currentSubmission = selections.map((selection) => selection.selected);
+    // ✅ Convert current submission into booleans
+    const currentSubmission = selections.map((selection, index) => selection.selected === imagePairs[index].human);
 
-    // ✅ Check if this exact submission was already made
-    const isDuplicateSubmission = alreadyGuessed.some(
-      (pastSubmission) => JSON.stringify(pastSubmission) === JSON.stringify(currentSubmission)
+    // ✅ Ensure attempts and alreadyGuessed are correctly restored and checked
+    const storedAttempts = localStorage.getItem("attempts");
+    const storedAlreadyGuessed = localStorage.getItem("alreadyGuessed");
+
+    const parsedAttempts = storedAttempts ? JSON.parse(storedAttempts) : attempts;
+    const parsedAlreadyGuessed = storedAlreadyGuessed ? JSON.parse(storedAlreadyGuessed) : alreadyGuessed;
+
+    // ✅ Ensure the duplicate check correctly references restored attempts
+    const isDuplicateSubmission = [...parsedAlreadyGuessed, ...parsedAttempts].some(
+      (pastAttempt) => JSON.stringify(pastAttempt.map(Boolean)) === JSON.stringify(currentSubmission.map(Boolean))
     );
 
     if (isDuplicateSubmission) {
@@ -948,19 +1141,25 @@ const handleSwipe = (swiper) => {
       return;
     }
 
-    // ✅ Store new guess in `alreadyGuessed`
-    const updatedGuesses = [...alreadyGuessed, currentSubmission];
-    setAlreadyGuessed(updatedGuesses);
-    localStorage.setItem("alreadyGuessed", JSON.stringify(updatedGuesses));
+    // ✅ Store `currentSubmission` in `attempts` as booleans but leave `alreadyGuessed[]` unchanged
+    const updatedGuesses = [...parsedAlreadyGuessed, selections.map(selection => selection.selected)];
+    const updatedAttempts = [...parsedAttempts, currentSubmission.map(Boolean)]; // ✅ Ensures booleans are stored
 
-    console.log("✅ Submission stored in alreadyGuessed:", updatedGuesses);
+    setAlreadyGuessed(updatedGuesses);
+    setAttempts(updatedAttempts);
+
+    localStorage.setItem("alreadyGuessed", JSON.stringify(updatedGuesses));
+    localStorage.setItem("attempts", JSON.stringify(updatedAttempts));
+
+    console.log("✅ Submission stored in alreadyGuessed and attempts:", updatedGuesses, updatedAttempts);
 
     if (isUserLoggedIn()) {
       try {
         await axiosInstance.put("/stats/already-guessed", { alreadyGuessed: updatedGuesses });
-        console.log("✅ alreadyGuessed updated in backend.");
+        await axiosInstance.put("/stats/attempts", { attempts: updatedAttempts });
+        console.log("✅ alreadyGuessed and attempts updated in backend.");
       } catch (error) {
-        console.error("❌ Error updating alreadyGuessed:", error);
+        console.error("❌ Error updating alreadyGuessed/attempts:", error);
       }
     }
 
@@ -978,6 +1177,30 @@ const handleSwipe = (swiper) => {
       console.log("🏁 Game completed! Correct answers:", correct);
       setIsGameComplete(true);
       setShowOverlay(false);
+
+      // ✅ Move attempts to completedAttempts upon game completion
+      const updatedCompletedAttempts = [...completedAttempts, ...updatedAttempts];
+
+      setCompletedAttempts(updatedCompletedAttempts);
+      localStorage.setItem("completedAttempts", JSON.stringify(updatedCompletedAttempts));
+
+      if (isUserLoggedIn()) {
+        try {
+          await axiosInstance.put("/stats/completed-attempts", { completedAttempts: updatedCompletedAttempts });
+          console.log("✅ Completed attempts saved in backend.");
+        } catch (error) {
+          console.error("❌ Error saving completed attempts:", error);
+        }
+      }
+
+      // ✅ Reset attempts for next game
+      setAttempts([]);
+      localStorage.setItem("attempts", JSON.stringify([]));
+
+      if (isUserLoggedIn()) {
+        await axiosInstance.put("/stats/attempts", { attempts: [] });
+      }
+
       handleGameComplete();
     } else {
       console.log("🔄 Guess submitted, but game is NOT complete yet. Showing mid-turn overlay...");
@@ -988,13 +1211,12 @@ const handleSwipe = (swiper) => {
     setIsSubmitting(false);
   };
 
-
   const handleStatsModalClose = () => {
     setIsStatsOpen(false);
     setTimeout(() => setIsStatsModalDismissed(true), 300); // Trigger animation after modal close animation
   };
 
-  const isSubmitEnabled = selections.length === imagePairs.length;
+  const isSubmitEnabled = imagePairs.length > 0 && selections.filter(Boolean).length === imagePairs.length;
 
   return (
     <div className={`game-container ${darkMode ? "dark-mode" : ""}`}>
@@ -1132,6 +1354,7 @@ const handleSwipe = (swiper) => {
                           key={idx}
                           className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
                         >
+                          {imageLoading[`${index}-${idx}`] && <div className="image-loader"></div>}
                           <img
                             src={image}
                             alt={`Painting ${idx + 1}`}
@@ -1157,6 +1380,9 @@ const handleSwipe = (swiper) => {
                               lastTapTime.current = currentTime;
                             }}
                             draggable="false"
+                            onLoad={() => handleImageLoad(index, idx)}
+                            onError={() => handleImageError(index, idx)}
+                            style={{ visibility: imageLoading[`${index}-${idx}`] ? "hidden" : "visible" }}
                           />
                         </div>
                       ))}

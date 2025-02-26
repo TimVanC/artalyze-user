@@ -89,6 +89,17 @@ const SettingsModal = ({ isOpen, onClose, isLoggedIn }) => {
               className="settings-button"
               onClick={() => {
                 onClose();
+                window.open("/patch-notes.html", "_blank");
+              }}
+            >
+              Patch Notes
+            </button>
+          </li>
+          <li>
+            <button
+              className="settings-button"
+              onClick={() => {
+                onClose();
                 window.open("/terms-of-service.html", "_blank");
               }}
             >

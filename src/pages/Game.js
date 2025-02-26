@@ -361,35 +361,38 @@ const Game = () => {
         }
       }
 
-      // ✅ **Ensure selections and attempts reset properly if LSMD is outdated**
+      // ✅ **Ensure selections, attempts, and completedAttempts reset properly if LSMD is outdated**
       if (!lastSelectionMadeDate || lastSelectionMadeDate !== today) {
-        console.log("🆕 New puzzle detected. Resetting selections and attempts BEFORE updating LSMD.");
+        console.log("🆕 New puzzle detected. Resetting selections, attempts, and completedAttempts BEFORE updating LSMD.");
 
         // **Clear localStorage before making API call**
         localStorage.removeItem("selections");
         localStorage.removeItem("completedSelections");
-        localStorage.removeItem("attempts"); // ✅ Reset attempts for new day
-        localStorage.removeItem("alreadyGuessed"); // ✅ Reset alreadyGuessed to prevent duplicate submissions
+        localStorage.removeItem("attempts");
+        localStorage.removeItem("completedAttempts"); // ✅ Reset completedAttempts for new day
+        localStorage.removeItem("alreadyGuessed");
 
         userSelections = [];
         userCompletedSelections = [];
-        setAttempts([]); // ✅ Reset attempts in state
-        setAlreadyGuessed([]); // ✅ Reset alreadyGuessed in state
+        setAttempts([]);
+        setCompletedAttempts([]); // ✅ Reset completedAttempts in state
+        setAlreadyGuessed([]);
 
-        console.log("🗑️ Selections and attempts cleared:", userSelections);
+        console.log("🗑️ Selections, attempts, and completedAttempts cleared:", userSelections);
 
         if (isLoggedIn) {
-          await axiosInstance.put("/stats/selections", { selections: [], attempts: [], lastSelectionMadeDate: today });
+          await axiosInstance.put("/stats/selections", { selections: [], attempts: [], completedAttempts: [], lastSelectionMadeDate: today });
         } else {
           localStorage.setItem("selections", JSON.stringify([]));
-          localStorage.setItem("attempts", JSON.stringify([])); // ✅ Reset attempts for guests
-          localStorage.setItem("alreadyGuessed", JSON.stringify([])); // ✅ Reset alreadyGuessed for guests
+          localStorage.setItem("attempts", JSON.stringify([]));
+          localStorage.setItem("completedAttempts", JSON.stringify([])); // ✅ Reset completedAttempts for guests
+          localStorage.setItem("alreadyGuessed", JSON.stringify([]));
           localStorage.setItem("lastSelectionMadeDate", today);
         }
 
         console.log(`✅ LSMD Updated to ${today}`);
       } else {
-        console.log("✅ Persisting selections and attempts as LSMD matches today's date.");
+        console.log("✅ Persisting selections, attempts, and completedAttempts as LSMD matches today's date.");
       }
 
       // ✅ **Ensure selections persist across refreshes during active gameplay**
@@ -1315,6 +1318,7 @@ const Game = () => {
         correctCount={correctCount}
         isGameComplete={isGameComplete}
         completedSelections={completedSelections}
+        attempts={completedAttempts} // ✅ Pass completedAttempts as attempts
       />
 
       <SettingsModal

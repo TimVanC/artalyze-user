@@ -28,6 +28,7 @@ const StatsModal = ({
   correctCount = 0,
   isGameComplete = false,
   completedSelections = [],
+  attempts = [], // ✅ Add attempts here
 }) => {
   const userId = localStorage.getItem('userId');
   const [stats, setStats] = useState(initialStats);
@@ -127,73 +128,76 @@ const StatsModal = ({
   const handleCompletionShare = () => {
     // Allow sharing only after the game is completed
     if (isGameComplete) {
-      shareResults(completedSelections); // Pass finalized selections
+      shareResults(completedSelections, stats.completedAttempts); // Pass finalized selections and all attempts
       return;
     }
-
+  
     // If the overlay is already active, do nothing
     if (showShareWarning) return;
-
+  
     // Show a warning if the user tries to share before completing today's puzzle
     setShowShareWarning(true);
-
+  
     if (shareWarningTimeoutRef.current) {
       clearTimeout(shareWarningTimeoutRef.current);
     }
-
+  
     shareWarningTimeoutRef.current = setTimeout(() => {
       setShowShareWarning(false);
       shareWarningTimeoutRef.current = null;
     }, 1000); // Show warning for 1 second
   };
-
-  // Helper function for sharing results
-  const shareResults = (usedSelections) => {
+  
+  // Helper function for sharing results with all attempts
+  const shareResults = (usedSelections, allAttempts) => {
     // Ensure we have valid selections and image pairs
     if (!usedSelections.length || !imagePairs.length) {
-        alert("No data available to share today's puzzle!");
-        return;
+      alert("No data available to share today's puzzle!");
+      return;
     }
-
+  
     const puzzleNumber = calculatePuzzleNumber();
-
+  
     // Calculate the correct count
     const correctCount = usedSelections.reduce((count, selection, index) => {
-        return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
+      return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
     }, 0);
-
-    // Generate the visual representation of results
-    const resultsVisual = usedSelections
-        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-        .join(" ");
-
+  
+    // Format all attempts visually
+    const formattedGuesses = allAttempts
+      .map(attempt =>
+        attempt.map((selected) => (selected ? "🟢" : "🔴")).join(" ")
+      ).join("\n");
+  
+    // Build the final attempt separately
+    const finalAttempt = usedSelections
+      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+      .join(" ");
+  
+    // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
-
-    // Construct the shareable text with proper formatting
-    const shareableText = `Artalyze #${puzzleNumber} ${correctCount}/${imagePairs.length}
-${resultsVisual}
-${paintings}
-
-Check it out here:
-https://artalyze.app`;
-
+  
+    // Construct the shareable text including all attempts
+    const shareableText = `Artalyze #${puzzleNumber} ${correctCount}/${imagePairs.length}\n${formattedGuesses}\n${finalAttempt}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
+  
     // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
-        navigator
-            .share({
-                title: `Artalyze #${puzzleNumber}`,
-                text: shareableText,
-            })
-            .catch((error) => console.log("Error sharing:", error));
+      navigator
+        .share({
+          title: `Artalyze #${puzzleNumber}`,
+          text: shareableText,
+        })
+        .catch((error) => console.log("Error sharing:", error));
     } else {
-        navigator.clipboard
-            .writeText(shareableText)
-            .then(() => {
-                alert("Results copied to clipboard! You can now paste it anywhere.");
-            })
-            .catch((error) => console.error("Failed to copy:", error));
+      navigator.clipboard
+        .writeText(shareableText)
+        .then(() => {
+          alert("Results copied to clipboard! You can now paste it anywhere.");
+        })
+        .catch((error) => console.error("Failed to copy:", error));
     }
-};
+  };
+  
 
   if (!isOpen && !isDismissing) return null;
 

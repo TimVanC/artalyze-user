@@ -17,20 +17,23 @@ const useSelections = (userId, isLoggedIn) => {
         const { data } = await axiosInstance.get('/stats/selections', {
           headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
         });
-        console.log('Fetched selections, attempts, and alreadyGuessed from backend:', data);
+        console.log('Fetched selections, attempts, completedAttempts, and alreadyGuessed from backend:', data);
     
         const today = getTodayInEST();
         if (data.lastSelectionMadeDate !== today) {
-          console.log("Last selection made on a previous day. Clearing outdated selections and attempts.");
+          console.log("Last selection made on a previous day. Clearing outdated selections, attempts, and completedAttempts.");
           setSelections([]);
-          setAttempts([]); // ✅ Reset attempts to prevent leaking from old game
-          setAlreadyGuessed([]); // ✅ Reset alreadyGuessed to ensure fresh tracking
-          await axiosInstance.put("/stats/selections", { selections: [], attempts: [], lastSelectionMadeDate: today });
+          setAttempts([]);
+          setCompletedAttempts([]); // ✅ Reset completedAttempts to prevent stale data
+          setAlreadyGuessed([]);
+          await axiosInstance.put("/stats/selections", { selections: [], attempts: [], completedAttempts: [], lastSelectionMadeDate: today });
         } else {
           setSelections(data.selections || []);
           setAttempts(data.attempts?.map(attempt => attempt.map(selected => !!selected)) || []);
+          setCompletedAttempts(data.completedAttempts || []);
           setAlreadyGuessed(data.alreadyGuessed || []);
           localStorage.setItem("attempts", JSON.stringify(data.attempts || []));
+          localStorage.setItem("completedAttempts", JSON.stringify(data.completedAttempts || []));
           localStorage.setItem("alreadyGuessed", JSON.stringify(data.alreadyGuessed || []));
         }
       } catch (err) {
@@ -40,7 +43,7 @@ const useSelections = (userId, isLoggedIn) => {
       } finally {
         setIsLoading(false);
       }
-    };      
+    };       
 
     if (isLoggedIn) {
       fetchSelections();

@@ -274,11 +274,11 @@ const Game = () => {
             localStorage.setItem("alreadyGuessed", JSON.stringify(alreadyGuessed));
           }
 
-          // ✅ **Restore attempts and completedAttempts**
           if (statsResponse.data.attempts) {
-            setAttempts(statsResponse.data.attempts);
-            localStorage.setItem("attempts", JSON.stringify(statsResponse.data.attempts));
-          }
+            const parsedAttempts = statsResponse.data.attempts.map(attempt => attempt.map(value => value === "true" ? true : false));
+            setAttempts(parsedAttempts);
+            localStorage.setItem("attempts", JSON.stringify(parsedAttempts));
+        }        
 
           if (statsResponse.data.completedAttempts) {
             setCompletedAttempts(statsResponse.data.completedAttempts);
@@ -1072,12 +1072,12 @@ const Game = () => {
     if (isSubmitting) return; // ✅ Prevent multiple rapid submissions
     setIsSubmitting(true);
   
-    // ✅ Convert current submission into booleans for `attempts`, but keep `alreadyGuessed[]` unchanged
+    // ✅ Convert current submission into booleans
     const currentSubmission = selections.map((selection, index) => selection.selected === imagePairs[index].human);
   
-    // ✅ Check if this exact submission was already made
+    // ✅ Ensure the duplicate check is always using booleans
     const isDuplicateSubmission = [...alreadyGuessed, ...attempts].some(
-      (pastAttempt) => JSON.stringify(pastAttempt) === JSON.stringify(currentSubmission)
+      (pastAttempt) => JSON.stringify(pastAttempt.map(Boolean)) === JSON.stringify(currentSubmission.map(Boolean))
     );
   
     if (isDuplicateSubmission) {
@@ -1096,7 +1096,7 @@ const Game = () => {
     setAttempts(updatedAttempts);
   
     localStorage.setItem("alreadyGuessed", JSON.stringify(updatedGuesses));
-    localStorage.setItem("attempts", JSON.stringify(updatedAttempts));
+    localStorage.setItem("attempts", JSON.stringify(updatedAttempts.map(attempt => attempt.map(Boolean))));
   
     console.log("✅ Submission stored in alreadyGuessed and attempts:", updatedGuesses, updatedAttempts);
   
@@ -1158,7 +1158,7 @@ const Game = () => {
     }
   
     setIsSubmitting(false);
-  };
+  };  
 
   const handleStatsModalClose = () => {
     setIsStatsOpen(false);

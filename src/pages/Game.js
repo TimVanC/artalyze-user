@@ -278,7 +278,7 @@ const Game = () => {
             const parsedAttempts = statsResponse.data.attempts.map(attempt => attempt.map(value => value === "true" ? true : false));
             setAttempts(parsedAttempts);
             localStorage.setItem("attempts", JSON.stringify(parsedAttempts));
-        }        
+          }
 
           if (statsResponse.data.completedAttempts) {
             setCompletedAttempts(statsResponse.data.completedAttempts);
@@ -325,14 +325,20 @@ const Game = () => {
         }
       }
 
-      // ✅ **Lock users on the completion screen if they already finished today's game**
       if (gameCompletedToday) {
-        console.log("✅ User already completed today's game. Staying on completion screen.");
-        setIsGameComplete(true);
+        console.log("✅ User already completed today's game. Checking reset logic.");
+
+        if (lastPlayedDate !== getTodayInEST()) {
+          console.log("🌅 New day detected. Resetting isGameComplete.");
+          setIsGameComplete(false);
+          localStorage.removeItem("isGameComplete");
+        } else {
+          setIsGameComplete(true);
+        }
       } else {
         console.log("🆕 New puzzle detected. Ensuring isGameComplete is reset.");
         setIsGameComplete(false);
-      }      
+      }
 
       // ✅ **Reset triesRemaining if lastPlayedDate is today (game completed)**
       if (lastPlayedDate === today || lastTriesMadeDate !== today) {
@@ -572,16 +578,22 @@ const Game = () => {
     };
   }, []);
 
-
-  // Persist isGameComplete state across refreshes
   useEffect(() => {
-    if (isGameComplete) {
+    const today = getTodayInEST();
+    const lastPlayedDate = localStorage.getItem("lastPlayedDate");
+  
+    if (lastPlayedDate !== today) {
+      console.log("🌅 New day detected. Preventing isGameComplete from persisting.");
+      setIsGameComplete(false);
+      localStorage.removeItem("isGameComplete");
+    } else if (isGameComplete) {
       console.log("Persisting game completion state to localStorage...");
       localStorage.setItem("isGameComplete", "true");
     } else {
       localStorage.removeItem("isGameComplete");
     }
   }, [isGameComplete]);
+  
 
   // Restore isGameComplete from localStorage on initial render
   useEffect(() => {
@@ -671,42 +683,30 @@ const Game = () => {
   useEffect(() => {
     const today = getTodayInEST();
     const lastPlayedDate = localStorage.getItem("lastPlayedDate");
-  
+
     if (!isGameComplete && lastPlayedDate !== today) {
-      console.log("🌅 New day detected. Resetting completedSelections, attempts, and completedAttempts.");
-  
-      // ✅ Reset all relevant game states
+      console.log("New day detected. Resetting completedSelections and completedAttempts.");
+
+      // ✅ Reset completedSelections
       setCompletedSelections([]);
-      setAttempts([]);
-      setCompletedAttempts([]);
-      setIsGameComplete(false); // ✅ Ensures fresh start for guest users
-  
-      // ✅ Clear LocalStorage Data
       localStorage.removeItem("completedSelections");
+
+      // ✅ Reset completedAttempts
+      setCompletedAttempts([]);
       localStorage.removeItem("completedAttempts");
-      localStorage.removeItem("attempts");
-      localStorage.removeItem("isGameComplete"); // ✅ Explicitly resets game completion state
-  
-      // ✅ Update lastPlayedDate to prevent redundant resets
-      localStorage.setItem("lastPlayedDate", today);
-  
+
       if (isUserLoggedIn()) {
-        console.log("📡 Resetting selections, attempts, and completedAttempts in the backend...");
-  
+        console.log("📡 Resetting completedSelections and completedAttempts in the backend...");
         axiosInstance.put(`/stats/completed-selections/${userId}`, { completedSelections: [] })
-          .then(() => {
-            console.log("✅ completedSelections reset in backend");
-            return axiosInstance.put(`/stats/attempts`, { attempts: [] });
-          })
-          .then(() => {
-            console.log("✅ attempts reset in backend");
-            return axiosInstance.put(`/stats/completed-attempts`, { completedAttempts: [] });
-          })
+          .then(() => console.log("✅ completedSelections reset in backend"))
+          .catch(error => console.error("❌ Error resetting completedSelections in backend:", error));
+
+        axiosInstance.put(`/stats/completed-attempts`, { completedAttempts: [] })
           .then(() => console.log("✅ completedAttempts reset in backend"))
-          .catch(error => console.error("❌ Error resetting game state in backend:", error));
+          .catch(error => console.error("❌ Error resetting completedAttempts in backend:", error));
       }
     }
-  }, [isGameComplete]);   
+  }, [isGameComplete]);
 
   // ✅ Now, update `lastPlayedDate` **only when the user actually completes a game**
   useEffect(() => {
@@ -986,10 +986,10 @@ const Game = () => {
     const puzzleNumber = calculatePuzzleNumber();
 
     const formattedGuesses = completedAttempts
-    .map(attempt => attempt
-      .map((selected) => (selected ? "🟢" : "🔴"))
-      .join(" ")
-    ).join("\n");  
+      .map(attempt => attempt
+        .map((selected) => (selected ? "🟢" : "🔴"))
+        .join(" ")
+      ).join("\n");
 
     // Build the final attempt separately
     const finalAttempt = completedSelections
@@ -1082,18 +1082,18 @@ const Game = () => {
 
   const handleSubmit = async () => {
     console.log("📡 Submit button pressed!");
-  
+
     if (isSubmitting) return; // ✅ Prevent multiple rapid submissions
     setIsSubmitting(true);
-  
+
     // ✅ Convert current submission into booleans
     const currentSubmission = selections.map((selection, index) => selection.selected === imagePairs[index].human);
-  
+
     // ✅ Ensure the duplicate check is always using booleans
     const isDuplicateSubmission = [...alreadyGuessed, ...attempts].some(
       (pastAttempt) => JSON.stringify(pastAttempt.map(Boolean)) === JSON.stringify(currentSubmission.map(Boolean))
     );
-  
+
     if (isDuplicateSubmission) {
       console.log("⛔ Duplicate full submission detected! Showing overlay.");
       setShowDuplicateOverlay(true);
@@ -1101,19 +1101,19 @@ const Game = () => {
       setIsSubmitting(false);
       return;
     }
-  
+
     // ✅ Store `currentSubmission` in `attempts` as booleans but leave `alreadyGuessed[]` unchanged
     const updatedGuesses = [...alreadyGuessed, selections.map(selection => selection.selected)]; // ✅ Keeps original format
     const updatedAttempts = [...attempts, currentSubmission]; // ✅ Stores booleans
-  
+
     setAlreadyGuessed(updatedGuesses);
     setAttempts(updatedAttempts);
-  
+
     localStorage.setItem("alreadyGuessed", JSON.stringify(updatedGuesses));
     localStorage.setItem("attempts", JSON.stringify(updatedAttempts.map(attempt => attempt.map(Boolean))));
-  
+
     console.log("✅ Submission stored in alreadyGuessed and attempts:", updatedGuesses, updatedAttempts);
-  
+
     if (isUserLoggedIn()) {
       try {
         await axiosInstance.put("/stats/already-guessed", { alreadyGuessed: updatedGuesses });
@@ -1123,30 +1123,30 @@ const Game = () => {
         console.error("❌ Error updating alreadyGuessed/attempts:", error);
       }
     }
-  
+
     // ✅ Calculate correct guesses
     let correct = selections.reduce((count, selection, index) => {
       return selection.isHumanSelection && selection.selected === imagePairs[index].human
         ? count + 1
         : count;
     }, 0);
-  
+
     setCorrectCount(correct);
-  
+
     // ✅ Check game completion or decrement tries
     if (correct === imagePairs.length || triesLeft === 1) {
       console.log("🏁 Game completed! Correct answers:", correct);
       setIsGameComplete(true);
       setShowOverlay(false);
-  
+
       // ✅ Move attempts to completedAttempts upon game completion
       const updatedCompletedAttempts = [...completedAttempts, ...attempts.map(attempt =>
         attempt.map(selected => !!selected) // ✅ Ensures booleans are stored
       )];
-      
+
       setCompletedAttempts(updatedCompletedAttempts);
       localStorage.setItem("completedAttempts", JSON.stringify(updatedCompletedAttempts));
-  
+
       if (isUserLoggedIn()) {
         try {
           await axiosInstance.put("/stats/completed-attempts", { completedAttempts: updatedCompletedAttempts.map(attempt => attempt.map(Boolean)) });
@@ -1155,24 +1155,24 @@ const Game = () => {
           console.error("❌ Error saving completed attempts:", error);
         }
       }
-  
+
       // ✅ Reset attempts for next game
       setAttempts([]);
       localStorage.setItem("attempts", JSON.stringify([]));
-  
+
       if (isUserLoggedIn()) {
         await axiosInstance.put("/stats/attempts", { attempts: [] });
       }
-  
+
       handleGameComplete();
     } else {
       console.log("🔄 Guess submitted, but game is NOT complete yet. Showing mid-turn overlay...");
       setShowOverlay(true);
       await decrementTries();
     }
-  
+
     setIsSubmitting(false);
-  };  
+  };
 
   const handleStatsModalClose = () => {
     setIsStatsOpen(false);

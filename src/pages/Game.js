@@ -361,36 +361,42 @@ const Game = () => {
         }
       }
 
-      // ✅ **Ensure selections and attempts reset properly if LSMD is outdated**
+      // ✅ **Ensure selections, attempts, completedSelections, and completedAttempts reset properly if LSMD is outdated**
       if (!lastSelectionMadeDate || lastSelectionMadeDate !== today) {
-        console.log("🆕 New puzzle detected. Resetting selections and attempts BEFORE updating LSMD.");
+        console.log("🆕 New puzzle detected. Resetting selections, attempts, completedSelections, and completedAttempts BEFORE updating LSMD.");
 
         // **Clear localStorage before making API call**
         localStorage.removeItem("selections");
-        localStorage.removeItem("completedSelections");
-        localStorage.removeItem("attempts"); // ✅ Reset attempts for new day
-        localStorage.removeItem("alreadyGuessed"); // ✅ Reset alreadyGuessed to prevent duplicate submissions
+        localStorage.removeItem("completedSelections"); // ✅ Reset completedSelections for new puzzle
+        localStorage.removeItem("attempts");
+        localStorage.removeItem("completedAttempts");
+        localStorage.removeItem("alreadyGuessed");
 
         userSelections = [];
         userCompletedSelections = [];
-        setAttempts([]); // ✅ Reset attempts in state
-        setAlreadyGuessed([]); // ✅ Reset alreadyGuessed in state
+        setAttempts([]);
+        setCompletedSelections([]); // ✅ Reset completedSelections in state
+        setCompletedAttempts([]);
+        setAlreadyGuessed([]);
 
-        console.log("🗑️ Selections and attempts cleared:", userSelections);
+        console.log("🗑️ Selections, attempts, completedSelections, and completedAttempts cleared:", userSelections);
 
         if (isLoggedIn) {
-          await axiosInstance.put("/stats/selections", { selections: [], attempts: [], lastSelectionMadeDate: today });
+          await axiosInstance.put("/stats/selections", { selections: [], attempts: [], completedSelections: [], completedAttempts: [], lastSelectionMadeDate: today });
         } else {
           localStorage.setItem("selections", JSON.stringify([]));
-          localStorage.setItem("attempts", JSON.stringify([])); // ✅ Reset attempts for guests
-          localStorage.setItem("alreadyGuessed", JSON.stringify([])); // ✅ Reset alreadyGuessed for guests
+          localStorage.setItem("attempts", JSON.stringify([]));
+          localStorage.setItem("completedSelections", JSON.stringify([])); // ✅ Reset completedSelections for guests
+          localStorage.setItem("completedAttempts", JSON.stringify([])); // ✅ Reset completedAttempts for guests
+          localStorage.setItem("alreadyGuessed", JSON.stringify([]));
           localStorage.setItem("lastSelectionMadeDate", today);
         }
 
         console.log(`✅ LSMD Updated to ${today}`);
       } else {
-        console.log("✅ Persisting selections and attempts as LSMD matches today's date.");
+        console.log("✅ Persisting selections, attempts, completedSelections, and completedAttempts as LSMD matches today's date.");
       }
+
 
       // ✅ **Ensure selections persist across refreshes during active gameplay**
       if (!gameCompletedToday) {
@@ -684,11 +690,15 @@ const Game = () => {
   useEffect(() => {
     if (!isLoggedIn) {
       const savedCompletedSelections = localStorage.getItem("completedSelections");
-
-      if (completedSelections.length === 0 && savedCompletedSelections) {
+      const parsedCompletedSelections = savedCompletedSelections ? JSON.parse(savedCompletedSelections) : [];
+  
+      // ✅ Prevent infinite loop: Only restore if necessary
+      if (completedSelections.length === 0 && parsedCompletedSelections.length > 0) {
         console.log("Restoring completedSelections from localStorage for guest user.");
-        setCompletedSelections(JSON.parse(savedCompletedSelections));
-      } else if (completedSelections.length > 0 && JSON.stringify(completedSelections) !== savedCompletedSelections) {
+        setCompletedSelections(parsedCompletedSelections);
+      } 
+      // ✅ Prevent unnecessary updates: Only save to localStorage if values have actually changed
+      else if (completedSelections.length > 0 && JSON.stringify(completedSelections) !== JSON.stringify(parsedCompletedSelections)) {
         console.log("Persisting completedSelections to localStorage for guest user.");
         localStorage.setItem("completedSelections", JSON.stringify(completedSelections));
       }
@@ -696,7 +706,7 @@ const Game = () => {
       console.log("Syncing completedSelections with backend...");
       saveCompletedSelectionsToBackend(completedSelections);
     }
-  }, [completedSelections, isLoggedIn, isGameComplete]); // ✅ Ensures proper sync when game is complete 
+  }, [completedSelections, isLoggedIn, isGameComplete]);
 
   // ✅ Existing useEffect that resets completedSelections when a new day starts
   useEffect(() => {
@@ -1128,12 +1138,15 @@ const Game = () => {
     const parsedAttempts = storedAttempts ? JSON.parse(storedAttempts) : attempts;
     const parsedAlreadyGuessed = storedAlreadyGuessed ? JSON.parse(storedAlreadyGuessed) : alreadyGuessed;
 
+    // ✅ Allow submission if it's a perfect attempt (all correct)
+    const isPerfectAttempt = currentSubmission.every((selected) => selected === true);
+
     // ✅ Ensure the duplicate check correctly references restored attempts
     const isDuplicateSubmission = [...parsedAlreadyGuessed, ...parsedAttempts].some(
       (pastAttempt) => JSON.stringify(pastAttempt.map(Boolean)) === JSON.stringify(currentSubmission.map(Boolean))
     );
 
-    if (isDuplicateSubmission) {
+    if (isDuplicateSubmission && !isPerfectAttempt) {
       console.log("⛔ Duplicate full submission detected! Showing overlay.");
       setShowDuplicateOverlay(true);
       setTimeout(() => setShowDuplicateOverlay(false), 1000);
@@ -1315,6 +1328,7 @@ const Game = () => {
         correctCount={correctCount}
         isGameComplete={isGameComplete}
         completedSelections={completedSelections}
+        attempts={completedAttempts} // ✅ Ensure attempts are passed
       />
 
       <SettingsModal

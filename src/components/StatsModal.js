@@ -28,6 +28,7 @@ const StatsModal = ({
   correctCount = 0,
   isGameComplete = false,
   completedSelections = [],
+  attempts = [], // ✅ Add attempts prop
 }) => {
   const userId = localStorage.getItem('userId');
   const [stats, setStats] = useState(initialStats);
@@ -125,75 +126,105 @@ const StatsModal = ({
   };
 
   const handleCompletionShare = () => {
-    // Allow sharing only after the game is completed
-    if (isGameComplete) {
-      shareResults(completedSelections); // Pass finalized selections
+    // Ensure completedSelections, attempts, and imagePairs are available
+    if (!completedSelections.length || !imagePairs.length) {
+      alert("No data available to share today's puzzle!");
       return;
     }
-
-    // If the overlay is already active, do nothing
-    if (showShareWarning) return;
-
-    // Show a warning if the user tries to share before completing today's puzzle
-    setShowShareWarning(true);
-
-    if (shareWarningTimeoutRef.current) {
-      clearTimeout(shareWarningTimeoutRef.current);
-    }
-
-    shareWarningTimeoutRef.current = setTimeout(() => {
-      setShowShareWarning(false);
-      shareWarningTimeoutRef.current = null;
-    }, 1000); // Show warning for 1 second
-  };
-
-  // Helper function for sharing results
-  const shareResults = (usedSelections) => {
-    // Ensure we have valid selections and image pairs
-    if (!usedSelections.length || !imagePairs.length) {
-        alert("No data available to share today's puzzle!");
-        return;
-    }
-
-    const puzzleNumber = calculatePuzzleNumber();
-
-    // Calculate the correct count
-    const correctCount = usedSelections.reduce((count, selection, index) => {
-        return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
+  
+    // Calculate the score based on completed selections
+    const score = completedSelections.reduce((count, selection, index) => {
+      if (selection?.selected === imagePairs[index]?.human) {
+        return count + 1;
+      }
+      return count;
     }, 0);
-
-    // Generate the visual representation of results
-    const resultsVisual = usedSelections
-        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-        .join(" ");
-
+  
+    // Get the puzzle number dynamically
+    const puzzleNumber = calculatePuzzleNumber();
+  
+    // Format all attempts (previous guesses)
+    const formattedGuesses = attempts
+      .map(attempt => attempt
+        .map((selected) => (selected ? "🟢" : "🔴"))
+        .join(" ")
+      ).join("\n");
+  
+    // Add the final attempt separately
+    const finalAttempt = completedSelections
+      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+      .join(" ");
+  
+    // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
-
-    // Construct the shareable text with proper formatting
-    const shareableText = `Artalyze #${puzzleNumber} ${correctCount}/${imagePairs.length}
-${resultsVisual}
-${paintings}
-
-Check it out here:
-https://artalyze.app`;
-
+  
+    // Construct the shareable text including all attempts
+    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${formattedGuesses}\n${finalAttempt}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
+  
     // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
-        navigator
-            .share({
-                title: `Artalyze #${puzzleNumber}`,
-                text: shareableText,
-            })
-            .catch((error) => console.log("Error sharing:", error));
+      navigator
+        .share({
+          title: `Artalyze #${puzzleNumber}`,
+          text: shareableText,
+        })
+        .catch((error) => console.log("Error sharing:", error));
     } else {
-        navigator.clipboard
-            .writeText(shareableText)
-            .then(() => {
-                alert("Results copied to clipboard! You can now paste it anywhere.");
-            })
-            .catch((error) => console.error("Failed to copy:", error));
+      navigator.clipboard
+        .writeText(shareableText)
+        .then(() => {
+          alert("Results copied to clipboard! You can now paste it anywhere.");
+        })
+        .catch((error) => console.error("Failed to copy:", error));
     }
-};
+  };
+  
+  
+  const shareResults = (usedSelections, allAttempts) => {
+    // Ensure we have valid selections, attempts, and image pairs
+    if (!usedSelections.length || !imagePairs.length || !allAttempts.length) {
+      alert("No data available to share today's puzzle!");
+      return;
+    }
+  
+    const puzzleNumber = calculatePuzzleNumber();
+  
+    // Calculate the correct count from the final attempt
+    const correctCount = usedSelections.reduce((count, selection, index) => {
+      return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
+    }, 0);
+  
+    // Format all attempts visually
+    const formattedGuesses = allAttempts
+      .map(attempt =>
+        attempt.map((selected) => (selected ? "🟢" : "🔴")).join(" ")
+      ).join("\n");
+  
+    // Add placeholder for painting emojis
+    const paintings = "🖼️ ".repeat(imagePairs.length).trim();
+  
+    // Construct the shareable text including all attempts
+    const shareableText = `Artalyze #${puzzleNumber} ${correctCount}/${imagePairs.length}\n${formattedGuesses}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
+  
+    // Attempt native sharing first, fallback to clipboard copy
+    if (navigator.share) {
+      navigator
+        .share({
+          title: `Artalyze #${puzzleNumber}`,
+          text: shareableText,
+        })
+        .catch((error) => console.log("Error sharing:", error));
+    } else {
+      navigator.clipboard
+        .writeText(shareableText)
+        .then(() => {
+          alert("Results copied to clipboard! You can now paste it anywhere.");
+        })
+        .catch((error) => console.error("Failed to copy:", error));
+    }
+  };
+  
+  
 
   if (!isOpen && !isDismissing) return null;
 

@@ -5,11 +5,12 @@ import { getTodayInEST } from '../utils/dateUtils';
 const useSelections = (userId, isLoggedIn) => {
   const [selections, setSelections] = useState([]);
   const [attempts, setAttempts] = useState([]); 
-  const [alreadyGuessed, setAlreadyGuessed] = useState([]); // ✅ Added missing state
+  const [alreadyGuessed, setAlreadyGuessed] = useState([]); 
+  const [completedAttempts, setCompletedAttempts] = useState([]); // ✅ Added missing state
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch selections, attempts, and alreadyGuessed from the backend or localStorage
+  // Fetch selections, attempts, completedAttempts, and alreadyGuessed from backend or localStorage
   useEffect(() => {
     const fetchSelections = async () => {
       try {
@@ -18,13 +19,13 @@ const useSelections = (userId, isLoggedIn) => {
           headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
         });
         console.log('Fetched selections, attempts, completedAttempts, and alreadyGuessed from backend:', data);
-    
+
         const today = getTodayInEST();
         if (data.lastSelectionMadeDate !== today) {
           console.log("Last selection made on a previous day. Clearing outdated selections, attempts, and completedAttempts.");
           setSelections([]);
           setAttempts([]);
-          setCompletedAttempts([]); // ✅ Reset completedAttempts to prevent stale data
+          setCompletedAttempts([]); // ✅ Reset completedAttempts for new puzzle
           setAlreadyGuessed([]);
           await axiosInstance.put("/stats/selections", { selections: [], attempts: [], completedAttempts: [], lastSelectionMadeDate: today });
         } else {
@@ -43,31 +44,35 @@ const useSelections = (userId, isLoggedIn) => {
       } finally {
         setIsLoading(false);
       }
-    };       
+    };
 
     if (isLoggedIn) {
       fetchSelections();
     } else {
       const savedSelections = localStorage.getItem('selections');
       const savedAttempts = localStorage.getItem('attempts');
+      const savedCompletedAttempts = localStorage.getItem('completedAttempts');
       const savedAlreadyGuessed = localStorage.getItem('alreadyGuessed');
       const lastSelectionMadeDate = localStorage.getItem('lastSelectionMadeDate');
       const today = getTodayInEST();
 
       if (lastSelectionMadeDate !== today) {
-        console.log("Last selection made on a previous day. Clearing outdated selections, attempts, and alreadyGuessed.");
+        console.log("Last selection made on a previous day. Clearing outdated selections, attempts, completedAttempts, and alreadyGuessed.");
 
         localStorage.setItem('selections', JSON.stringify([]));
         localStorage.setItem('attempts', JSON.stringify([])); 
+        localStorage.setItem('completedAttempts', JSON.stringify([])); // ✅ Reset completedAttempts for guests
         localStorage.setItem('alreadyGuessed', JSON.stringify([]));
         localStorage.setItem('lastSelectionMadeDate', today);
 
         setSelections([]);
         setAttempts([]); 
+        setCompletedAttempts([]); // ✅ Reset completedAttempts in state
         setAlreadyGuessed([]);
       } else {
         setSelections(savedSelections ? JSON.parse(savedSelections) : []);
         setAttempts(savedAttempts ? JSON.parse(savedAttempts) : []);
+        setCompletedAttempts(savedCompletedAttempts ? JSON.parse(savedCompletedAttempts) : []);
         setAlreadyGuessed(savedAlreadyGuessed ? JSON.parse(savedAlreadyGuessed) : []);
       }
       setIsLoading(false);
@@ -102,7 +107,13 @@ const useSelections = (userId, isLoggedIn) => {
     }
   };
 
-  return { selections, updateSelections, attempts, setAttempts, alreadyGuessed, setAlreadyGuessed, isLoading, error };
+  return { 
+    selections, updateSelections, 
+    attempts, setAttempts, 
+    completedAttempts, setCompletedAttempts, // ✅ Now properly returned
+    alreadyGuessed, setAlreadyGuessed, 
+    isLoading, error 
+  };
 };
 
 export default useSelections;

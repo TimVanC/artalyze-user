@@ -413,29 +413,29 @@ const Game = () => {
 
         const initializeImagePairs = (imagePairsData) => {
           const today = getTodayInEST();
-          const lastPlayedDate = localStorage.getItem("lastPlayedDate");
+          const lastUpdatedDate = localStorage.getItem("lastUpdatedDate");
         
-          // ✅ Reset randomizedImagePairs if it's a new day
-          if (lastPlayedDate !== today) {
+          // ✅ Reset only if a new day is detected
+          if (lastUpdatedDate !== today) {
             console.log("🌅 New day detected! Resetting randomizedImagePairs.");
             localStorage.removeItem("randomizedImagePairs");
-            localStorage.setItem("lastPlayedDate", today);
+            localStorage.setItem("lastUpdatedDate", today);
           }
         
-          // Retrieve from localStorage after potential reset
-          const storedPairs = localStorage.getItem("randomizedImagePairs");
+          let storedPairs = localStorage.getItem("randomizedImagePairs");
         
-          if (storedPairs) {
-            console.log("🔄 Using stored image pairs from localStorage");
-            return JSON.parse(storedPairs);
-          } else {
-            console.log("🎲 Randomizing image pairs for the first time");
+          // ✅ Always fetch new image pairs if storedPairs is missing
+          if (!storedPairs || lastUpdatedDate !== today) {
+            console.log("🎲 Fetching and randomizing new image pairs.");
             const randomizedPairs = getRandomizedPairs(imagePairsData);
             localStorage.setItem("randomizedImagePairs", JSON.stringify(randomizedPairs));
             return randomizedPairs;
           }
-        };        
-
+        
+          console.log("🔄 Using cached image pairs from localStorage.");
+          return JSON.parse(storedPairs);
+        };
+        
         const pairs = initializeImagePairs(puzzleResponse.data.imagePairs);
         console.log("🖼️ Setting imagePairs:", pairs);
         setImagePairs(pairs);

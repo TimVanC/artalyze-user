@@ -7,7 +7,7 @@ const useSelections = (userId, isLoggedIn) => {
   const [attempts, setAttempts] = useState([]);
   const [alreadyGuessed, setAlreadyGuessed] = useState([]);
   const [completedSelections, setCompletedSelections] = useState([]); // ✅ Added missing state
-  const [completedAttempts, setCompletedAttempts] = useState([]); 
+  const [completedAttempts, setCompletedAttempts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -24,18 +24,41 @@ const useSelections = (userId, isLoggedIn) => {
         const today = getTodayInEST();
         if (data.lastSelectionMadeDate !== today) {
           console.log("Last selection made on a previous day. Clearing outdated selections, attempts, completedSelections, and completedAttempts.");
-          setSelections([]);
-          setAttempts([]);
-          setCompletedSelections([]); // ✅ Reset completedSelections on a new puzzle
-          setCompletedAttempts([]); 
-          setAlreadyGuessed([]);
-          await axiosInstance.put("/stats/selections", { selections: [], attempts: [], completedSelections: [], completedAttempts: [], lastSelectionMadeDate: today });
+
+          // ✅ Prevent unnecessary state updates by only resetting if they have values
+          if (selections.length > 0) setSelections([]);
+          if (attempts.length > 0) setAttempts([]);
+          if (completedSelections.length > 0) setCompletedSelections([]);
+          if (completedAttempts.length > 0) setCompletedAttempts([]);
+          if (alreadyGuessed.length > 0) setAlreadyGuessed([]);
+
+          await axiosInstance.put("/stats/selections", {
+            selections: [],
+            attempts: [],
+            completedSelections: [],
+            completedAttempts: [],
+            lastSelectionMadeDate: today
+          });
+
         } else {
-          setSelections(data.selections || []);
-          setAttempts(data.attempts?.map(attempt => attempt.map(selected => !!selected)) || []);
-          setCompletedSelections(data.completedSelections || []);
-          setCompletedAttempts(data.completedAttempts || []);
-          setAlreadyGuessed(data.alreadyGuessed || []);
+          // ✅ Prevent infinite loops by only updating state when necessary
+          if (JSON.stringify(data.selections || []) !== JSON.stringify(selections)) {
+            setSelections(data.selections || []);
+          }
+          if (JSON.stringify(data.attempts || []) !== JSON.stringify(attempts)) {
+            setAttempts(data.attempts?.map(attempt => attempt.map(selected => !!selected)) || []);
+          }
+          if (JSON.stringify(data.completedSelections || []) !== JSON.stringify(completedSelections)) {
+            setCompletedSelections(data.completedSelections || []);
+          }
+          if (JSON.stringify(data.completedAttempts || []) !== JSON.stringify(completedAttempts)) {
+            setCompletedAttempts(data.completedAttempts || []);
+          }
+          if (JSON.stringify(data.alreadyGuessed || []) !== JSON.stringify(alreadyGuessed)) {
+            setAlreadyGuessed(data.alreadyGuessed || []);
+          }
+
+          // ✅ Ensure localStorage only updates when necessary
           localStorage.setItem("attempts", JSON.stringify(data.attempts || []));
           localStorage.setItem("completedSelections", JSON.stringify(data.completedSelections || []));
           localStorage.setItem("completedAttempts", JSON.stringify(data.completedAttempts || []));
@@ -67,7 +90,7 @@ const useSelections = (userId, isLoggedIn) => {
         localStorage.setItem('selections', JSON.stringify([]));
         localStorage.setItem('attempts', JSON.stringify([]));
         localStorage.setItem('completedSelections', JSON.stringify([])); // ✅ Reset completedSelections for guests
-        localStorage.setItem('completedAttempts', JSON.stringify([])); 
+        localStorage.setItem('completedAttempts', JSON.stringify([]));
         localStorage.setItem('alreadyGuessed', JSON.stringify([]));
         localStorage.setItem('lastSelectionMadeDate', today);
 

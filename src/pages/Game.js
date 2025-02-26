@@ -690,11 +690,15 @@ const Game = () => {
   useEffect(() => {
     if (!isLoggedIn) {
       const savedCompletedSelections = localStorage.getItem("completedSelections");
-
-      if (completedSelections.length === 0 && savedCompletedSelections) {
+      const parsedCompletedSelections = savedCompletedSelections ? JSON.parse(savedCompletedSelections) : [];
+  
+      // ✅ Prevent infinite loop: Only restore if necessary
+      if (completedSelections.length === 0 && parsedCompletedSelections.length > 0) {
         console.log("Restoring completedSelections from localStorage for guest user.");
-        setCompletedSelections(JSON.parse(savedCompletedSelections));
-      } else if (completedSelections.length > 0 && JSON.stringify(completedSelections) !== savedCompletedSelections) {
+        setCompletedSelections(parsedCompletedSelections);
+      } 
+      // ✅ Prevent unnecessary updates: Only save to localStorage if values have actually changed
+      else if (completedSelections.length > 0 && JSON.stringify(completedSelections) !== JSON.stringify(parsedCompletedSelections)) {
         console.log("Persisting completedSelections to localStorage for guest user.");
         localStorage.setItem("completedSelections", JSON.stringify(completedSelections));
       }
@@ -702,7 +706,7 @@ const Game = () => {
       console.log("Syncing completedSelections with backend...");
       saveCompletedSelectionsToBackend(completedSelections);
     }
-  }, [completedSelections, isLoggedIn, isGameComplete]); // ✅ Ensures proper sync when game is complete 
+  }, [completedSelections, isLoggedIn, isGameComplete]);
 
   // ✅ Existing useEffect that resets completedSelections when a new day starts
   useEffect(() => {

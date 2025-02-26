@@ -4,8 +4,8 @@ import { getTodayInEST } from '../utils/dateUtils';
 
 const useSelections = (userId, isLoggedIn) => {
   const [selections, setSelections] = useState([]);
-  const [attempts, setAttempts] = useState([]); 
-  const [alreadyGuessed, setAlreadyGuessed] = useState([]); 
+  const [attempts, setAttempts] = useState([]);
+  const [alreadyGuessed, setAlreadyGuessed] = useState([]);
   const [completedAttempts, setCompletedAttempts] = useState([]); // ✅ Added missing state
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,12 +22,13 @@ const useSelections = (userId, isLoggedIn) => {
 
         const today = getTodayInEST();
         if (data.lastSelectionMadeDate !== today) {
-          console.log("Last selection made on a previous day. Clearing outdated selections, attempts, and completedAttempts.");
+          console.log("Last selection made on a previous day. Clearing outdated selections, attempts, completedSelections, and completedAttempts.");
           setSelections([]);
           setAttempts([]);
-          setCompletedAttempts([]); // ✅ Reset completedAttempts for new puzzle
+          setCompletedSelections([]); // ✅ Reset completedSelections on a new puzzle
+          setCompletedAttempts([]); // ✅ Reset completedAttempts on a new puzzle
           setAlreadyGuessed([]);
-          await axiosInstance.put("/stats/selections", { selections: [], attempts: [], completedAttempts: [], lastSelectionMadeDate: today });
+          await axiosInstance.put("/stats/selections", { selections: [], attempts: [], completedSelections: [], completedAttempts: [], lastSelectionMadeDate: today });
         } else {
           setSelections(data.selections || []);
           setAttempts(data.attempts?.map(attempt => attempt.map(selected => !!selected)) || []);
@@ -60,13 +61,13 @@ const useSelections = (userId, isLoggedIn) => {
         console.log("Last selection made on a previous day. Clearing outdated selections, attempts, completedAttempts, and alreadyGuessed.");
 
         localStorage.setItem('selections', JSON.stringify([]));
-        localStorage.setItem('attempts', JSON.stringify([])); 
+        localStorage.setItem('attempts', JSON.stringify([]));
         localStorage.setItem('completedAttempts', JSON.stringify([])); // ✅ Reset completedAttempts for guests
         localStorage.setItem('alreadyGuessed', JSON.stringify([]));
         localStorage.setItem('lastSelectionMadeDate', today);
 
         setSelections([]);
-        setAttempts([]); 
+        setAttempts([]);
         setCompletedAttempts([]); // ✅ Reset completedAttempts in state
         setAlreadyGuessed([]);
       } else {
@@ -107,12 +108,12 @@ const useSelections = (userId, isLoggedIn) => {
     }
   };
 
-  return { 
-    selections, updateSelections, 
-    attempts, setAttempts, 
+  return {
+    selections, updateSelections,
+    attempts, setAttempts,
     completedAttempts, setCompletedAttempts, // ✅ Now properly returned
-    alreadyGuessed, setAlreadyGuessed, 
-    isLoading, error 
+    alreadyGuessed, setAlreadyGuessed,
+    isLoading, error
   };
 };
 

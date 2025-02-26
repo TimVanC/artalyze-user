@@ -6,11 +6,12 @@ const useSelections = (userId, isLoggedIn) => {
   const [selections, setSelections] = useState([]);
   const [attempts, setAttempts] = useState([]);
   const [alreadyGuessed, setAlreadyGuessed] = useState([]);
-  const [completedAttempts, setCompletedAttempts] = useState([]); // ✅ Added missing state
+  const [completedSelections, setCompletedSelections] = useState([]); // ✅ Added missing state
+  const [completedAttempts, setCompletedAttempts] = useState([]); 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch selections, attempts, completedAttempts, and alreadyGuessed from backend or localStorage
+  // Fetch selections, attempts, completedSelections, completedAttempts, and alreadyGuessed from backend or localStorage
   useEffect(() => {
     const fetchSelections = async () => {
       try {
@@ -18,7 +19,7 @@ const useSelections = (userId, isLoggedIn) => {
         const { data } = await axiosInstance.get('/stats/selections', {
           headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
         });
-        console.log('Fetched selections, attempts, completedAttempts, and alreadyGuessed from backend:', data);
+        console.log('Fetched selections, attempts, completedSelections, completedAttempts, and alreadyGuessed from backend:', data);
 
         const today = getTodayInEST();
         if (data.lastSelectionMadeDate !== today) {
@@ -26,15 +27,17 @@ const useSelections = (userId, isLoggedIn) => {
           setSelections([]);
           setAttempts([]);
           setCompletedSelections([]); // ✅ Reset completedSelections on a new puzzle
-          setCompletedAttempts([]); // ✅ Reset completedAttempts on a new puzzle
+          setCompletedAttempts([]); 
           setAlreadyGuessed([]);
           await axiosInstance.put("/stats/selections", { selections: [], attempts: [], completedSelections: [], completedAttempts: [], lastSelectionMadeDate: today });
         } else {
           setSelections(data.selections || []);
           setAttempts(data.attempts?.map(attempt => attempt.map(selected => !!selected)) || []);
+          setCompletedSelections(data.completedSelections || []);
           setCompletedAttempts(data.completedAttempts || []);
           setAlreadyGuessed(data.alreadyGuessed || []);
           localStorage.setItem("attempts", JSON.stringify(data.attempts || []));
+          localStorage.setItem("completedSelections", JSON.stringify(data.completedSelections || []));
           localStorage.setItem("completedAttempts", JSON.stringify(data.completedAttempts || []));
           localStorage.setItem("alreadyGuessed", JSON.stringify(data.alreadyGuessed || []));
         }
@@ -52,27 +55,31 @@ const useSelections = (userId, isLoggedIn) => {
     } else {
       const savedSelections = localStorage.getItem('selections');
       const savedAttempts = localStorage.getItem('attempts');
+      const savedCompletedSelections = localStorage.getItem('completedSelections');
       const savedCompletedAttempts = localStorage.getItem('completedAttempts');
       const savedAlreadyGuessed = localStorage.getItem('alreadyGuessed');
       const lastSelectionMadeDate = localStorage.getItem('lastSelectionMadeDate');
       const today = getTodayInEST();
 
       if (lastSelectionMadeDate !== today) {
-        console.log("Last selection made on a previous day. Clearing outdated selections, attempts, completedAttempts, and alreadyGuessed.");
+        console.log("Last selection made on a previous day. Clearing outdated selections, attempts, completedSelections, completedAttempts, and alreadyGuessed.");
 
         localStorage.setItem('selections', JSON.stringify([]));
         localStorage.setItem('attempts', JSON.stringify([]));
-        localStorage.setItem('completedAttempts', JSON.stringify([])); // ✅ Reset completedAttempts for guests
+        localStorage.setItem('completedSelections', JSON.stringify([])); // ✅ Reset completedSelections for guests
+        localStorage.setItem('completedAttempts', JSON.stringify([])); 
         localStorage.setItem('alreadyGuessed', JSON.stringify([]));
         localStorage.setItem('lastSelectionMadeDate', today);
 
         setSelections([]);
         setAttempts([]);
-        setCompletedAttempts([]); // ✅ Reset completedAttempts in state
+        setCompletedSelections([]); // ✅ Reset completedSelections in state
+        setCompletedAttempts([]);
         setAlreadyGuessed([]);
       } else {
         setSelections(savedSelections ? JSON.parse(savedSelections) : []);
         setAttempts(savedAttempts ? JSON.parse(savedAttempts) : []);
+        setCompletedSelections(savedCompletedSelections ? JSON.parse(savedCompletedSelections) : []);
         setCompletedAttempts(savedCompletedAttempts ? JSON.parse(savedCompletedAttempts) : []);
         setAlreadyGuessed(savedAlreadyGuessed ? JSON.parse(savedAlreadyGuessed) : []);
       }
@@ -111,6 +118,7 @@ const useSelections = (userId, isLoggedIn) => {
   return {
     selections, updateSelections,
     attempts, setAttempts,
+    completedSelections, setCompletedSelections, // ✅ Now properly returned
     completedAttempts, setCompletedAttempts, // ✅ Now properly returned
     alreadyGuessed, setAlreadyGuessed,
     isLoading, error

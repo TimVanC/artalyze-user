@@ -694,6 +694,19 @@ const Game = () => {
     }
   }, [isGameComplete]);
 
+  useEffect(() => {
+    const today = getTodayInEST();
+    const lastSelectionMadeDate = localStorage.getItem("lastSelectionMadeDate");
+  
+    // ✅ Reset attempts[] if lastSelectionMadeDate is outdated
+    if (!lastSelectionMadeDate || lastSelectionMadeDate !== today) {
+      console.log("🌅 New day detected. Resetting attempts for guest user.");
+      setAttempts([]);
+      localStorage.setItem("attempts", JSON.stringify([]));
+      localStorage.setItem("lastSelectionMadeDate", today);
+    }
+  }, [isGameComplete]); // ✅ Ensure it re-triggers after a game completes  
+
   // ✅ Now, update `lastPlayedDate` **only when the user actually completes a game**
   useEffect(() => {
     if (isGameComplete) {

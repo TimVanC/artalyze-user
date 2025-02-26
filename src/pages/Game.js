@@ -72,7 +72,6 @@ const Game = () => {
     return localStorage.getItem("darkMode") === "true";
   });
 
-  const [imageLoading, setImageLoading] = useState({});
 
   const [stats, setStats] = useState({
     gamesPlayed: 0,
@@ -348,32 +347,14 @@ const Game = () => {
       console.log("📦 Puzzle Response:", puzzleResponse.data);
 
       if (puzzleResponse.data?.imagePairs?.length > 0) {
-        const getRandomizedPairs = (pairs) => {
-          return pairs.map((pair) => ({
-            human: pair.humanImageURL,
-            ai: pair.aiImageURL,
-            images: Math.random() > 0.5
-              ? [pair.humanImageURL, pair.aiImageURL]
-              : [pair.aiImageURL, pair.humanImageURL],
-          }));
-        };
+        const pairs = puzzleResponse.data.imagePairs.map((pair) => ({
+          human: pair.humanImageURL,
+          ai: pair.aiImageURL,
+          images: Math.random() > 0.5
+            ? [pair.humanImageURL, pair.aiImageURL]
+            : [pair.aiImageURL, pair.humanImageURL],
+        }));
 
-        const initializeImagePairs = (imagePairsData) => {
-          // Check if stored randomized pairs exist
-          const storedPairs = localStorage.getItem("randomizedImagePairs");
-
-          if (storedPairs) {
-            console.log("🔄 Using stored image pairs from localStorage");
-            return JSON.parse(storedPairs);
-          } else {
-            console.log("🎲 Randomizing image pairs for the first time");
-            const randomizedPairs = getRandomizedPairs(imagePairsData);
-            localStorage.setItem("randomizedImagePairs", JSON.stringify(randomizedPairs));
-            return randomizedPairs;
-          }
-        };
-
-        const pairs = initializeImagePairs(puzzleResponse.data.imagePairs);
         console.log("🖼️ Setting imagePairs:", pairs);
         setImagePairs(pairs);
         localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
@@ -548,28 +529,13 @@ const Game = () => {
   // Monitor updates to imagePairs
   useEffect(() => {
     console.log("Image pairs state updated:", imagePairs);
-
     if (imagePairs.length > 0) {
-      // Existing logic for updating Swiper
       setTimeout(() => {
         if (swiperRef.current) {
           console.log("Updating Swiper to current index:", currentIndex);
           swiperRef.current.slideToLoop(currentIndex, 0);
         }
       }, 100);
-
-      // 🔄 **New Image Preloading Logic**
-      const loadingState = {};
-      imagePairs.forEach((pair, index) => {
-        pair.images.forEach((image, position) => {
-          loadingState[`${index}-${position}`] = true; // Mark as loading
-          const img = new Image();
-          img.src = image;
-          img.onload = () => handleImageLoad(index, position);
-          img.onerror = () => handleImageError(index, position);
-        });
-      });
-      setImageLoading((prev) => ({ ...prev, ...loadingState }));
     }
   }, [currentIndex, imagePairs]);
 
@@ -823,13 +789,8 @@ const Game = () => {
   const handleSelection = (selectedImage, isHumanSelection) => {
     const updatedSelections = [...selections];
 
-    // Ensure index exists before updating
-    if (!updatedSelections[currentIndex]) {
-        updatedSelections[currentIndex] = { selected: null, isHumanSelection: false };
-    }
-
-    // Toggle selection (if clicked again, it removes selection)
-    if (updatedSelections[currentIndex].selected === selectedImage) {
+    // Deselect if already selected
+    if (updatedSelections[currentIndex]?.selected === selectedImage) {
         updatedSelections[currentIndex] = null;
     } else {
         updatedSelections[currentIndex] = { selected: selectedImage, isHumanSelection };
@@ -837,14 +798,6 @@ const Game = () => {
 
     updateSelections(updatedSelections);
     localStorage.setItem("selections", JSON.stringify(updatedSelections));
-
-    // ✅ Force Submit Button State Update
-    const isAllSelected = updatedSelections.filter(Boolean).length === imagePairs.length;
-    if (isAllSelected) {
-        document.querySelector(".submit-button").classList.add("enabled");
-    } else {
-        document.querySelector(".submit-button").classList.remove("enabled");
-    }
 
     // Check if user has seen overlays before
     const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
@@ -858,39 +811,38 @@ const Game = () => {
     }
 };
 
+const handleSwipe = (swiper) => {
+  setCurrentIndex(swiper.realIndex);
 
-  const handleSwipe = (swiper) => {
-    setCurrentIndex(swiper.realIndex);
+  // Check if user has seen overlays before
+  const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
 
-    // Check if user has seen overlays before
-    const hasSeenOverlays = localStorage.getItem("hasSeenOverlays") === "true";
-
-    if (!hasSeenOverlays) {
+  if (!hasSeenOverlays) {
       // Show "Swipe left to go back" overlay after the first swipe (only once)
       if (!hasSeenSwipeLeft && swiper.realIndex > 0) {
-        setShowSwipeLeftOverlay(true);
-        setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
-        setHasSeenSwipeLeft(true);
+          setShowSwipeLeftOverlay(true);
+          setTimeout(() => setShowSwipeLeftOverlay(false), 2000);
+          setHasSeenSwipeLeft(true);
       }
 
       // Show "Double tap to enlarge" overlay after the second swipe (only once)
       if (!hasSeenDoubleTap && swiper.realIndex > 1) {
-        setShowDoubleTapOverlay(true);
-        setTimeout(() => setShowDoubleTapOverlay(false), 2000);
-        setHasSeenDoubleTap(true);
+          setShowDoubleTapOverlay(true);
+          setTimeout(() => setShowDoubleTapOverlay(false), 2000);
+          setHasSeenDoubleTap(true);
       }
 
       // Show "Tap info icon for more help" overlay after the fourth swipe (only once)
       if (!showInfoOverlay && swiper.realIndex > 2) {
-        setShowInfoOverlay(true);
-        setTimeout(() => {
-          setShowInfoOverlay(false);
-          // Mark overlays as seen after all have displayed
-          localStorage.setItem("hasSeenOverlays", "true");
-        }, 2000);
+          setShowInfoOverlay(true);
+          setTimeout(() => {
+              setShowInfoOverlay(false);
+              // Mark overlays as seen after all have displayed
+              localStorage.setItem("hasSeenOverlays", "true");
+          }, 2000);
       }
-    }
-  };
+  }
+};
 
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs are available
@@ -961,34 +913,9 @@ const Game = () => {
   };
 
   const handleImageClick = (imageUrl) => {
-    if (!imageLoading[imageUrl]) {  // Only open if it's fully loaded
-      console.log("Opening enlarged image:", imageUrl);
-      setEnlargedImage(imageUrl);
-      setEnlargedImageMode("game-screen");
-    }
-  };
-
-  const handleImageLoad = (index, position) => {
-    setImageLoading((prev) => ({ ...prev, [`${index}-${position}`]: false }));
-  };
-
-  const handleImageError = (index, position) => {
-    console.error(`Failed to load image at index ${index}, position ${position}`);
-    setImageLoading((prev) => ({ ...prev, [`${index}-${position}`]: false }));
-  };
-
-  const preloadImages = (imagePairs) => {
-    const loadingState = {};
-    imagePairs.forEach((pair, index) => {
-      pair.images.forEach((image, position) => {
-        loadingState[`${index}-${position}`] = true; // Mark as loading
-        const img = new Image();
-        img.src = image;
-        img.onload = () => handleImageLoad(index, position);
-        img.onerror = () => handleImageError(index, position);
-      });
-    });
-    setImageLoading((prev) => ({ ...prev, ...loadingState }));
+    console.log("Opening enlarged image:", imageUrl);
+    setEnlargedImage(imageUrl);
+    setEnlargedImageMode("game-screen"); // Change to default to game-screen
   };
 
   const closeEnlargedImage = () => {
@@ -998,6 +925,7 @@ const Game = () => {
   const handleRelease = () => {
     clearTimeout(longPressTimer.current);
   };
+
 
   const handleSubmit = async () => {
     console.log("📡 Submit button pressed!");
@@ -1066,7 +994,7 @@ const Game = () => {
     setTimeout(() => setIsStatsModalDismissed(true), 300); // Trigger animation after modal close animation
   };
 
-  const isSubmitEnabled = imagePairs.length > 0 && selections.filter(Boolean).length === imagePairs.length;
+  const isSubmitEnabled = selections.length === imagePairs.length;
 
   return (
     <div className={`game-container ${darkMode ? "dark-mode" : ""}`}>
@@ -1204,7 +1132,6 @@ const Game = () => {
                           key={idx}
                           className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
                         >
-                          {imageLoading[`${index}-${idx}`] && <div className="image-loader"></div>}
                           <img
                             src={image}
                             alt={`Painting ${idx + 1}`}
@@ -1230,9 +1157,6 @@ const Game = () => {
                               lastTapTime.current = currentTime;
                             }}
                             draggable="false"
-                            onLoad={() => handleImageLoad(index, idx)}
-                            onError={() => handleImageError(index, idx)}
-                            style={{ visibility: imageLoading[`${index}-${idx}`] ? "hidden" : "visible" }}
                           />
                         </div>
                       ))}

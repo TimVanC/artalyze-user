@@ -1318,8 +1318,9 @@ const Game = () => {
         correctCount={correctCount}
         isGameComplete={isGameComplete}
         completedSelections={completedSelections}
-        attempts={completedAttempts} // ✅ Pass completedAttempts as attempts
+        attempts={completedAttempts} // ✅ Pass all user attempts
       />
+
 
       <SettingsModal
         isOpen={isSettingsOpen}

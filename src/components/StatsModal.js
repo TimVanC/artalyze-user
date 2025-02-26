@@ -28,7 +28,7 @@ const StatsModal = ({
   correctCount = 0,
   isGameComplete = false,
   completedSelections = [],
-  attempts = [], // ✅ Add attempts here
+  attempts = [], // ✅ Accept attempts from Game.js
 }) => {
   const userId = localStorage.getItem('userId');
   const [stats, setStats] = useState(initialStats);
@@ -148,17 +148,16 @@ const StatsModal = ({
     }, 1000); // Show warning for 1 second
   };
   
-  // Helper function for sharing results with all attempts
   const shareResults = (usedSelections, allAttempts) => {
-    // Ensure we have valid selections and image pairs
-    if (!usedSelections.length || !imagePairs.length) {
+    // Ensure we have valid selections, attempts, and image pairs
+    if (!usedSelections.length || !imagePairs.length || !allAttempts.length) {
       alert("No data available to share today's puzzle!");
       return;
     }
   
     const puzzleNumber = calculatePuzzleNumber();
   
-    // Calculate the correct count
+    // Calculate the correct count from the final attempt
     const correctCount = usedSelections.reduce((count, selection, index) => {
       return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
     }, 0);
@@ -169,16 +168,11 @@ const StatsModal = ({
         attempt.map((selected) => (selected ? "🟢" : "🔴")).join(" ")
       ).join("\n");
   
-    // Build the final attempt separately
-    const finalAttempt = usedSelections
-      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-      .join(" ");
-  
     // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
   
     // Construct the shareable text including all attempts
-    const shareableText = `Artalyze #${puzzleNumber} ${correctCount}/${imagePairs.length}\n${formattedGuesses}\n${finalAttempt}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
+    const shareableText = `Artalyze #${puzzleNumber} ${correctCount}/${imagePairs.length}\n${formattedGuesses}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
   
     // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
@@ -197,6 +191,7 @@ const StatsModal = ({
         .catch((error) => console.error("Failed to copy:", error));
     }
   };
+  
   
 
   if (!isOpen && !isDismissing) return null;

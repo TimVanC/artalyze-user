@@ -321,12 +321,19 @@ const Game = () => {
         }
       }
 
-      // ✅ **Lock users on the completion screen if they already finished today's game**
       if (gameCompletedToday) {
-        console.log("✅ User already completed today's game. Staying on completion screen.");
-        setIsGameComplete(true);
+        console.log("✅ User already completed today's game. Checking if selections need reset.");
+      
+        // ✅ Ensure completedSelections and completedAttempts are reset properly
+        if (!completedSelections.length || !completedAttempts.length) {
+          console.log("🔄 No completed attempts found, resetting for a new game.");
+          setIsGameComplete(false);
+        } else {
+          setIsGameComplete(true);
+        }
+      
         return;
-      }
+      }      
 
       // ✅ **Reset triesRemaining if lastPlayedDate is today (game completed)**
       if (lastPlayedDate === today || lastTriesMadeDate !== today) {
@@ -661,40 +668,42 @@ const Game = () => {
     }
   }, [completedSelections, isLoggedIn, isGameComplete]); // ✅ Ensures proper sync when game is complete 
 
-// ✅ Existing useEffect that resets completedSelections when a new day starts
-useEffect(() => {
-  const today = getTodayInEST();
-  const lastPlayedDate = localStorage.getItem("lastPlayedDate");
-
-  if (lastPlayedDate !== today) {
-    console.log("🌅 New day detected. Resetting completedSelections, completedAttempts, and updating lastPlayedDate.");
-
-    // ✅ Reset completedSelections
-    setCompletedSelections([]);
-    localStorage.removeItem("completedSelections");
-
-    // ✅ Reset completedAttempts
-    setCompletedAttempts([]);
-    localStorage.removeItem("completedAttempts");
-
-    // ✅ Update lastPlayedDate to prevent redundant resets
-    localStorage.setItem("lastPlayedDate", today);
-
-    if (isUserLoggedIn()) {
-      console.log("📡 Resetting completedSelections and completedAttempts in the backend...");
-
-      // ✅ Reset completedSelections in the backend
-      axiosInstance.put(`/stats/completed-selections/${userId}`, { completedSelections: [] })
-        .then(() => console.log("✅ completedSelections reset in backend"))
-        .catch(error => console.error("❌ Error resetting completedSelections in backend:", error));
-
-      // ✅ Reset completedAttempts in the backend
-      axiosInstance.put(`/stats/completed-attempts`, { completedAttempts: [] })
-        .then(() => console.log("✅ completedAttempts reset in backend"))
-        .catch(error => console.error("❌ Error resetting completedAttempts in backend:", error));
+  useEffect(() => {
+    const today = getTodayInEST();
+    const lastPlayedDate = localStorage.getItem("lastPlayedDate");
+  
+    if (lastPlayedDate !== today) {
+      console.log("🌅 New day detected. Resetting completedSelections, completedAttempts, isGameComplete, and updating lastPlayedDate.");
+  
+      // ✅ Reset completedSelections
+      setCompletedSelections([]);
+      localStorage.removeItem("completedSelections");
+  
+      // ✅ Reset completedAttempts
+      setCompletedAttempts([]);
+      localStorage.removeItem("completedAttempts");
+  
+      // ✅ Reset isGameComplete to allow a new game to start
+      setIsGameComplete(false);
+      localStorage.removeItem("isGameComplete");
+  
+      // ✅ Update lastPlayedDate to prevent redundant resets
+      localStorage.setItem("lastPlayedDate", today);
+  
+      if (isUserLoggedIn()) {
+        console.log("📡 Resetting completedSelections and completedAttempts in the backend...");
+  
+        axiosInstance.put(`/stats/completed-selections/${userId}`, { completedSelections: [] })
+          .then(() => console.log("✅ completedSelections reset in backend"))
+          .catch(error => console.error("❌ Error resetting completedSelections in backend:", error));
+  
+        axiosInstance.put(`/stats/completed-attempts`, { completedAttempts: [] })
+          .then(() => console.log("✅ completedAttempts reset in backend"))
+          .catch(error => console.error("❌ Error resetting completedAttempts in backend:", error));
+      }
     }
-  }
-}, [userId, isGameComplete]); // ✅ Ensure it updates when the user logs in or the game is completed
+  }, [userId, isGameComplete]); // ✅ Ensures reset logic updates when the user logs in or the game completes
+  
 
   // ✅ Now, update `lastPlayedDate` **only when the user actually completes a game**
   useEffect(() => {

@@ -44,7 +44,6 @@ img {
 
   .zoomable {
     touch-action: pinch-zoom;
-    transform: scale(1); /* ✅ Always start at original size */
     max-width: 100%;
     max-height: 100%;
     transform-origin: center;

@@ -1466,8 +1466,8 @@ const Game = () => {
                     prevEl: ".swiper-button-prev",
                     nextEl: ".swiper-button-next",
                   }}
-                  slidesPerView={1} // Show only one image per slide
-                  spaceBetween={10} // Add some space if needed between slides
+                  slidesPerView={1}
+                  spaceBetween={10}
                 >
                   {imagePairs &&
                     imagePairs.map((pair, index) => (
@@ -1479,11 +1479,8 @@ const Game = () => {
                             className={`enlarged-image ${window.innerWidth < 650 ? "zoom-enabled" : ""}`}
                             onClick={(e) => e.stopPropagation()} // Prevents modal from closing
                             onContextMenu={(e) => e.preventDefault()} // Disable right-click
-                            onTouchStart={(e) => {
-                              e.preventDefault(); // ✅ Block iOS menu
-                              e.stopPropagation();
-                            }}
-                            onMouseDown={(e) => e.preventDefault()} // Block dragging
+                            onTouchStart={(e) => e.stopPropagation()} // Stop event bubbling
+                            onMouseDown={(e) => e.preventDefault()} // Prevent dragging
                             draggable="false"
                           />
                         </div>
@@ -1495,7 +1492,6 @@ const Game = () => {
               <div className="swiper-button-next">&#8594;</div>
             </div>
           )}
-
         </>
       )}
 

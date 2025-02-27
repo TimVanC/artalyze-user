@@ -1035,10 +1035,21 @@ body.dark-mode .info-overlay {
 
 /* Media Queries */
 
-/* Enable zooming only for mobile screens */
+/* Allow zooming only for mobile screens */
 @media (max-width: 650px) {
   .zoom-enabled {
-    touch-action: pinch-zoom; /* Allow pinch zooming */
+    touch-action: pinch-zoom; /* Enable pinch-to-zoom */
+  }
+
+  .enlarged-image-container {
+    overflow: hidden;
+  }
+
+  .enlarged-image {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
   }
 }
 

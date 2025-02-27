@@ -74,7 +74,6 @@ const Game = () => {
   });
 
   const [imageLoading, setImageLoading] = useState({});
-  const [zoomLevel, setZoomLevel] = useState(1);
 
   const [stats, setStats] = useState({
     gamesPlayed: 0,
@@ -692,12 +691,12 @@ const Game = () => {
     if (!isLoggedIn) {
       const savedCompletedSelections = localStorage.getItem("completedSelections");
       const parsedCompletedSelections = savedCompletedSelections ? JSON.parse(savedCompletedSelections) : [];
-
+  
       // ✅ Prevent infinite loop: Only restore if necessary
       if (completedSelections.length === 0 && parsedCompletedSelections.length > 0) {
         console.log("Restoring completedSelections from localStorage for guest user.");
         setCompletedSelections(parsedCompletedSelections);
-      }
+      } 
       // ✅ Prevent unnecessary updates: Only save to localStorage if values have actually changed
       else if (completedSelections.length > 0 && JSON.stringify(completedSelections) !== JSON.stringify(parsedCompletedSelections)) {
         console.log("Persisting completedSelections to localStorage for guest user.");
@@ -1085,10 +1084,11 @@ const Game = () => {
   };
 
   const handleImageClick = (imageUrl) => {
-    if (window.innerWidth > 650) return; // ✅ Prevent zoom on larger screens
-    setEnlargedImage(imageUrl);
-    setEnlargedImageMode("game-screen");
-    setZoomLevel(1); // ✅ Reset zoom level when opening
+    if (!imageLoading[imageUrl]) {  // Only open if it's fully loaded
+      console.log("Opening enlarged image:", imageUrl);
+      setEnlargedImage(imageUrl);
+      setEnlargedImageMode("game-screen");
+    }
   };
 
   const handleImageLoad = (index, position) => {
@@ -1472,26 +1472,18 @@ const Game = () => {
                   {imagePairs &&
                     imagePairs.map((pair, index) => (
                       <SwiperSlide key={index}>
-                        <div
-                          className="enlarged-image-container"
-                          style={{ touchAction: window.innerWidth > 650 ? "none" : "auto" }} // ✅ Properly allows pinch-to-zoom on mobile
-                        >
+                        <div className="enlarged-image-container">
                           <img
                             src={enlargedImage}
                             alt="Enlarged view"
                             className="enlarged-image"
-                            style={{
-                              transform: `scale(${window.innerWidth > 650 ? 1 : zoomLevel})`,
-                              transition: "transform 0.3s ease-in-out",
-                            }}
                             onClick={(e) => e.stopPropagation()} // Prevents modal from closing
                             onContextMenu={(e) => e.preventDefault()} // Disable right-click
-                            onTouchStart={(e) => e.stopPropagation()} // Prevent unintended behaviors
-                            onWheel={(e) => {
-                              if (window.innerWidth > 650) return; // Disable zoom on large screens
-                              e.preventDefault();
-                              setZoomLevel(prevZoom => Math.min(Math.max(prevZoom + e.deltaY * -0.01, 1), 3)); // Limit between 1x and 3x
+                            onTouchStart={(e) => {
+                              e.preventDefault(); // ✅ Block iOS menu
+                              e.stopPropagation();
                             }}
+                            onMouseDown={(e) => e.preventDefault()} // Block dragging
                             draggable="false"
                           />
                         </div>
@@ -1503,7 +1495,6 @@ const Game = () => {
               <div className="swiper-button-next">&#8594;</div>
             </div>
           )}
-
         </>
       )}
 
@@ -1622,31 +1613,20 @@ const Game = () => {
 
       {enlargedImage && (
         <div className={`enlarge-modal ${enlargedImageMode}`} onClick={closeEnlargedImage}>
-          <div
-            className="enlarged-image-container"
-            style={{ touchAction: window.innerWidth > 650 ? "none" : "auto" }} // ✅ Allows pinch-to-zoom only on small screens
-          >
+          <div className="enlarged-image-container">
             <img
               src={enlargedImage}
               alt="Enlarged view"
               className="enlarged-image"
-              style={{
-                transform: `scale(${window.innerWidth > 650 ? 1 : zoomLevel})`,
-                transition: "transform 0.3s ease-in-out",
-              }}
               onClick={(e) => e.stopPropagation()}
               onContextMenu={(e) => e.preventDefault()}
-              onTouchStart={(e) => e.stopPropagation()}
-              onWheel={(e) => {
-                if (window.innerWidth > 650) return; // Disable zoom on large screens
-                e.preventDefault();
-                setZoomLevel(prevZoom => Math.min(Math.max(prevZoom + e.deltaY * -0.01, 1), 3));
-              }}
-              draggable="false"
+              onTouchStart={(e) => e.preventDefault()}
+              onMouseDown={(e) => e.preventDefault()}
             />
           </div>
         </div>
       )}
+
 
     </div>
   );

@@ -14,13 +14,13 @@ body {
 }
 
 /* Ensure images behave properly across devices */
-img {
+/* img {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
   pointer-events: auto;
   touch-action: manipulation;
-}
+} */
 
 
 /* Top Bar */
@@ -1250,18 +1250,6 @@ body.dark-mode .info-overlay {
   .thumbnail-container img {
     width: 101%;
     height: 101%;
-  }
-}
-
-@media (max-width: 650px) {
-  .enlarged-image-container {
-    touch-action: auto; /* ✅ Enables pinch-to-zoom on small screens */
-  }
-}
-
-@media (min-width: 651px) {
-  .enlarged-image-container {
-    touch-action: none; /* ❌ Prevents zooming on large screens */
   }
 }
 

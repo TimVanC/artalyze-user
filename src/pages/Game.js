@@ -156,9 +156,19 @@ const Game = () => {
     localStorage.setItem("completedSelections", JSON.stringify(updatedCompletedSelections));
     
     if (isUserLoggedIn()) {
-      console.log("📡 Storing completedSelections to backend immediately...");
+      console.log("📡 Storing completedSelections to backend...");
       await saveCompletedSelectionsToBackend(updatedCompletedSelections);
-    }      
+    
+      console.log("✅ Fetching completedSelections after save...");
+      const fetchedSelections = await fetchCompletedSelectionsFromBackend();
+    
+      if (fetchedSelections && fetchedSelections.length > 0) {
+        console.log("✅ CompletedSelections successfully fetched:", fetchedSelections);
+        setCompletedSelections(fetchedSelections);
+      } else {
+        console.warn("⚠️ Backend still returned empty completedSelections.");
+      }
+    }         
 
     try {
       const today = getTodayInEST();
@@ -779,20 +789,22 @@ const Game = () => {
   }, [isGameComplete]);
 
 
-  // Prevent re-fetching completedSelections endlessly
   useEffect(() => {
-    if (isGameComplete && isLoggedIn && completedSelections.length === 0) {
-      console.log("Fetching completed selections after game completion...");
-      fetchCompletedSelectionsFromBackend().then((data) => {
-        if (data && data.length > 0) {
-          console.log("Fetched completed selections from backend:", data);
-          if (JSON.stringify(data) !== JSON.stringify(completedSelections)) {
-            setCompletedSelections(data); // Update only if there's a difference
+    if (isGameComplete && isLoggedIn) {
+      console.log("📡 Checking if completedSelections need to be updated...");
+      if (completedSelections.length === 0) {
+        console.log("Fetching completed selections from backend...");
+        fetchCompletedSelectionsFromBackend().then((data) => {
+          if (data && data.length > 0) {
+            setCompletedSelections(data);
+          } else {
+            console.warn("⚠️ Backend still returned empty completedSelections.");
           }
-        }
-      });
+        });
+      }
     }
-  }, [isGameComplete, isLoggedIn, completedSelections.length]);
+  }, [isGameComplete, isLoggedIn]);
+  
 
   // Log selections state updates for debugging
   useEffect(() => {
@@ -908,18 +920,28 @@ const Game = () => {
 
   const fetchCompletedSelectionsFromBackend = async () => {
     try {
-      console.log("Fetching completed selections from backend...");
-      const response = await axiosInstance.get(`/stats/${userId}`, {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.error("❌ Missing userId. Cannot fetch completedSelections.");
+        return [];
+      }
+  
+      console.log("📡 Fetching completed selections from backend...");
+      const response = await axiosInstance.get(`/stats/completed-selections/${userId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
       });
-
+  
       const completedSelections = response.data.completedSelections || [];
-      setCompletedSelections(completedSelections);
-      console.log("Fetched completed selections from backend:", completedSelections);
+      if (completedSelections.length === 0) {
+        console.warn("⚠️ Backend returned empty completedSelections.");
+      }
+  
+      return completedSelections;
     } catch (error) {
-      console.error("Error fetching completed selections:", error.response?.data || error.message);
+      console.error("❌ Error fetching completedSelections:", error.response?.data || error.message);
+      return [];
     }
-  };
+  };  
 
   const decrementTries = async () => {
     try {

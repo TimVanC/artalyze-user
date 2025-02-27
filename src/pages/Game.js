@@ -578,28 +578,34 @@ const Game = () => {
 
   useEffect(() => {
     const disableZoom = (event) => {
-      if (event.ctrlKey || event.metaKey || event.deltaY) {
+      // ✅ Block zoom shortcuts ONLY when an image is NOT enlarged
+      if (!document.querySelector(".zoomable")) {
+        if (event.ctrlKey || event.metaKey || event.deltaY) {
+          event.preventDefault();
+        }
+      }
+    };
+  
+    const disableTouchZoom = (event) => {
+      // ✅ Allow pinch-to-zoom on `.zoomable` images
+      if (!event.target.closest(".zoomable")) {
         event.preventDefault();
       }
     };
-
-    const disableTouchZoom = (event) => {
-      event.preventDefault();
-    };
-
+  
     const disableContextMenu = (event) => {
       event.preventDefault();
     };
-
-    // Prevent right-click (context menu)
+  
+    // ✅ Prevent right-click (context menu)
     document.addEventListener("contextmenu", disableContextMenu);
-
-    // Prevent zooming gestures
-    document.addEventListener("wheel", disableZoom, { passive: false }); // Prevent Ctrl + Scroll zoom
-    document.addEventListener("keydown", disableZoom); // Prevent zoom shortcuts
-    document.addEventListener("gesturestart", disableTouchZoom); // Prevent pinch zoom (iOS)
-    document.addEventListener("gesturechange", disableTouchZoom); // Prevent zoom adjustments (iOS)
-
+  
+    // ✅ Prevent zooming gestures ONLY if no image is enlarged
+    document.addEventListener("wheel", disableZoom, { passive: false });
+    document.addEventListener("keydown", disableZoom);
+    document.addEventListener("gesturestart", disableTouchZoom);
+    document.addEventListener("gesturechange", disableTouchZoom);
+  
     return () => {
       document.removeEventListener("contextmenu", disableContextMenu);
       document.removeEventListener("wheel", disableZoom);
@@ -607,8 +613,7 @@ const Game = () => {
       document.removeEventListener("gesturestart", disableTouchZoom);
       document.removeEventListener("gesturechange", disableTouchZoom);
     };
-  }, []);
-
+  }, []); 
 
   // Persist isGameComplete state across refreshes
   useEffect(() => {

@@ -1253,6 +1253,18 @@ body.dark-mode .info-overlay {
   }
 }
 
+@media (max-width: 650px) {
+  .enlarged-image-container {
+    touch-action: auto; /* ✅ Enables pinch-to-zoom on small screens */
+  }
+}
+
+@media (min-width: 651px) {
+  .enlarged-image-container {
+    touch-action: none; /* ❌ Prevents zooming on large screens */
+  }
+}
+
 /* Dark Mode */
 body.dark-mode .top-bar {
   background-color: #181818;

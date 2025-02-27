@@ -1473,16 +1473,18 @@ const Game = () => {
                     imagePairs.map((pair, index) => (
                       <SwiperSlide key={index}>
                         <div className="enlarged-image-container">
-                          <img
-                            src={enlargedImage}
-                            alt="Enlarged view"
-                            className={`enlarged-image ${window.innerWidth < 650 ? "zoom-enabled" : ""}`}
-                            onClick={(e) => e.stopPropagation()} // Prevents modal from closing
-                            onContextMenu={(e) => e.preventDefault()} // Disable right-click
-                            onTouchStart={(e) => e.stopPropagation()} // Stop event bubbling
-                            onMouseDown={(e) => e.preventDefault()} // Prevent dragging
-                            draggable="false"
-                          />
+                          <div className="zoom-wrapper">
+                            <img
+                              src={enlargedImage}
+                              alt="Enlarged view"
+                              className="enlarged-image zoomable"
+                              onClick={(e) => e.stopPropagation()} // Prevents modal from closing
+                              onContextMenu={(e) => e.preventDefault()} // Disable right-click
+                              onTouchStart={(e) => e.stopPropagation()} // Stop event bubbling
+                              onMouseDown={(e) => e.preventDefault()} // Prevent dragging
+                              draggable="false"
+                            />
+                          </div>
                         </div>
                       </SwiperSlide>
                     ))}
@@ -1492,6 +1494,7 @@ const Game = () => {
               <div className="swiper-button-next">&#8594;</div>
             </div>
           )}
+
         </>
       )}
 

@@ -6,22 +6,49 @@ body {
   box-sizing: border-box;
 }
 
-html,
-body {
+/* Prevents zooming the entire page */
+html, body {
   background-color: #ffffff;
-  touch-action: manipulation;
+  touch-action: manipulation; /* ✅ Keeps scrolling but prevents full-page zoom */
   overflow-x: hidden;
 }
 
-/* Ensure images behave properly across devices */
+/* Prevents long press and selection on normal images */
 img {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
   pointer-events: auto;
-  touch-action: none;
+  touch-action: none; /* ❌ Blocks zoom on all images */
 }
 
+/* ✅ Enable pinch-to-zoom ONLY for enlarged images */
+@media (max-width: 650px) {
+  .enlarged-image-container {
+    overflow: hidden; /* ✅ Ensures zooming stays within bounds */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .zoom-wrapper {
+    overflow: auto; /* ✅ Allows zooming without affecting the page */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .zoomable {
+    touch-action: pinch-zoom; /* ✅ Enables pinch-zoom ONLY for enlarged images */
+    max-width: 100%;
+    max-height: 100%;
+    transform-origin: center;
+  }
+}
 
 /* Top Bar */
 .top-bar {
@@ -1034,24 +1061,6 @@ body.dark-mode .info-overlay {
 }
 
 /* Media Queries */
-
-@media (max-width: 650px) {
-  .zoom-wrapper {
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-  }
-
-  .zoomable {
-    max-width: 100%;
-    max-height: 100%;
-    touch-action: pinch-zoom; /* ✅ Allows only pinch zooming */
-    transform-origin: center;
-  }
-}
 
 /* ✅ Large Tablets - iPad Pro 12.9", Surface Pro, Galaxy Tab S8 Ultra (1024px x 1366px) */
 @media (min-width: 850px) and (max-width: 1279px) and (max-height: 1366px) {

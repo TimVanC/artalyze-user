@@ -1477,7 +1477,7 @@ const Game = () => {
                             <img
                               src={enlargedImage}
                               alt="Enlarged view"
-                              className="enlarged-image zoomable"
+                              className="enlarged-image zoomable" /* ✅ Correct class */
                               onClick={(e) => e.stopPropagation()} // Prevents modal from closing
                               onContextMenu={(e) => e.preventDefault()} // Disable right-click
                               onTouchStart={(e) => e.stopPropagation()} // Stop event bubbling
@@ -1612,20 +1612,22 @@ const Game = () => {
       )}
 
       {enlargedImage && (
-        <div className={`enlarge-modal ${enlargedImageMode}`} onClick={closeEnlargedImage}>
+        <div className="enlarge-modal" onClick={closeEnlargedImage}>
           <div className="enlarged-image-container">
             <img
               src={enlargedImage}
               alt="Enlarged view"
-              className={`enlarged-image ${window.innerWidth < 650 ? "zoom-enabled" : ""}`}
-              onClick={(e) => e.stopPropagation()}
-              onContextMenu={(e) => e.preventDefault()}
-              onTouchStart={(e) => e.preventDefault()}
-              onMouseDown={(e) => e.preventDefault()}
+              className="zoomable" /* ✅ Add this class */
+              onClick={(e) => e.stopPropagation()} // Prevents modal from closing
+              onContextMenu={(e) => e.preventDefault()} // Disable right-click
+              onTouchStart={(e) => e.stopPropagation()} // Stop event bubbling
+              onMouseDown={(e) => e.preventDefault()} // Prevent dragging
+              draggable="false"
             />
           </div>
         </div>
       )}
+
 
     </div>
   );

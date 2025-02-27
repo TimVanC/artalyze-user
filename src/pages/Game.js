@@ -578,37 +578,51 @@ const Game = () => {
 
   useEffect(() => {
     const disableZoom = (event) => {
-      if (event.ctrlKey || event.metaKey || event.deltaY) {
+      if (!document.querySelector(".zoomable")) {
+        if (event.ctrlKey || event.metaKey || event.deltaY) {
+          event.preventDefault();
+        }
+      }
+    };
+  
+    const disableTouchZoom = (event) => {
+      if (!event.target.closest(".zoomable")) {
         event.preventDefault();
       }
     };
-
-    const disableTouchZoom = (event) => {
-      event.preventDefault();
+  
+    const preventZoomOut = (event) => {
+      if (event.scale < 1) {
+        event.preventDefault();
+      }
     };
-
+  
     const disableContextMenu = (event) => {
       event.preventDefault();
     };
-
+  
     // Prevent right-click (context menu)
     document.addEventListener("contextmenu", disableContextMenu);
-
-    // Prevent zooming gestures
-    document.addEventListener("wheel", disableZoom, { passive: false }); // Prevent Ctrl + Scroll zoom
-    document.addEventListener("keydown", disableZoom); // Prevent zoom shortcuts
-    document.addEventListener("gesturestart", disableTouchZoom); // Prevent pinch zoom (iOS)
-    document.addEventListener("gesturechange", disableTouchZoom); // Prevent zoom adjustments (iOS)
-
+  
+    // Prevent zooming gestures except on .zoomable images
+    document.addEventListener("wheel", disableZoom, { passive: false });
+    document.addEventListener("keydown", disableZoom);
+    document.addEventListener("gesturestart", disableTouchZoom);
+    document.addEventListener("gesturechange", disableTouchZoom);
+  
+    // Prevent zooming out smaller than original size
+    document.addEventListener("gesturechange", preventZoomOut);
+  
     return () => {
       document.removeEventListener("contextmenu", disableContextMenu);
       document.removeEventListener("wheel", disableZoom);
       document.removeEventListener("keydown", disableZoom);
       document.removeEventListener("gesturestart", disableTouchZoom);
       document.removeEventListener("gesturechange", disableTouchZoom);
+      document.removeEventListener("gesturechange", preventZoomOut);
     };
   }, []);
-
+  
 
   // Persist isGameComplete state across refreshes
   useEffect(() => {
@@ -691,12 +705,12 @@ const Game = () => {
     if (!isLoggedIn) {
       const savedCompletedSelections = localStorage.getItem("completedSelections");
       const parsedCompletedSelections = savedCompletedSelections ? JSON.parse(savedCompletedSelections) : [];
-  
+
       // ✅ Prevent infinite loop: Only restore if necessary
       if (completedSelections.length === 0 && parsedCompletedSelections.length > 0) {
         console.log("Restoring completedSelections from localStorage for guest user.");
         setCompletedSelections(parsedCompletedSelections);
-      } 
+      }
       // ✅ Prevent unnecessary updates: Only save to localStorage if values have actually changed
       else if (completedSelections.length > 0 && JSON.stringify(completedSelections) !== JSON.stringify(parsedCompletedSelections)) {
         console.log("Persisting completedSelections to localStorage for guest user.");
@@ -1466,26 +1480,25 @@ const Game = () => {
                     prevEl: ".swiper-button-prev",
                     nextEl: ".swiper-button-next",
                   }}
-                  slidesPerView={1} // Show only one image per slide
-                  spaceBetween={10} // Add some space if needed between slides
+                  slidesPerView={1}
+                  spaceBetween={10}
                 >
                   {imagePairs &&
                     imagePairs.map((pair, index) => (
                       <SwiperSlide key={index}>
                         <div className="enlarged-image-container">
-                          <img
-                            src={enlargedImage}
-                            alt="Enlarged view"
-                            className="enlarged-image"
-                            onClick={(e) => e.stopPropagation()} // Prevents modal from closing
-                            onContextMenu={(e) => e.preventDefault()} // Disable right-click
-                            onTouchStart={(e) => {
-                              e.preventDefault(); // ✅ Block iOS menu
-                              e.stopPropagation();
-                            }}
-                            onMouseDown={(e) => e.preventDefault()} // Block dragging
-                            draggable="false"
-                          />
+                          <div className="zoom-wrapper">
+                            <img
+                              src={enlargedImage}
+                              alt="Enlarged view"
+                              className="enlarged-image zoomable" /* ✅ Correct class */
+                              onClick={(e) => e.stopPropagation()} // Prevents modal from closing
+                              onContextMenu={(e) => e.preventDefault()} // Disable right-click
+                              onTouchStart={(e) => e.stopPropagation()} // Stop event bubbling
+                              onMouseDown={(e) => e.preventDefault()} // Prevent dragging
+                              draggable="false"
+                            />
+                          </div>
                         </div>
                       </SwiperSlide>
                     ))}
@@ -1495,6 +1508,7 @@ const Game = () => {
               <div className="swiper-button-next">&#8594;</div>
             </div>
           )}
+
         </>
       )}
 
@@ -1612,16 +1626,17 @@ const Game = () => {
       )}
 
       {enlargedImage && (
-        <div className={`enlarge-modal ${enlargedImageMode}`} onClick={closeEnlargedImage}>
+        <div className="enlarge-modal" onClick={closeEnlargedImage}>
           <div className="enlarged-image-container">
             <img
               src={enlargedImage}
               alt="Enlarged view"
-              className="enlarged-image"
-              onClick={(e) => e.stopPropagation()}
-              onContextMenu={(e) => e.preventDefault()}
-              onTouchStart={(e) => e.preventDefault()}
-              onMouseDown={(e) => e.preventDefault()}
+              className="zoomable" /* ✅ Add this class */
+              onClick={(e) => e.stopPropagation()} // Prevents modal from closing
+              onContextMenu={(e) => e.preventDefault()} // Disable right-click
+              onTouchStart={(e) => e.stopPropagation()} // Stop event bubbling
+              onMouseDown={(e) => e.preventDefault()} // Prevent dragging
+              draggable="false"
             />
           </div>
         </div>

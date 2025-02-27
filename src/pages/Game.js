@@ -153,7 +153,12 @@ const Game = () => {
 
     const updatedCompletedSelections = [...completedSelections, ...selections];
     setCompletedSelections(updatedCompletedSelections);
-    localStorage.setItem("completedSelections", JSON.stringify(updatedCompletedSelections)); // ✅ Ensure persistence    
+    localStorage.setItem("completedSelections", JSON.stringify(updatedCompletedSelections));
+    
+    if (isUserLoggedIn()) {
+      console.log("📡 Storing completedSelections to backend immediately...");
+      await saveCompletedSelectionsToBackend(updatedCompletedSelections);
+    }      
 
     try {
       const today = getTodayInEST();
@@ -881,25 +886,25 @@ const Game = () => {
 
   const saveCompletedSelectionsToBackend = async (completedSelections) => {
     const userId = localStorage.getItem("userId");
-
+  
     if (!userId || !Array.isArray(completedSelections) || completedSelections.length === 0) {
       console.error("Invalid parameters: Cannot save completedSelections. Missing userId or completedSelections is empty.");
       return;
     }
-
+  
     try {
       const payload = { completedSelections };
-      console.log("Saving completedSelections to backend with payload:", payload);
-
-      const response = await axiosInstance.put(`/stats/completed-selections/${userId}`, payload, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
-      });
-
-      console.log("CompletedSelections successfully saved to backend:", response.data);
+      console.log("📡 Saving completedSelections to backend with payload:", payload);
+  
+      await axiosInstance.put(`/stats/completed-selections/${userId}`, payload);
+      console.log("✅ CompletedSelections successfully saved to backend");
+  
+      // Immediately update local state to prevent UI delay
+      setCompletedSelections(completedSelections);
     } catch (error) {
-      console.error("Error saving completedSelections to backend:", error.response?.data || error.message);
+      console.error("❌ Error saving completedSelections to backend:", error.response?.data || error.message);
     }
-  };
+  };  
 
   const fetchCompletedSelectionsFromBackend = async () => {
     try {

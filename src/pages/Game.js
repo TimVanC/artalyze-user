@@ -691,12 +691,12 @@ const Game = () => {
     if (!isLoggedIn) {
       const savedCompletedSelections = localStorage.getItem("completedSelections");
       const parsedCompletedSelections = savedCompletedSelections ? JSON.parse(savedCompletedSelections) : [];
-  
+
       // ✅ Prevent infinite loop: Only restore if necessary
       if (completedSelections.length === 0 && parsedCompletedSelections.length > 0) {
         console.log("Restoring completedSelections from localStorage for guest user.");
         setCompletedSelections(parsedCompletedSelections);
-      } 
+      }
       // ✅ Prevent unnecessary updates: Only save to localStorage if values have actually changed
       else if (completedSelections.length > 0 && JSON.stringify(completedSelections) !== JSON.stringify(parsedCompletedSelections)) {
         console.log("Persisting completedSelections to localStorage for guest user.");
@@ -1476,7 +1476,7 @@ const Game = () => {
                           <img
                             src={enlargedImage}
                             alt="Enlarged view"
-                            className="enlarged-image"
+                            className={`enlarged-image ${window.innerWidth < 650 ? "zoom-enabled" : ""}`}
                             onClick={(e) => e.stopPropagation()} // Prevents modal from closing
                             onContextMenu={(e) => e.preventDefault()} // Disable right-click
                             onTouchStart={(e) => {
@@ -1495,6 +1495,7 @@ const Game = () => {
               <div className="swiper-button-next">&#8594;</div>
             </div>
           )}
+
         </>
       )}
 
@@ -1617,7 +1618,7 @@ const Game = () => {
             <img
               src={enlargedImage}
               alt="Enlarged view"
-              className="enlarged-image"
+              className={`enlarged-image ${window.innerWidth < 650 ? "zoom-enabled" : ""}`}
               onClick={(e) => e.stopPropagation()}
               onContextMenu={(e) => e.preventDefault()}
               onTouchStart={(e) => e.preventDefault()}
@@ -1626,7 +1627,6 @@ const Game = () => {
           </div>
         </div>
       )}
-
 
     </div>
   );

@@ -59,6 +59,7 @@ const Game = () => {
   const [hasSeenSwipeOverlays, setHasSeenSwipeOverlays] = useState(() => {
     return localStorage.getItem("hasSeenSwipeOverlays") === "true";
   });
+  const [scale, setScale] = useState(1);
 
 
   const [userId, setUserId] = useState(localStorage.getItem("userId"));
@@ -584,45 +585,48 @@ const Game = () => {
         }
       }
     };
-  
+
     const disableTouchZoom = (event) => {
       if (!event.target.closest(".zoomable")) {
         event.preventDefault();
       }
     };
-  
+
+    const handleGestureChange = (event) => {
+      setScale(event.scale); // Track current scale
+    };
+
     const preventZoomOut = (event) => {
-      if (event.scale < 1) {
+      if (scale < 1) {
         event.preventDefault();
+        setScale(1); // Reset scale to 1
+        document.querySelector(".zoomable").style.transform = "scale(1)"; // Force reset
       }
     };
-  
+
     const disableContextMenu = (event) => {
       event.preventDefault();
     };
-  
+
     // Prevent right-click (context menu)
     document.addEventListener("contextmenu", disableContextMenu);
-  
+
     // Prevent zooming gestures except on .zoomable images
     document.addEventListener("wheel", disableZoom, { passive: false });
     document.addEventListener("keydown", disableZoom);
     document.addEventListener("gesturestart", disableTouchZoom);
-    document.addEventListener("gesturechange", disableTouchZoom);
-  
-    // Prevent zooming out smaller than original size
-    document.addEventListener("gesturechange", preventZoomOut);
-  
+    document.addEventListener("gesturechange", handleGestureChange);
+    document.addEventListener("gestureend", preventZoomOut); // Stronger enforcement
+
     return () => {
       document.removeEventListener("contextmenu", disableContextMenu);
       document.removeEventListener("wheel", disableZoom);
       document.removeEventListener("keydown", disableZoom);
       document.removeEventListener("gesturestart", disableTouchZoom);
-      document.removeEventListener("gesturechange", disableTouchZoom);
-      document.removeEventListener("gesturechange", preventZoomOut);
+      document.removeEventListener("gesturechange", handleGestureChange);
+      document.removeEventListener("gestureend", preventZoomOut);
     };
-  }, []);
-  
+  }, [scale]);
 
   // Persist isGameComplete state across refreshes
   useEffect(() => {

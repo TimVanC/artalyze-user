@@ -578,7 +578,6 @@ const Game = () => {
 
   useEffect(() => {
     const disableZoom = (event) => {
-      // ✅ Block zoom shortcuts ONLY when an image is NOT enlarged
       if (!document.querySelector(".zoomable")) {
         if (event.ctrlKey || event.metaKey || event.deltaY) {
           event.preventDefault();
@@ -587,8 +586,13 @@ const Game = () => {
     };
   
     const disableTouchZoom = (event) => {
-      // ✅ Allow pinch-to-zoom on `.zoomable` images
       if (!event.target.closest(".zoomable")) {
+        event.preventDefault();
+      }
+    };
+  
+    const preventZoomOut = (event) => {
+      if (event.scale < 1) {
         event.preventDefault();
       }
     };
@@ -597,14 +601,17 @@ const Game = () => {
       event.preventDefault();
     };
   
-    // ✅ Prevent right-click (context menu)
+    // Prevent right-click (context menu)
     document.addEventListener("contextmenu", disableContextMenu);
   
-    // ✅ Prevent zooming gestures ONLY if no image is enlarged
+    // Prevent zooming gestures except on .zoomable images
     document.addEventListener("wheel", disableZoom, { passive: false });
     document.addEventListener("keydown", disableZoom);
     document.addEventListener("gesturestart", disableTouchZoom);
     document.addEventListener("gesturechange", disableTouchZoom);
+  
+    // Prevent zooming out smaller than original size
+    document.addEventListener("gesturechange", preventZoomOut);
   
     return () => {
       document.removeEventListener("contextmenu", disableContextMenu);
@@ -612,8 +619,10 @@ const Game = () => {
       document.removeEventListener("keydown", disableZoom);
       document.removeEventListener("gesturestart", disableTouchZoom);
       document.removeEventListener("gesturechange", disableTouchZoom);
+      document.removeEventListener("gesturechange", preventZoomOut);
     };
-  }, []); 
+  }, []);
+  
 
   // Persist isGameComplete state across refreshes
   useEffect(() => {

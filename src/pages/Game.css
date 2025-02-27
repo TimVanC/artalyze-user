@@ -22,10 +22,9 @@ img {
   touch-action: none; /* ❌ Blocks zoom on all images */
 }
 
-/* ✅ Enable pinch-to-zoom ONLY for enlarged images */
 @media (max-width: 650px) {
   .enlarged-image-container {
-    overflow: hidden; /* ✅ Ensures zooming stays within bounds */
+    overflow: hidden; /* Prevents white space from appearing */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -34,16 +33,17 @@ img {
   }
 
   .zoom-wrapper {
-    overflow: auto; /* ✅ Allows zooming without affecting the page */
+    overflow: hidden; /* Prevents zooming out too far */
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: 100%;
+    transform-origin: center;
   }
 
   .zoomable {
-    touch-action: pinch-zoom; /* ✅ Enables pinch-zoom ONLY for enlarged images */
+    touch-action: pinch-zoom;
     max-width: 100%;
     max-height: 100%;
     transform-origin: center;

@@ -10,7 +10,70 @@
 
 <body>
 
-    <h1>Artalyze - BETA Version 1.3 Patch Notes</h1>
+    <h1>BETA Version 1.4 Patch Notes</h1>
+    <div class="content-wrapper">
+        <p class="last-updated">Release Date: February 27th, 2025</p>
+
+        <h2>New Features & Improvements</h2>
+
+        <div class="section">
+            <h3>Pinch-to-Zoom for Enlarged Images</h3>
+            <ul>
+                <li>Users on mobile devices (width < 650px) can now <strong>pinch-to-zoom</strong> when viewing an
+                        enlarged image.</li>
+                <li>Zooming is <strong>only enabled for enlarged images</strong>, preventing unintended page zooming.
+                </li>
+                <li>Users can zoom in and reset to the original size, but <strong>cannot zoom out beyond 100%</strong>
+                    to avoid layout issues.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3>Enhanced Mobile Zoom Controls</h3>
+            <ul>
+                <li><strong>Prevented zooming out past the original image size</strong> to avoid excessive white space
+                    on Chrome.</li>
+                <li><strong>Enforced a minimum zoom level of 100%</strong> while allowing smooth zooming in.</li>
+                <li>Improved image scaling to ensure zoom remains intuitive across different devices.</li>
+            </ul>
+        </div>
+
+        <h2>Bug Fixes & Optimizations</h2>
+
+        <div class="section">
+            <h3>Fixed Chrome Zoom-Out Bug</h3>
+            <ul>
+                <li>Previously, users on Chrome could <strong>continue zooming out</strong> after zooming in, causing
+                    unwanted white space.</li>
+                <li>Implemented a <strong>gesture tracking system</strong> to detect when users shrink below 100% scale
+                    and automatically reset them to full size.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3>Prevented Page Zooming While Keeping Image Zoom Functional</h3>
+            <ul>
+                <li>Stopped <code>touch-action: none;</code> from globally blocking gestures while still preventing page
+                    zoom.</li>
+                <li>Adjusted event listeners to <strong>allow pinch gestures only on enlarged images</strong>, keeping
+                    the rest of the site zoom-restricted.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3>Refined Event Listener Handling</h3>
+            <ul>
+                <li>Ensured <code>gesturestart</code>, <code>gesturechange</code>, and <code>gestureend</code> properly
+                    manage zoom interactions.</li>
+                <li>Moved all zoom-related event handling into a <strong>single <code>useEffect</code> hook</strong>,
+                    reducing unnecessary event listeners.</li>
+                <li>Fixed an issue where zoom restrictions weren’t consistently applying on iOS and Chrome.</li>
+            </ul>
+        </div>
+    </div>
+
+
+    <h1>BETA Version 1.3 Patch Notes</h1>
     <div class="content-wrapper">
         <p class="last-updated">Release Date: February 26th, 2025</p>
 
@@ -69,7 +132,7 @@
             </ul>
         </div>
 
-        <h1>Artalyze - BETA Version 1.2 Patch Notes</h1>
+        <h1>BETA Version 1.2 Patch Notes</h1>
         <div class="content-wrapper">
             <p class="last-updated">Release Date: February 25th, 2025</p>
 
@@ -110,7 +173,7 @@
             </div>
         </div>
 
-        <h1>Artalyze - BETA Version 1.1 Patch Notes</h1>
+        <h1>BETA Version 1.1 Patch Notes</h1>
         <div class="content-wrapper">
             <p class="last-updated">Release Date: February 17th, 2025</p>
 

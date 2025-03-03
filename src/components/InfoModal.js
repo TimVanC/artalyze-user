@@ -49,9 +49,10 @@ const InfoModal = ({ isOpen, onClose }) => {
           <hr className="section-separator" />
           <ul>
             <li>Swipe through each pair and tap on the painting you believe is created by a human.</li>
-            <li>Double-tap the image to enlarge it.</li>
+            <li>Double-tap the image to enlarge it or pinch to zoom in.</li>
             <li>You have three tries to get all five pairs correct.</li>
             <li>The correct answers will be revealed after your final selection.</li>
+            <li>Each daily puzzle increases in difficulty from Monday to Sunday, with Monday being the easiest and Sunday the hardest.</li>
           </ul>
         </section>
 

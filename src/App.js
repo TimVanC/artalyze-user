@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import PrivateRoute from "./routes/PrivateRoute";
 import { AuthProvider } from "./AuthContext";
 import { Analytics } from "@vercel/analytics/react"; // ✅ Import Vercel Analytics
+import ReactGA from "react-ga4";
 
 // Import Font Awesome CSS
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -23,6 +24,10 @@ function AppContent() {
     } else {
       document.body.classList.remove("dark-mode");
     }
+
+    // ✅ Initialize Google Analytics 4
+    ReactGA.initialize("G-KSNGBVY1V6"); 
+    ReactGA.send("pageview"); // ✅ Track initial page load
   }, [darkMode]);
 
   return (

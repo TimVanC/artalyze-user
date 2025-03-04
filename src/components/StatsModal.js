@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import ReactGA from "react-ga4";
 import { useDarkMode } from "../hooks/useDarkMode";
 import "./StatsModal.css";
 import { FaShareAlt } from 'react-icons/fa';
@@ -392,7 +393,6 @@ const StatsModal = ({
                 <FaShareAlt className="share-icon" /> Share Stats
               </button>
 
-
               <button
                 className="modal-share-today-button"
                 onClick={() => {
@@ -408,7 +408,6 @@ const StatsModal = ({
               >
                 <FaShareAlt className="share-icon" /> Share Today
               </button>
-
 
             </div>
 

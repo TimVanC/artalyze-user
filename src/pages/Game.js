@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactGA from "react-ga4";
 import { useNavigate } from 'react-router-dom';
 import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaLongArrowAltRight, FaLongArrowAltLeft } from 'react-icons/fa';
 import logo from '../assets/images/artalyze-logo.png';
@@ -584,35 +585,35 @@ const Game = () => {
         }
       }
     };
-  
+
     const disableTouchZoom = (event) => {
       if (!event.target.closest(".zoomable")) {
         event.preventDefault();
       }
     };
-  
+
     const preventZoomOut = (event) => {
       if (event.scale < 1) {
         event.preventDefault();
       }
     };
-  
+
     const disableContextMenu = (event) => {
       event.preventDefault();
     };
-  
+
     // Prevent right-click (context menu)
     document.addEventListener("contextmenu", disableContextMenu);
-  
+
     // Prevent zooming gestures except on .zoomable images
     document.addEventListener("wheel", disableZoom, { passive: false });
     document.addEventListener("keydown", disableZoom);
     document.addEventListener("gesturestart", disableTouchZoom);
     document.addEventListener("gesturechange", disableTouchZoom);
-  
+
     // Prevent zooming out smaller than original size
     document.addEventListener("gesturechange", preventZoomOut);
-  
+
     return () => {
       document.removeEventListener("contextmenu", disableContextMenu);
       document.removeEventListener("wheel", disableZoom);
@@ -622,7 +623,7 @@ const Game = () => {
       document.removeEventListener("gesturechange", preventZoomOut);
     };
   }, []);
-  
+
 
   // Persist isGameComplete state across refreshes
   useEffect(() => {
@@ -1141,6 +1142,12 @@ const Game = () => {
 
     if (isSubmitting) return; // ✅ Prevent multiple rapid submissions
     setIsSubmitting(true);
+
+    ReactGA.event({
+      category: "Game",
+      action: "Submit Button Clicked",
+      label: "User submitted a game attempt",
+    });
 
     // ✅ Convert current submission into booleans
     const currentSubmission = selections.map((selection, index) => selection.selected === imagePairs[index].human);

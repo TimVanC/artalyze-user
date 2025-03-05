@@ -585,45 +585,34 @@ const Game = () => {
         }
       }
     };
-
+  
     const disableTouchZoom = (event) => {
       if (!event.target.closest(".zoomable")) {
         event.preventDefault();
       }
     };
-
-    const preventZoomOut = (event) => {
-      if (event.scale < 1) {
-        event.preventDefault();
-      }
-    };
-
+  
     const disableContextMenu = (event) => {
       event.preventDefault();
     };
-
+  
     // Prevent right-click (context menu)
     document.addEventListener("contextmenu", disableContextMenu);
-
+  
     // Prevent zooming gestures except on .zoomable images
     document.addEventListener("wheel", disableZoom, { passive: false });
     document.addEventListener("keydown", disableZoom);
     document.addEventListener("gesturestart", disableTouchZoom);
     document.addEventListener("gesturechange", disableTouchZoom);
-
-    // Prevent zooming out smaller than original size
-    document.addEventListener("gesturechange", preventZoomOut);
-
+  
     return () => {
       document.removeEventListener("contextmenu", disableContextMenu);
       document.removeEventListener("wheel", disableZoom);
       document.removeEventListener("keydown", disableZoom);
       document.removeEventListener("gesturestart", disableTouchZoom);
       document.removeEventListener("gesturechange", disableTouchZoom);
-      document.removeEventListener("gesturechange", preventZoomOut);
     };
   }, []);
-
 
   // Persist isGameComplete state across refreshes
   useEffect(() => {

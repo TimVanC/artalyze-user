@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactGA from "react-ga4";
 import { useNavigate } from 'react-router-dom';
 import { FaInfoCircle, FaChartBar, FaCog, FaShareAlt, FaLongArrowAltRight, FaLongArrowAltLeft } from 'react-icons/fa';
 import logo from '../assets/images/artalyze-logo.png';
@@ -153,22 +154,7 @@ const Game = () => {
 
     const updatedCompletedSelections = [...completedSelections, ...selections];
     setCompletedSelections(updatedCompletedSelections);
-    localStorage.setItem("completedSelections", JSON.stringify(updatedCompletedSelections));
-    
-    if (isUserLoggedIn()) {
-      console.log("📡 Storing completedSelections to backend...");
-      await saveCompletedSelectionsToBackend(updatedCompletedSelections);
-    
-      console.log("✅ Fetching completedSelections after save...");
-      const fetchedSelections = await fetchCompletedSelectionsFromBackend();
-    
-      if (fetchedSelections && fetchedSelections.length > 0) {
-        console.log("✅ CompletedSelections successfully fetched:", fetchedSelections);
-        setCompletedSelections(fetchedSelections);
-      } else {
-        console.warn("⚠️ Backend still returned empty completedSelections.");
-      }
-    }         
+    localStorage.setItem("completedSelections", JSON.stringify(updatedCompletedSelections)); // ✅ Ensure persistence    
 
     try {
       const today = getTodayInEST();
@@ -599,35 +585,35 @@ const Game = () => {
         }
       }
     };
-  
+
     const disableTouchZoom = (event) => {
       if (!event.target.closest(".zoomable")) {
         event.preventDefault();
       }
     };
-  
+
     const preventZoomOut = (event) => {
       if (event.scale < 1) {
         event.preventDefault();
       }
     };
-  
+
     const disableContextMenu = (event) => {
       event.preventDefault();
     };
-  
+
     // Prevent right-click (context menu)
     document.addEventListener("contextmenu", disableContextMenu);
-  
+
     // Prevent zooming gestures except on .zoomable images
     document.addEventListener("wheel", disableZoom, { passive: false });
     document.addEventListener("keydown", disableZoom);
     document.addEventListener("gesturestart", disableTouchZoom);
     document.addEventListener("gesturechange", disableTouchZoom);
-  
+
     // Prevent zooming out smaller than original size
     document.addEventListener("gesturechange", preventZoomOut);
-  
+
     return () => {
       document.removeEventListener("contextmenu", disableContextMenu);
       document.removeEventListener("wheel", disableZoom);
@@ -637,7 +623,7 @@ const Game = () => {
       document.removeEventListener("gesturechange", preventZoomOut);
     };
   }, []);
-  
+
 
   // Persist isGameComplete state across refreshes
   useEffect(() => {
@@ -789,22 +775,20 @@ const Game = () => {
   }, [isGameComplete]);
 
 
+  // Prevent re-fetching completedSelections endlessly
   useEffect(() => {
-    if (isGameComplete && isLoggedIn) {
-      console.log("📡 Checking if completedSelections need to be updated...");
-      if (completedSelections.length === 0) {
-        console.log("Fetching completed selections from backend...");
-        fetchCompletedSelectionsFromBackend().then((data) => {
-          if (data && data.length > 0) {
-            setCompletedSelections(data);
-          } else {
-            console.warn("⚠️ Backend still returned empty completedSelections.");
+    if (isGameComplete && isLoggedIn && completedSelections.length === 0) {
+      console.log("Fetching completed selections after game completion...");
+      fetchCompletedSelectionsFromBackend().then((data) => {
+        if (data && data.length > 0) {
+          console.log("Fetched completed selections from backend:", data);
+          if (JSON.stringify(data) !== JSON.stringify(completedSelections)) {
+            setCompletedSelections(data); // Update only if there's a difference
           }
-        });
-      }
+        }
+      });
     }
-  }, [isGameComplete, isLoggedIn]);
-  
+  }, [isGameComplete, isLoggedIn, completedSelections.length]);
 
   // Log selections state updates for debugging
   useEffect(() => {
@@ -898,50 +882,40 @@ const Game = () => {
 
   const saveCompletedSelectionsToBackend = async (completedSelections) => {
     const userId = localStorage.getItem("userId");
-  
+
     if (!userId || !Array.isArray(completedSelections) || completedSelections.length === 0) {
       console.error("Invalid parameters: Cannot save completedSelections. Missing userId or completedSelections is empty.");
       return;
     }
-  
+
     try {
       const payload = { completedSelections };
-      console.log("📡 Saving completedSelections to backend with payload:", payload);
-  
-      await axiosInstance.put(`/stats/completed-selections/${userId}`, payload);
-      console.log("✅ CompletedSelections successfully saved to backend");
-  
-      // Immediately update local state to prevent UI delay
-      setCompletedSelections(completedSelections);
+      console.log("Saving completedSelections to backend with payload:", payload);
+
+      const response = await axiosInstance.put(`/stats/completed-selections/${userId}`, payload, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+      });
+
+      console.log("CompletedSelections successfully saved to backend:", response.data);
     } catch (error) {
-      console.error("❌ Error saving completedSelections to backend:", error.response?.data || error.message);
+      console.error("Error saving completedSelections to backend:", error.response?.data || error.message);
     }
-  };  
+  };
 
   const fetchCompletedSelectionsFromBackend = async () => {
     try {
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        console.error("❌ Missing userId. Cannot fetch completedSelections.");
-        return [];
-      }
-  
-      console.log("📡 Fetching completed selections from backend...");
-      const response = await axiosInstance.get(`/stats/completed-selections/${userId}`, {
+      console.log("Fetching completed selections from backend...");
+      const response = await axiosInstance.get(`/stats/${userId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
       });
-  
+
       const completedSelections = response.data.completedSelections || [];
-      if (completedSelections.length === 0) {
-        console.warn("⚠️ Backend returned empty completedSelections.");
-      }
-  
-      return completedSelections;
+      setCompletedSelections(completedSelections);
+      console.log("Fetched completed selections from backend:", completedSelections);
     } catch (error) {
-      console.error("❌ Error fetching completedSelections:", error.response?.data || error.message);
-      return [];
+      console.error("Error fetching completed selections:", error.response?.data || error.message);
     }
-  };  
+  };
 
   const decrementTries = async () => {
     try {
@@ -1169,6 +1143,12 @@ const Game = () => {
     if (isSubmitting) return; // ✅ Prevent multiple rapid submissions
     setIsSubmitting(true);
 
+    ReactGA.event({
+      category: "Game",
+      action: "Submit Button Clicked",
+      label: "User submitted a game attempt",
+    });
+
     // ✅ Convert current submission into booleans
     const currentSubmission = selections.map((selection, index) => selection.selected === imagePairs[index].human);
 
@@ -1351,9 +1331,50 @@ const Game = () => {
           Artalyze
         </div>
         <div className="icons-right">
-          <FaInfoCircle className="icon" title="Info" onClick={() => setIsInfoOpen(true)} />
-          <FaChartBar className="icon" title="Stats" onClick={() => setIsStatsOpen(true)} />
-          <FaCog className="icon" title="Settings" onClick={() => setIsSettingsOpen(true)} />
+          <FaInfoCircle
+            className="icon"
+            title="Info"
+            onClick={() => {
+              setIsInfoOpen(true);
+
+              // ✅ Track Info icon click in Google Analytics
+              ReactGA.event({
+                category: "Icons",
+                action: "Info Icon Clicked",
+                label: "User opened the info modal",
+              });
+            }}
+          />
+
+          <FaChartBar
+            className="icon"
+            title="Stats"
+            onClick={() => {
+              setIsStatsOpen(true);
+
+              // ✅ Track Stats icon click in Google Analytics
+              ReactGA.event({
+                category: "Icons",
+                action: "Stats Icon Clicked",
+                label: "User opened the stats modal",
+              });
+            }}
+          />
+
+          <FaCog
+            className="icon"
+            title="Settings"
+            onClick={() => {
+              setIsSettingsOpen(true);
+
+              // ✅ Track Settings icon click in Google Analytics
+              ReactGA.event({
+                category: "Icons",
+                action: "Settings Icon Clicked",
+                label: "User opened the settings modal",
+              });
+            }}
+          />
         </div>
       </div>
 
@@ -1459,6 +1480,13 @@ const Game = () => {
                   updateSelections([]);
                   localStorage.removeItem("selections");
 
+                  // ✅ Track the "Clear Selections" event in Google Analytics
+                  ReactGA.event({
+                    category: "Game",
+                    action: "Clear Selections Clicked",
+                    label: "User cleared their selections",
+                  });
+
                   if (isUserLoggedIn()) {
                     axiosInstance.put(`/stats/selections`, { selections: [] })
                       .then(() => console.log("Selections cleared in backend"))
@@ -1480,9 +1508,18 @@ const Game = () => {
                   onClick={() => {
                     setCurrentIndex(index);
                     swiperRef.current.slideToLoop(index);
+
+                    // ✅ Track navigation button clicks in Google Analytics
+                    ReactGA.event({
+                      category: "Navigation",
+                      action: "Nav Button Clicked",
+                      label: `User navigated to image pair ${index + 1}`,
+                      value: index + 1, // Track which image pair they navigated to
+                    });
                   }}
                   aria-label={`Go to image pair ${index + 1}`} /* Accessibility */
-                />
+                >
+                </button>
               ))}
             </div>
 
@@ -1570,7 +1607,19 @@ const Game = () => {
 
           {/* Top Header with Stats, Score Badge, and Share Button */}
           <div className="completion-header">
-            <button className="stats-button compact" onClick={() => setIsStatsOpen(true)}>
+            <button
+              className="stats-button compact"
+              onClick={() => {
+                setIsStatsOpen(true);
+
+                // ✅ Track Stats button click in Google Analytics
+                ReactGA.event({
+                  category: "Completion Screen",
+                  action: "Stats Button Clicked",
+                  label: "User opened game stats",
+                });
+              }}
+            >
               <FaChartBar /> Stats
             </button>
 
@@ -1592,7 +1641,19 @@ const Game = () => {
               Score: {correctCount}/5
             </span>
 
-            <button className="share-button compact" onClick={handleCompletionShare}>
+            <button
+              className="share-button compact"
+              onClick={() => {
+                handleCompletionShare();
+
+                // ✅ Track Share button click in Google Analytics
+                ReactGA.event({
+                  category: "Completion Screen",
+                  action: "Share Button Clicked",
+                  label: "User shared game results",
+                });
+              }}
+            >
               <FaShareAlt /> Share
             </button>
           </div>

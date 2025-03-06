@@ -1132,12 +1132,6 @@ const Game = () => {
     if (isSubmitting) return; // ✅ Prevent multiple rapid submissions
     setIsSubmitting(true);
 
-    ReactGA.event({
-      category: "Game",
-      action: "Submit Button Clicked",
-      label: "User submitted a game attempt",
-    });
-
     // ✅ Convert current submission into booleans
     const currentSubmission = selections.map((selection, index) => selection.selected === imagePairs[index].human);
 
@@ -1320,50 +1314,9 @@ const Game = () => {
           Artalyze
         </div>
         <div className="icons-right">
-          <FaInfoCircle
-            className="icon"
-            title="Info"
-            onClick={() => {
-              setIsInfoOpen(true);
-
-              // ✅ Track Info icon click in Google Analytics
-              ReactGA.event({
-                category: "Icons",
-                action: "Info Icon Clicked",
-                label: "User opened the info modal",
-              });
-            }}
-          />
-
-          <FaChartBar
-            className="icon"
-            title="Stats"
-            onClick={() => {
-              setIsStatsOpen(true);
-
-              // ✅ Track Stats icon click in Google Analytics
-              ReactGA.event({
-                category: "Icons",
-                action: "Stats Icon Clicked",
-                label: "User opened the stats modal",
-              });
-            }}
-          />
-
-          <FaCog
-            className="icon"
-            title="Settings"
-            onClick={() => {
-              setIsSettingsOpen(true);
-
-              // ✅ Track Settings icon click in Google Analytics
-              ReactGA.event({
-                category: "Icons",
-                action: "Settings Icon Clicked",
-                label: "User opened the settings modal",
-              });
-            }}
-          />
+          <FaInfoCircle className="icon" title="Info" onClick={() => setIsInfoOpen(true)} />
+          <FaChartBar className="icon" title="Stats" onClick={() => setIsStatsOpen(true)} />
+          <FaCog className="icon" title="Settings" onClick={() => setIsSettingsOpen(true)} />
         </div>
       </div>
 
@@ -1469,13 +1422,6 @@ const Game = () => {
                   updateSelections([]);
                   localStorage.removeItem("selections");
 
-                  // ✅ Track the "Clear Selections" event in Google Analytics
-                  ReactGA.event({
-                    category: "Game",
-                    action: "Clear Selections Clicked",
-                    label: "User cleared their selections",
-                  });
-
                   if (isUserLoggedIn()) {
                     axiosInstance.put(`/stats/selections`, { selections: [] })
                       .then(() => console.log("Selections cleared in backend"))
@@ -1497,18 +1443,9 @@ const Game = () => {
                   onClick={() => {
                     setCurrentIndex(index);
                     swiperRef.current.slideToLoop(index);
-
-                    // ✅ Track navigation button clicks in Google Analytics
-                    ReactGA.event({
-                      category: "Navigation",
-                      action: "Nav Button Clicked",
-                      label: `User navigated to image pair ${index + 1}`,
-                      value: index + 1, // Track which image pair they navigated to
-                    });
                   }}
                   aria-label={`Go to image pair ${index + 1}`} /* Accessibility */
-                >
-                </button>
+                />
               ))}
             </div>
 
@@ -1596,19 +1533,7 @@ const Game = () => {
 
           {/* Top Header with Stats, Score Badge, and Share Button */}
           <div className="completion-header">
-            <button
-              className="stats-button compact"
-              onClick={() => {
-                setIsStatsOpen(true);
-
-                // ✅ Track Stats button click in Google Analytics
-                ReactGA.event({
-                  category: "Completion Screen",
-                  action: "Stats Button Clicked",
-                  label: "User opened game stats",
-                });
-              }}
-            >
+            <button className="stats-button compact" onClick={() => setIsStatsOpen(true)}>
               <FaChartBar /> Stats
             </button>
 
@@ -1630,19 +1555,7 @@ const Game = () => {
               Score: {correctCount}/5
             </span>
 
-            <button
-              className="share-button compact"
-              onClick={() => {
-                handleCompletionShare();
-
-                // ✅ Track Share button click in Google Analytics
-                ReactGA.event({
-                  category: "Completion Screen",
-                  action: "Share Button Clicked",
-                  label: "User shared game results",
-                });
-              }}
-            >
+            <button className="share-button compact" onClick={handleCompletionShare}>
               <FaShareAlt /> Share
             </button>
           </div>

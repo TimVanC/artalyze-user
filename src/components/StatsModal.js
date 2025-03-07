@@ -145,21 +145,22 @@ const StatsModal = ({
 
             const data = await response.json();
             attemptsToUse = data.completedAttempts || [];
-            setLocalCompletedAttempts(attemptsToUse);  // ✅ Update local state
+            setLocalCompletedAttempts(attemptsToUse);
             localStorage.setItem("completedAttempts", JSON.stringify(attemptsToUse));
-
-            if (!attemptsToUse.length) {
-                alert("No attempts found. Please try again.");
-                return;
-            }
         } catch (error) {
             console.error("❌ Error fetching completedAttempts:", error);
-            alert("Failed to retrieve attempts. Try again later.");
-            return;
         }
     }
 
-    // ✅ Get the final attempt
+    // ✅ If no completedAttempts exist, create one based on completedSelections (fixes 5/5 on first try issue)
+    if (attemptsToUse.length === 0) {
+        console.log("⚠️ No recorded attempts. Creating first attempt based on completedSelections...");
+        attemptsToUse = [
+            completedSelections.map((selection, index) => selection?.selected === imagePairs[index]?.human)
+        ];
+    }
+
+    // ✅ Get the final correct selections after game completion
     const finalAttempt = imagePairs.map((pair, index) => {
         const selection = completedSelections[index];
         return selection?.selected === pair.human ? "🟢" : "🔴";

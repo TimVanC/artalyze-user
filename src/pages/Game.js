@@ -1026,7 +1026,7 @@ const Game = () => {
   };
 
   const handleCompletionShare = async () => {
-    if (!completedAttempts.length || !imagePairs.length) {
+    if (!completedSelections.length || !imagePairs.length) {
         alert("No data available to share today's puzzle!");
         return;
     }
@@ -1041,16 +1041,17 @@ const Game = () => {
             attemptsToUse = response.data.completedAttempts || [];
             setCompletedAttempts(attemptsToUse);
             localStorage.setItem("completedAttempts", JSON.stringify(attemptsToUse));
-
-            if (!attemptsToUse.length) {
-                alert("No attempts found. Please try again.");
-                return;
-            }
         } catch (error) {
             console.error("❌ Error fetching completedAttempts:", error);
-            alert("Failed to retrieve attempts. Try again later.");
-            return;
         }
+    }
+
+    // ✅ If no completedAttempts exist, create one based on completedSelections (fixes 5/5 on first try issue)
+    if (attemptsToUse.length === 0) {
+        console.log("⚠️ No recorded attempts. Creating first attempt based on completedSelections...");
+        attemptsToUse = [
+            completedSelections.map((selection, index) => selection?.selected === imagePairs[index]?.human)
+        ];
     }
 
     // ✅ Get the final correct selections after game completion
@@ -1097,7 +1098,6 @@ const Game = () => {
             .catch((error) => console.error("Failed to copy:", error));
     }
 };
-
 
   const handlePlayClick = () => {
     if (window.innerWidth > 768) { // Targeting laptop/desktop screens

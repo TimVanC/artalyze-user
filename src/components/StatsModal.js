@@ -104,7 +104,7 @@ const StatsModal = ({
     
     Track your stats and play daily:
     https://artalyze.app
-    `;    
+    `;
 
     if (navigator.share) {
       navigator
@@ -126,41 +126,43 @@ const StatsModal = ({
   };
 
   const handleCompletionShare = () => {
-    // Ensure completedSelections, attempts, and imagePairs are available
+    // Ensure completedSelections and imagePairs exist
     if (!completedSelections.length || !imagePairs.length) {
       alert("No data available to share today's puzzle!");
       return;
     }
-  
-    // Calculate the score based on completed selections
+
+    // Calculate the final score (correct selections in last attempt)
     const score = completedSelections.reduce((count, selection, index) => {
-      if (selection?.selected === imagePairs[index]?.human) {
-        return count + 1;
-      }
-      return count;
+      return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
     }, 0);
-  
+
     // Get the puzzle number dynamically
     const puzzleNumber = calculatePuzzleNumber();
-  
-    // Format all attempts (previous guesses)
-    const formattedGuesses = attempts
+
+    // Format all attempts (actual guesses)
+    const formattedGuesses = completedAttempts
       .map(attempt => attempt
-        .map((selected) => (selected ? "🟢" : "🔴"))
+        .map(selected => (selected ? "🟢" : "🔴"))
         .join(" ")
       ).join("\n");
-  
-    // Add the final attempt separately
-    const finalAttempt = completedSelections
+
+    // Ensure the final attempt is NOT duplicated if already included
+    const lastAttempt = completedSelections
       .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
       .join(" ");
-  
+
+    let finalShareText = formattedGuesses;
+    if (!formattedGuesses.includes(lastAttempt)) {
+      finalShareText += `\n${lastAttempt}`;
+    }
+
     // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
-  
-    // Construct the shareable text including all attempts
-    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${formattedGuesses}\n${finalAttempt}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
-  
+
+    // Construct the final shareable text
+    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${finalShareText}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
+
     // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
       navigator
@@ -178,34 +180,35 @@ const StatsModal = ({
         .catch((error) => console.error("Failed to copy:", error));
     }
   };
-  
-  
+
+
+
   const shareResults = (usedSelections, allAttempts) => {
     // Ensure we have valid selections, attempts, and image pairs
     if (!usedSelections.length || !imagePairs.length || !allAttempts.length) {
       alert("No data available to share today's puzzle!");
       return;
     }
-  
+
     const puzzleNumber = calculatePuzzleNumber();
-  
+
     // Calculate the correct count from the final attempt
     const correctCount = usedSelections.reduce((count, selection, index) => {
       return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
     }, 0);
-  
+
     // Format all attempts visually
     const formattedGuesses = allAttempts
       .map(attempt =>
         attempt.map((selected) => (selected ? "🟢" : "🔴")).join(" ")
       ).join("\n");
-  
+
     // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
-  
+
     // Construct the shareable text including all attempts
     const shareableText = `Artalyze #${puzzleNumber} ${correctCount}/${imagePairs.length}\n${formattedGuesses}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
-  
+
     // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
       navigator
@@ -223,8 +226,8 @@ const StatsModal = ({
         .catch((error) => console.error("Failed to copy:", error));
     }
   };
-  
-  
+
+
 
   if (!isOpen && !isDismissing) return null;
 
@@ -382,9 +385,9 @@ const StatsModal = ({
               >
                 <FaShareAlt className="share-icon" /> Share Stats
               </button>
-              <button 
-              className="modal-share-today-button" 
-              onClick={handleCompletionShare}
+              <button
+                className="modal-share-today-button"
+                onClick={handleCompletionShare}
               >
                 <FaShareAlt className="share-icon" /> Share Today
               </button>

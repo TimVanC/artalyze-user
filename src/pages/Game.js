@@ -1014,60 +1014,60 @@ const Game = () => {
   };
 
   const handleCompletionShare = () => {
-    // Ensure completedSelections, alreadyGuessed, and imagePairs are available
+    // Ensure completedSelections and imagePairs exist
     if (!completedSelections.length || !imagePairs.length) {
-      alert("No data available to share today's puzzle!");
-      return;
+        alert("No data available to share today's puzzle!");
+        return;
     }
 
-    // Calculate the score based on completed selections
+    // Calculate the final score (correct selections in last attempt)
     const score = completedSelections.reduce((count, selection, index) => {
-      if (selection?.selected === imagePairs[index]?.human) {
-        return count + 1;
-      }
-      return count;
+        return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
     }, 0);
 
     // Get the puzzle number dynamically
     const puzzleNumber = calculatePuzzleNumber();
 
+    // Format all attempts (actual guesses)
     const formattedGuesses = completedAttempts
-      .map(attempt => attempt
-        .map((selected) => (selected ? "🟢" : "🔴"))
-        .join(" ")
-      ).join("\n");
+        .map(attempt => attempt
+            .map(selected => (selected ? "🟢" : "🔴"))
+            .join(" ")
+        ).join("\n");
 
-    // Build the final attempt separately
-    const finalAttempt = completedSelections
-      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-      .join(" ");
+    // Ensure the final attempt is NOT duplicated if already included
+    const lastAttempt = completedSelections
+        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+        .join(" ");
+
+    let finalShareText = formattedGuesses;
+    if (!formattedGuesses.includes(lastAttempt)) {
+        finalShareText += `\n${lastAttempt}`;
+    }
 
     // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
 
-    // Construct the shareable text with ALL ATTEMPTS properly included
-    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${formattedGuesses}\n${finalAttempt}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
+    // Construct the final shareable text
+    const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${finalShareText}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
 
-    // Check if the device supports native sharing
+    // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
-      navigator
-        .share({
-          title: `Artalyze #${puzzleNumber}`,
-          text: shareableText,
-        })
-        .catch((error) => console.log("Error sharing:", error));
+        navigator
+            .share({
+                title: `Artalyze #${puzzleNumber}`,
+                text: shareableText,
+            })
+            .catch((error) => console.log("Error sharing:", error));
     } else {
-      // Fallback to clipboard copy if native sharing is unavailable
-      navigator.clipboard
-        .writeText(shareableText)
-        .then(() => {
-          alert("Results copied to clipboard! You can now paste it anywhere.");
-        })
-        .catch((error) => {
-          console.error("Failed to copy:", error);
-        });
+        navigator.clipboard
+            .writeText(shareableText)
+            .then(() => {
+                alert("Results copied to clipboard! You can now paste it anywhere.");
+            })
+            .catch((error) => console.error("Failed to copy:", error));
     }
-  };
+};
 
   const handlePlayClick = () => {
     if (window.innerWidth > 768) { // Targeting laptop/desktop screens

@@ -2,20 +2,26 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDarkMode } from "../hooks/useDarkMode";
 import "./StatsModal.css";
 import { FaShareAlt } from 'react-icons/fa';
-import axiosInstance from '../axiosInstance';
+import { handleShare } from '../utils/shareUtils';
+import { getTodayInEST, getYesterdayInEST } from '../utils/dateUtils';
 import { calculatePuzzleNumber } from '../utils/puzzleUtils';
 import CountUp from 'react-countup';
 import logo from '../assets/images/artalyze-logo.png';
 
-const isUserLoggedIn = () => {
-  return !!localStorage.getItem('authToken');
+const defaultStats = {
+  gamesPlayed: 0,
+  winPercentage: 0,
+  currentStreak: 0,
+  maxStreak: 0,
+  perfectPuzzles: 0,
+  mistakeDistribution: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+  lastPlayedDate: null,
 };
 
 const StatsModal = ({
   isOpen,
   onClose,
-  stats,
-  onStatsUpdate,
+  stats: initialStats = defaultStats,
   isLoggedIn = false,
   selections = [],
   imagePairs = [],
@@ -24,9 +30,10 @@ const StatsModal = ({
   completedSelections = [],
   attempts = [],
   completedAttempts = [],
-  setCompletedAttempts,
 }) => {
+
   const userId = localStorage.getItem('userId');
+  const [stats, setStats] = useState(initialStats);
   const [animatedBars, setAnimatedBars] = useState({});
   const [shouldAnimateNumbers, setShouldAnimateNumbers] = useState(false);
   const [isDismissing, setIsDismissing] = useState(false);
@@ -36,7 +43,6 @@ const StatsModal = ({
   const [showShareWarning, setShowShareWarning] = useState(false);
   const shareWarningTimeoutRef = useRef(null);
   const { darkMode } = useDarkMode();
-
 
   // Fetch stats when modal opens
   useEffect(() => {
@@ -60,12 +66,7 @@ const StatsModal = ({
         try {
           const updatedStats = JSON.parse(text); // Parse as JSON
           console.log("Fetched stats from backend:", updatedStats);
-
-          // ✅ Use onStatsUpdate instead of setStats
-          if (onStatsUpdate) {
-            onStatsUpdate(updatedStats);
-          }
-
+          setStats(updatedStats);
           setAnimatedBars(updatedStats.mistakeDistribution || {});
           setShouldAnimateNumbers(true);
         } catch (jsonError) {
@@ -80,8 +81,7 @@ const StatsModal = ({
     if (isOpen && isLoggedIn) {
       fetchAndValidateStats();
     }
-  }, [isOpen, isLoggedIn, userId, onStatsUpdate]);
-
+  }, [isOpen, isLoggedIn, userId]);
 
   useEffect(() => {
     return () => {
@@ -90,6 +90,7 @@ const StatsModal = ({
       }
     };
   }, []);
+
 
   const handleHistoricalStatsShare = () => {
     const shareableText = `
@@ -126,62 +127,64 @@ const StatsModal = ({
     }
   };
 
-  const handleCompletionShare = async () => {
+  const handleCompletionShare = () => {
+    // Ensure completedSelections and imagePairs exist
     if (!completedSelections.length || !imagePairs.length) {
-      alert("No data available to share today's puzzle!");
-      return;
+        alert("No data available to share today's puzzle!");
+        return;
     }
 
-    let allAttempts = completedAttempts;
+    // Calculate the final score (correct selections in last attempt)
+    const score = completedSelections.reduce((count, selection, index) => {
+        return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
+    }, 0);
 
-    // ✅ Ensure completedAttempts is retrieved from backend if missing
-    if (isUserLoggedIn() && completedAttempts.length === 0) {
-      try {
-        console.log("📡 Fetching completedAttempts from backend...");
-        const response = await axiosInstance.get(`/stats/${userId}`);
-        if (response.data.completedAttempts) {
-          allAttempts = response.data.completedAttempts;
-          if (setCompletedAttempts) setCompletedAttempts(allAttempts);
-          localStorage.setItem("completedAttempts", JSON.stringify(allAttempts));
-        }
-      } catch (error) {
-        console.error("❌ Error fetching completedAttempts from backend:", error);
-      }
-    }
-
-    // Format attempts for sharing
-    const formattedGuesses = allAttempts
-      .map(attempt => attempt
-        .map(selected => (selected ? "🟢" : "🔴"))
-        .join(" ")
-      ).join("\n");
-
+    // Get the puzzle number dynamically
     const puzzleNumber = calculatePuzzleNumber();
-    const score = completedSelections.reduce((count, selection, index) =>
-      selection?.selected === imagePairs[index]?.human ? count + 1 : count, 0);
 
-    // Ensure final attempt is not duplicated
+    // **Check if completedAttempts exists, else fallback to attempts**
+    const allAttempts = completedAttempts.length > 0 ? completedAttempts : attempts;
+
+    // Format all attempts (actual guesses)
+    const formattedGuesses = allAttempts
+        .map(attempt => attempt
+            .map(selected => (selected ? "🟢" : "🔴"))
+            .join(" ")
+        ).join("\n");
+
+    // Ensure the final attempt is NOT duplicated if already included
     const lastAttempt = completedSelections
-      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-      .join(" ");
+        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+        .join(" ");
 
     let finalShareText = formattedGuesses;
     if (!formattedGuesses.includes(lastAttempt)) {
-      finalShareText += `\n${lastAttempt}`;
+        finalShareText += `\n${lastAttempt}`;
     }
 
+    // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
+
+    // Construct the final shareable text
     const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${finalShareText}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
 
+    // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
-      navigator.share({ title: `Artalyze #${puzzleNumber}`, text: shareableText })
-        .catch(error => console.log("Error sharing:", error));
+        navigator
+            .share({
+                title: `Artalyze #${puzzleNumber}`,
+                text: shareableText,
+            })
+            .catch((error) => console.log("Error sharing:", error));
     } else {
-      navigator.clipboard.writeText(shareableText)
-        .then(() => alert("Results copied to clipboard!"))
-        .catch(error => console.error("Failed to copy:", error));
+        navigator.clipboard
+            .writeText(shareableText)
+            .then(() => {
+                alert("Results copied to clipboard! You can now paste it anywhere.");
+            })
+            .catch((error) => console.error("Failed to copy:", error));
     }
-  };
+};
 
   const shareResults = (usedSelections, allAttempts) => {
     // Ensure we have valid selections, attempts, and image pairs

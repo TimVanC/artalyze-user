@@ -43,6 +43,7 @@ const StatsModal = ({
   const [showShareWarning, setShowShareWarning] = useState(false);
   const shareWarningTimeoutRef = useRef(null);
   const { darkMode } = useDarkMode();
+  const [localCompletedAttempts, setLocalCompletedAttempts] = useState(completedAttempts);
 
   // Fetch stats when modal opens
   useEffect(() => {
@@ -133,7 +134,7 @@ const StatsModal = ({
         return;
     }
 
-    let attemptsToUse = completedAttempts.length > 0 ? completedAttempts : JSON.parse(localStorage.getItem("completedAttempts")) || [];
+    let attemptsToUse = localCompletedAttempts.length > 0 ? localCompletedAttempts : JSON.parse(localStorage.getItem("completedAttempts")) || [];
 
     if (isLoggedIn && attemptsToUse.length === 0) {
         console.log("🔄 Fetching completedAttempts from backend before sharing...");
@@ -144,7 +145,7 @@ const StatsModal = ({
 
             const data = await response.json();
             attemptsToUse = data.completedAttempts || [];
-            setCompletedAttempts(attemptsToUse);
+            setLocalCompletedAttempts(attemptsToUse);  // ✅ Update local state
             localStorage.setItem("completedAttempts", JSON.stringify(attemptsToUse));
 
             if (!attemptsToUse.length) {

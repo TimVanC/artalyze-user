@@ -127,64 +127,62 @@ const StatsModal = ({
     }
   };
 
-  const handleCompletionShare = () => {
-    // Ensure completedSelections and imagePairs exist
+  const handleCompletionShare = async () => {
     if (!completedSelections.length || !imagePairs.length) {
-        alert("No data available to share today's puzzle!");
-        return;
+      alert("No data available to share today's puzzle!");
+      return;
     }
 
-    // Calculate the final score (correct selections in last attempt)
-    const score = completedSelections.reduce((count, selection, index) => {
-        return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
-    }, 0);
+    let allAttempts = completedAttempts;
 
-    // Get the puzzle number dynamically
-    const puzzleNumber = calculatePuzzleNumber();
+    // ✅ Ensure completedAttempts is retrieved from backend if missing
+    if (isUserLoggedIn() && completedAttempts.length === 0) {
+      try {
+        console.log("📡 Fetching completedAttempts from backend...");
+        const response = await axiosInstance.get(`/stats/${userId}`);
+        if (response.data.completedAttempts) {
+          allAttempts = response.data.completedAttempts;
+          setCompletedAttempts(allAttempts);
+          localStorage.setItem("completedAttempts", JSON.stringify(allAttempts));
+        }
+      } catch (error) {
+        console.error("❌ Error fetching completedAttempts from backend:", error);
+      }
+    }
 
-    // **Check if completedAttempts exists, else fallback to attempts**
-    const allAttempts = completedAttempts.length > 0 ? completedAttempts : attempts;
-
-    // Format all attempts (actual guesses)
+    // Format attempts for sharing
     const formattedGuesses = allAttempts
-        .map(attempt => attempt
-            .map(selected => (selected ? "🟢" : "🔴"))
-            .join(" ")
-        ).join("\n");
+      .map(attempt => attempt
+        .map(selected => (selected ? "🟢" : "🔴"))
+        .join(" ")
+      ).join("\n");
 
-    // Ensure the final attempt is NOT duplicated if already included
+    const puzzleNumber = calculatePuzzleNumber();
+    const score = completedSelections.reduce((count, selection, index) =>
+      selection?.selected === imagePairs[index]?.human ? count + 1 : count, 0);
+
+    // Ensure final attempt is not duplicated
     const lastAttempt = completedSelections
-        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-        .join(" ");
+      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+      .join(" ");
 
     let finalShareText = formattedGuesses;
     if (!formattedGuesses.includes(lastAttempt)) {
-        finalShareText += `\n${lastAttempt}`;
+      finalShareText += `\n${lastAttempt}`;
     }
 
-    // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
-
-    // Construct the final shareable text
     const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${finalShareText}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
 
-    // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
-        navigator
-            .share({
-                title: `Artalyze #${puzzleNumber}`,
-                text: shareableText,
-            })
-            .catch((error) => console.log("Error sharing:", error));
+      navigator.share({ title: `Artalyze #${puzzleNumber}`, text: shareableText })
+        .catch(error => console.log("Error sharing:", error));
     } else {
-        navigator.clipboard
-            .writeText(shareableText)
-            .then(() => {
-                alert("Results copied to clipboard! You can now paste it anywhere.");
-            })
-            .catch((error) => console.error("Failed to copy:", error));
+      navigator.clipboard.writeText(shareableText)
+        .then(() => alert("Results copied to clipboard!"))
+        .catch(error => console.error("Failed to copy:", error));
     }
-};
+  };
 
   const shareResults = (usedSelections, allAttempts) => {
     // Ensure we have valid selections, attempts, and image pairs

@@ -1025,61 +1025,79 @@ const Game = () => {
     }
   };
 
-  const handleCompletionShare = () => {
-    // Ensure completedSelections and imagePairs exist
-    if (!completedSelections.length || !imagePairs.length) {
-      alert("No data available to share today's puzzle!");
-      return;
+  const handleCompletionShare = async () => {
+    // Ensure completedAttempts and imagePairs exist
+    if (!completedAttempts.length || !imagePairs.length) {
+        alert("No data available to share today's puzzle!");
+        return;
     }
 
-    // Calculate the final score (correct selections in last attempt)
-    const score = completedSelections.reduce((count, selection, index) => {
-      return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
-    }, 0);
+    // Ensure latest data is fetched before sharing (for logged-in users)
+    if (isUserLoggedIn() && completedAttempts.length === 0) {
+        console.log("🔄 Fetching completedAttempts from backend before sharing...");
+        try {
+            const response = await axiosInstance.get(`/stats/${userId}`);
+            const fetchedAttempts = response.data.completedAttempts || [];
+            setCompletedAttempts(fetchedAttempts); // Update state
+            localStorage.setItem("completedAttempts", JSON.stringify(fetchedAttempts)); // Ensure persistence
 
-    // Get the puzzle number dynamically
-    const puzzleNumber = calculatePuzzleNumber();
+            // Double-check to prevent premature sharing
+            if (!fetchedAttempts.length) {
+                alert("No attempts found. Please try again.");
+                return;
+            }
+        } catch (error) {
+            console.error("❌ Error fetching completedAttempts:", error);
+            alert("Failed to retrieve attempts. Try again later.");
+            return;
+        }
+    }
 
-    // Format all attempts (actual guesses)
-    const formattedGuesses = completedAttempts
-      .map(attempt => attempt
-        .map(selected => (selected ? "🟢" : "🔴"))
-        .join(" ")
-      ).join("\n");
+    // ✅ Use the latest stored completedAttempts
+    const attemptsToUse = completedAttempts.length > 0 ? completedAttempts : JSON.parse(localStorage.getItem("completedAttempts")) || [];
 
-    // Ensure the final attempt is NOT duplicated if already included
-    const lastAttempt = completedSelections
-      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-      .join(" ");
+    // ✅ Format attempts correctly
+    const formattedGuesses = attemptsToUse
+        .map(attempt => attempt.map(selected => (selected === "true" || selected === true) ? "🟢" : "🔴").join(" "))
+        .join("\n");
+
+    // ✅ Ensure final attempt is not duplicated
+    const lastAttempt = attemptsToUse[attemptsToUse.length - 1]
+        .map(selected => (selected === "true" || selected === true) ? "🟢" : "🔴")
+        .join(" ");
 
     let finalShareText = formattedGuesses;
     if (!formattedGuesses.includes(lastAttempt)) {
-      finalShareText += `\n${lastAttempt}`;
+        finalShareText += `\n${lastAttempt}`;
     }
 
     // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
 
     // Construct the final shareable text
+    const puzzleNumber = calculatePuzzleNumber();
+    const score = attemptsToUse.length > 0 ? attemptsToUse[attemptsToUse.length - 1].filter(s => s === "true" || s === true).length : 0;
+
     const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${finalShareText}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
 
     // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
-      navigator
-        .share({
-          title: `Artalyze #${puzzleNumber}`,
-          text: shareableText,
-        })
-        .catch((error) => console.log("Error sharing:", error));
+        navigator
+            .share({
+                title: `Artalyze #${puzzleNumber}`,
+                text: shareableText,
+            })
+            .catch((error) => console.log("Error sharing:", error));
     } else {
-      navigator.clipboard
-        .writeText(shareableText)
-        .then(() => {
-          alert("Results copied to clipboard! You can now paste it anywhere.");
-        })
-        .catch((error) => console.error("Failed to copy:", error));
+        navigator.clipboard
+            .writeText(shareableText)
+            .then(() => {
+                alert("Results copied to clipboard! You can now paste it anywhere.");
+            })
+            .catch((error) => console.error("Failed to copy:", error));
     }
-  };
+};
+
 
   const handlePlayClick = () => {
     if (window.innerWidth > 768) { // Targeting laptop/desktop screens

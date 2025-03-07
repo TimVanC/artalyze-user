@@ -130,33 +130,36 @@ const StatsModal = ({
   const handleCompletionShare = () => {
     // Ensure completedSelections and imagePairs exist
     if (!completedSelections.length || !imagePairs.length) {
-      alert("No data available to share today's puzzle!");
-      return;
+        alert("No data available to share today's puzzle!");
+        return;
     }
 
     // Calculate the final score (correct selections in last attempt)
     const score = completedSelections.reduce((count, selection, index) => {
-      return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
+        return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
     }, 0);
 
     // Get the puzzle number dynamically
     const puzzleNumber = calculatePuzzleNumber();
 
+    // **Check if completedAttempts exists, else fallback to attempts**
+    const allAttempts = completedAttempts.length > 0 ? completedAttempts : attempts;
+
     // Format all attempts (actual guesses)
-    const formattedGuesses = completedAttempts
-      .map(attempt => attempt
-        .map(selected => (selected ? "🟢" : "🔴"))
-        .join(" ")
-      ).join("\n");
+    const formattedGuesses = allAttempts
+        .map(attempt => attempt
+            .map(selected => (selected ? "🟢" : "🔴"))
+            .join(" ")
+        ).join("\n");
 
     // Ensure the final attempt is NOT duplicated if already included
     const lastAttempt = completedSelections
-      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-      .join(" ");
+        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+        .join(" ");
 
     let finalShareText = formattedGuesses;
     if (!formattedGuesses.includes(lastAttempt)) {
-      finalShareText += `\n${lastAttempt}`;
+        finalShareText += `\n${lastAttempt}`;
     }
 
     // Add placeholder for painting emojis
@@ -167,23 +170,21 @@ const StatsModal = ({
 
     // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
-      navigator
-        .share({
-          title: `Artalyze #${puzzleNumber}`,
-          text: shareableText,
-        })
-        .catch((error) => console.log("Error sharing:", error));
+        navigator
+            .share({
+                title: `Artalyze #${puzzleNumber}`,
+                text: shareableText,
+            })
+            .catch((error) => console.log("Error sharing:", error));
     } else {
-      navigator.clipboard
-        .writeText(shareableText)
-        .then(() => {
-          alert("Results copied to clipboard! You can now paste it anywhere.");
-        })
-        .catch((error) => console.error("Failed to copy:", error));
+        navigator.clipboard
+            .writeText(shareableText)
+            .then(() => {
+                alert("Results copied to clipboard! You can now paste it anywhere.");
+            })
+            .catch((error) => console.error("Failed to copy:", error));
     }
-  };
-
-
+};
 
   const shareResults = (usedSelections, allAttempts) => {
     // Ensure we have valid selections, attempts, and image pairs

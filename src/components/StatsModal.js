@@ -28,8 +28,10 @@ const StatsModal = ({
   correctCount = 0,
   isGameComplete = false,
   completedSelections = [],
-  attempts = [], // ✅ Add attempts prop
+  attempts = [],
+  completedAttempts = [],
 }) => {
+
   const userId = localStorage.getItem('userId');
   const [stats, setStats] = useState(initialStats);
   const [animatedBars, setAnimatedBars] = useState({});

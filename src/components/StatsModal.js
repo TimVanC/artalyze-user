@@ -2,26 +2,20 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDarkMode } from "../hooks/useDarkMode";
 import "./StatsModal.css";
 import { FaShareAlt } from 'react-icons/fa';
-import { handleShare } from '../utils/shareUtils';
-import { getTodayInEST, getYesterdayInEST } from '../utils/dateUtils';
+import axiosInstance from '../axiosInstance';
 import { calculatePuzzleNumber } from '../utils/puzzleUtils';
 import CountUp from 'react-countup';
 import logo from '../assets/images/artalyze-logo.png';
 
-const defaultStats = {
-  gamesPlayed: 0,
-  winPercentage: 0,
-  currentStreak: 0,
-  maxStreak: 0,
-  perfectPuzzles: 0,
-  mistakeDistribution: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
-  lastPlayedDate: null,
+const isUserLoggedIn = () => {
+  return !!localStorage.getItem('authToken');
 };
 
 const StatsModal = ({
   isOpen,
   onClose,
-  stats: initialStats = defaultStats,
+  stats,
+  onStatsUpdate,
   isLoggedIn = false,
   selections = [],
   imagePairs = [],
@@ -30,10 +24,9 @@ const StatsModal = ({
   completedSelections = [],
   attempts = [],
   completedAttempts = [],
+  setCompletedAttempts,
 }) => {
-
   const userId = localStorage.getItem('userId');
-  const [stats, setStats] = useState(initialStats);
   const [animatedBars, setAnimatedBars] = useState({});
   const [shouldAnimateNumbers, setShouldAnimateNumbers] = useState(false);
   const [isDismissing, setIsDismissing] = useState(false);
@@ -43,6 +36,7 @@ const StatsModal = ({
   const [showShareWarning, setShowShareWarning] = useState(false);
   const shareWarningTimeoutRef = useRef(null);
   const { darkMode } = useDarkMode();
+
 
   // Fetch stats when modal opens
   useEffect(() => {
@@ -66,7 +60,12 @@ const StatsModal = ({
         try {
           const updatedStats = JSON.parse(text); // Parse as JSON
           console.log("Fetched stats from backend:", updatedStats);
-          setStats(updatedStats);
+
+          // ✅ Use onStatsUpdate instead of setStats
+          if (onStatsUpdate) {
+            onStatsUpdate(updatedStats);
+          }
+
           setAnimatedBars(updatedStats.mistakeDistribution || {});
           setShouldAnimateNumbers(true);
         } catch (jsonError) {
@@ -81,7 +80,8 @@ const StatsModal = ({
     if (isOpen && isLoggedIn) {
       fetchAndValidateStats();
     }
-  }, [isOpen, isLoggedIn, userId]);
+  }, [isOpen, isLoggedIn, userId, onStatsUpdate]);
+
 
   useEffect(() => {
     return () => {
@@ -90,7 +90,6 @@ const StatsModal = ({
       }
     };
   }, []);
-
 
   const handleHistoricalStatsShare = () => {
     const shareableText = `
@@ -142,7 +141,7 @@ const StatsModal = ({
         const response = await axiosInstance.get(`/stats/${userId}`);
         if (response.data.completedAttempts) {
           allAttempts = response.data.completedAttempts;
-          setCompletedAttempts(allAttempts);
+          if (setCompletedAttempts) setCompletedAttempts(allAttempts);
           localStorage.setItem("completedAttempts", JSON.stringify(allAttempts));
         }
       } catch (error) {

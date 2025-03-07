@@ -585,26 +585,26 @@ const Game = () => {
         }
       }
     };
-  
+
     const disableTouchZoom = (event) => {
       if (!event.target.closest(".zoomable")) {
         event.preventDefault();
       }
     };
-  
+
     const disableContextMenu = (event) => {
       event.preventDefault();
     };
-  
+
     // Prevent right-click (context menu)
     document.addEventListener("contextmenu", disableContextMenu);
-  
+
     // Prevent zooming gestures except on .zoomable images
     document.addEventListener("wheel", disableZoom, { passive: false });
     document.addEventListener("keydown", disableZoom);
     document.addEventListener("gesturestart", disableTouchZoom);
     document.addEventListener("gesturechange", disableTouchZoom);
-  
+
     return () => {
       document.removeEventListener("contextmenu", disableContextMenu);
       document.removeEventListener("wheel", disableZoom);
@@ -1015,60 +1015,60 @@ const Game = () => {
 
   const handleCompletionShare = async () => {
     if (!completedSelections.length || !imagePairs.length) {
-        alert("No data available to share today's puzzle!");
-        return;
+      alert("No data available to share today's puzzle!");
+      return;
     }
 
     let allAttempts = completedAttempts;
 
     // ✅ Ensure completedAttempts is retrieved from backend if missing
     if (isUserLoggedIn() && completedAttempts.length === 0) {
-        try {
-            console.log("📡 Fetching completedAttempts from backend...");
-            const response = await axiosInstance.get(`/stats/${userId}`);
-            if (response.data.completedAttempts) {
-                allAttempts = response.data.completedAttempts;
-                setCompletedAttempts(allAttempts);
-                localStorage.setItem("completedAttempts", JSON.stringify(allAttempts));
-            }
-        } catch (error) {
-            console.error("❌ Error fetching completedAttempts from backend:", error);
+      try {
+        console.log("📡 Fetching completedAttempts from backend...");
+        const response = await axiosInstance.get(`/stats/${userId}`);
+        if (response.data.completedAttempts) {
+          allAttempts = response.data.completedAttempts;
+          setCompletedAttempts(allAttempts);
+          localStorage.setItem("completedAttempts", JSON.stringify(allAttempts));
         }
+      } catch (error) {
+        console.error("❌ Error fetching completedAttempts from backend:", error);
+      }
     }
 
     // Format attempts for sharing
     const formattedGuesses = allAttempts
-        .map(attempt => attempt
-            .map(selected => (selected ? "🟢" : "🔴"))
-            .join(" ")
-        ).join("\n");
+      .map(attempt => attempt
+        .map(selected => (selected ? "🟢" : "🔴"))
+        .join(" ")
+      ).join("\n");
 
     const puzzleNumber = calculatePuzzleNumber();
-    const score = completedSelections.reduce((count, selection, index) => 
-        selection?.selected === imagePairs[index]?.human ? count + 1 : count, 0);
+    const score = completedSelections.reduce((count, selection, index) =>
+      selection?.selected === imagePairs[index]?.human ? count + 1 : count, 0);
 
     // Ensure final attempt is not duplicated
     const lastAttempt = completedSelections
-        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-        .join(" ");
+      .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
+      .join(" ");
 
     let finalShareText = formattedGuesses;
     if (!formattedGuesses.includes(lastAttempt)) {
-        finalShareText += `\n${lastAttempt}`;
+      finalShareText += `\n${lastAttempt}`;
     }
 
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
     const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${finalShareText}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
 
     if (navigator.share) {
-        navigator.share({ title: `Artalyze #${puzzleNumber}`, text: shareableText })
-            .catch(error => console.log("Error sharing:", error));
+      navigator.share({ title: `Artalyze #${puzzleNumber}`, text: shareableText })
+        .catch(error => console.log("Error sharing:", error));
     } else {
-        navigator.clipboard.writeText(shareableText)
-            .then(() => alert("Results copied to clipboard!"))
-            .catch(error => console.error("Failed to copy:", error));
+      navigator.clipboard.writeText(shareableText)
+        .then(() => alert("Results copied to clipboard!"))
+        .catch(error => console.error("Failed to copy:", error));
     }
-};
+  };
 
   const handlePlayClick = () => {
     if (window.innerWidth > 768) { // Targeting laptop/desktop screens
@@ -1327,13 +1327,16 @@ const Game = () => {
         isOpen={isStatsOpen}
         onClose={handleStatsModalClose}
         stats={stats}
+        onStatsUpdate={setStats}
         isLoggedIn={isLoggedIn}
         selections={selections}
         imagePairs={imagePairs}
         correctCount={correctCount}
         isGameComplete={isGameComplete}
         completedSelections={completedSelections}
-        attempts={completedAttempts} // ✅ Ensure attempts are passed
+        attempts={completedAttempts}
+        completedAttempts={completedAttempts}
+        setCompletedAttempts={setCompletedAttempts}
       />
 
       <SettingsModal

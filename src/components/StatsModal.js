@@ -127,43 +127,60 @@ const StatsModal = ({
     }
   };
 
-  const handleCompletionShare = () => {
-    // Ensure completedSelections and imagePairs exist
+  const handleCompletionShare = async () => {
     if (!completedSelections.length || !imagePairs.length) {
         alert("No data available to share today's puzzle!");
         return;
     }
 
-    // Calculate the final score (correct selections in last attempt)
-    const score = completedSelections.reduce((count, selection, index) => {
-        return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
-    }, 0);
+    let attemptsToUse = completedAttempts.length > 0 ? completedAttempts : JSON.parse(localStorage.getItem("completedAttempts")) || [];
 
-    // Get the puzzle number dynamically
-    const puzzleNumber = calculatePuzzleNumber();
+    if (isLoggedIn && attemptsToUse.length === 0) {
+        console.log("🔄 Fetching completedAttempts from backend before sharing...");
+        try {
+            const response = await fetch(`https://artalyze-backend-production.up.railway.app/api/stats/${userId}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+            });
 
-    // **Check if completedAttempts exists, else fallback to attempts**
-    const allAttempts = completedAttempts.length > 0 ? completedAttempts : attempts;
+            const data = await response.json();
+            attemptsToUse = data.completedAttempts || [];
+            setCompletedAttempts(attemptsToUse);
+            localStorage.setItem("completedAttempts", JSON.stringify(attemptsToUse));
 
-    // Format all attempts (actual guesses)
-    const formattedGuesses = allAttempts
-        .map(attempt => attempt
-            .map(selected => (selected ? "🟢" : "🔴"))
-            .join(" ")
-        ).join("\n");
-
-    // Ensure the final attempt is NOT duplicated if already included
-    const lastAttempt = completedSelections
-        .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
-        .join(" ");
-
-    let finalShareText = formattedGuesses;
-    if (!formattedGuesses.includes(lastAttempt)) {
-        finalShareText += `\n${lastAttempt}`;
+            if (!attemptsToUse.length) {
+                alert("No attempts found. Please try again.");
+                return;
+            }
+        } catch (error) {
+            console.error("❌ Error fetching completedAttempts:", error);
+            alert("Failed to retrieve attempts. Try again later.");
+            return;
+        }
     }
 
-    // Add placeholder for painting emojis
+    // ✅ Get the final attempt
+    const finalAttempt = imagePairs.map((pair, index) => {
+        const selection = completedSelections[index];
+        return selection?.selected === pair.human ? "🟢" : "🔴";
+    }).join(" ");
+
+    // ✅ Format all previous attempts correctly
+    const formattedGuesses = attemptsToUse
+        .map(attempt => attempt.map(selected => (selected === "true" || selected === true) ? "🟢" : "🔴").join(" "))
+        .join("\n");
+
+    // ✅ Append the final attempt only if it's not already included
+    let finalShareText = formattedGuesses;
+    if (!formattedGuesses.includes(finalAttempt)) {
+        finalShareText += `\n${finalAttempt}`;
+    }
+
+    // Add painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
+
+    // Get puzzle number and correct score
+    const puzzleNumber = calculatePuzzleNumber();
+    const score = finalAttempt.split(" ").filter(mark => mark === "🟢").length;
 
     // Construct the final shareable text
     const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${finalShareText}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;

@@ -1026,23 +1026,23 @@ const Game = () => {
   };
 
   const handleCompletionShare = async () => {
-    // Ensure completedAttempts and imagePairs exist
     if (!completedAttempts.length || !imagePairs.length) {
         alert("No data available to share today's puzzle!");
         return;
     }
 
-    // Ensure latest data is fetched before sharing (for logged-in users)
-    if (isUserLoggedIn() && completedAttempts.length === 0) {
+    // Fetch latest data for logged-in users if needed
+    let attemptsToUse = completedAttempts.length > 0 ? completedAttempts : JSON.parse(localStorage.getItem("completedAttempts")) || [];
+
+    if (isUserLoggedIn() && attemptsToUse.length === 0) {
         console.log("🔄 Fetching completedAttempts from backend before sharing...");
         try {
             const response = await axiosInstance.get(`/stats/${userId}`);
-            const fetchedAttempts = response.data.completedAttempts || [];
-            setCompletedAttempts(fetchedAttempts); // Update state
-            localStorage.setItem("completedAttempts", JSON.stringify(fetchedAttempts)); // Ensure persistence
+            attemptsToUse = response.data.completedAttempts || [];
+            setCompletedAttempts(attemptsToUse);
+            localStorage.setItem("completedAttempts", JSON.stringify(attemptsToUse));
 
-            // Double-check to prevent premature sharing
-            if (!fetchedAttempts.length) {
+            if (!attemptsToUse.length) {
                 alert("No attempts found. Please try again.");
                 return;
             }
@@ -1053,31 +1053,31 @@ const Game = () => {
         }
     }
 
-    // ✅ Use the latest stored completedAttempts
-    const attemptsToUse = completedAttempts.length > 0 ? completedAttempts : JSON.parse(localStorage.getItem("completedAttempts")) || [];
+    // ✅ Get the final correct selections after game completion
+    const finalAttempt = imagePairs.map((pair, index) => {
+        const selection = completedSelections[index];
+        return selection?.selected === pair.human ? "🟢" : "🔴";
+    }).join(" ");
 
-    // ✅ Format attempts correctly
+    // ✅ Format all previous attempts correctly
     const formattedGuesses = attemptsToUse
         .map(attempt => attempt.map(selected => (selected === "true" || selected === true) ? "🟢" : "🔴").join(" "))
         .join("\n");
 
-    // ✅ Ensure final attempt is not duplicated
-    const lastAttempt = attemptsToUse[attemptsToUse.length - 1]
-        .map(selected => (selected === "true" || selected === true) ? "🟢" : "🔴")
-        .join(" ");
-
+    // ✅ Append the final attempt only if it's not already included
     let finalShareText = formattedGuesses;
-    if (!formattedGuesses.includes(lastAttempt)) {
-        finalShareText += `\n${lastAttempt}`;
+    if (!formattedGuesses.includes(finalAttempt)) {
+        finalShareText += `\n${finalAttempt}`;
     }
 
-    // Add placeholder for painting emojis
+    // Add painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
 
-    // Construct the final shareable text
+    // Get puzzle number and score
     const puzzleNumber = calculatePuzzleNumber();
-    const score = attemptsToUse.length > 0 ? attemptsToUse[attemptsToUse.length - 1].filter(s => s === "true" || s === true).length : 0;
+    const score = finalAttempt.split(" ").filter(mark => mark === "🟢").length;
 
+    // Construct the final shareable text
     const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${finalShareText}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
 
     // Attempt native sharing first, fallback to clipboard copy

@@ -23,5 +23,5 @@ Built with performance, simplicity, and daily engagement in mind — inspired by
 
 ## Other Repos
 
-- [`artalyze-backend`](https://github.com/yourname/artalyze-backend) – API & logic
-- [`artalyze-admin`](https://github.com/yourname/artalyze-admin) – internal image upload dashboard 
+- [`artalyze-backend`](https://github.com/TimVanC/artalyze-backend) – API & logic
+- [`artalyze-admin`](https://github.com/TimVanC/artalyze-admin) – internal image upload dashboard 

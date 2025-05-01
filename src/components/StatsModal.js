@@ -28,7 +28,7 @@ const StatsModal = ({
   correctCount = 0,
   isGameComplete = false,
   completedSelections = [],
-  attempts = [], // ✅ Add attempts prop
+  attempts = [],
 }) => {
   const userId = localStorage.getItem('userId');
   const [stats, setStats] = useState(initialStats);
@@ -42,7 +42,7 @@ const StatsModal = ({
   const shareWarningTimeoutRef = useRef(null);
   const { darkMode } = useDarkMode();
 
-  // Fetch stats when modal opens
+  // Load user stats when the modal opens
   useEffect(() => {
     const fetchAndValidateStats = async () => {
       try {
@@ -59,10 +59,10 @@ const StatsModal = ({
           headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
         });
 
-        const text = await response.text(); // Get raw response
+        const text = await response.text();
 
         try {
-          const updatedStats = JSON.parse(text); // Parse as JSON
+          const updatedStats = JSON.parse(text);
           console.log("Fetched stats from backend:", updatedStats);
           setStats(updatedStats);
           setAnimatedBars(updatedStats.mistakeDistribution || {});
@@ -81,6 +81,7 @@ const StatsModal = ({
     }
   }, [isOpen, isLoggedIn, userId]);
 
+  // Clean up share warning timeout on unmount
   useEffect(() => {
     return () => {
       if (shareWarningTimeoutRef.current) {
@@ -89,10 +90,10 @@ const StatsModal = ({
     };
   }, []);
 
-
+  // Share historical stats with friends
   const handleHistoricalStatsShare = () => {
     const shareableText = `
-    🎨 Artalyze Stats 🎨
+    Artalyze Stats
     
     Games Played: ${stats.gamesPlayed}
     Win Rate: ${stats.winPercentage}%
@@ -125,14 +126,13 @@ const StatsModal = ({
     }
   };
 
+  // Share today's puzzle results
   const handleCompletionShare = () => {
-    // Ensure completedSelections, attempts, and imagePairs are available
     if (!completedSelections.length || !imagePairs.length) {
       alert("No data available to share today's puzzle!");
       return;
     }
   
-    // Calculate the score based on completed selections
     const score = completedSelections.reduce((count, selection, index) => {
       if (selection?.selected === imagePairs[index]?.human) {
         return count + 1;
@@ -140,28 +140,22 @@ const StatsModal = ({
       return count;
     }, 0);
   
-    // Get the puzzle number dynamically
     const puzzleNumber = calculatePuzzleNumber();
   
-    // Format all attempts (previous guesses)
     const formattedGuesses = attempts
       .map(attempt => attempt
         .map((selected) => (selected ? "🟢" : "🔴"))
         .join(" ")
       ).join("\n");
   
-    // Add the final attempt separately
     const finalAttempt = completedSelections
       .map((selection, index) => (selection?.selected === imagePairs[index]?.human ? "🟢" : "🔴"))
       .join(" ");
   
-    // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
   
-    // Construct the shareable text including all attempts
     const shareableText = `Artalyze #${puzzleNumber} ${score}/${imagePairs.length}\n${formattedGuesses}\n${finalAttempt}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
   
-    // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
       navigator
         .share({
@@ -179,9 +173,8 @@ const StatsModal = ({
     }
   };
   
-  
+  // Share current game results
   const shareResults = (usedSelections, allAttempts) => {
-    // Ensure we have valid selections, attempts, and image pairs
     if (!usedSelections.length || !imagePairs.length || !allAttempts.length) {
       alert("No data available to share today's puzzle!");
       return;
@@ -189,24 +182,19 @@ const StatsModal = ({
   
     const puzzleNumber = calculatePuzzleNumber();
   
-    // Calculate the correct count from the final attempt
     const correctCount = usedSelections.reduce((count, selection, index) => {
       return selection?.selected === imagePairs[index]?.human ? count + 1 : count;
     }, 0);
   
-    // Format all attempts visually
     const formattedGuesses = allAttempts
       .map(attempt =>
         attempt.map((selected) => (selected ? "🟢" : "🔴")).join(" ")
       ).join("\n");
   
-    // Add placeholder for painting emojis
     const paintings = "🖼️ ".repeat(imagePairs.length).trim();
   
-    // Construct the shareable text including all attempts
     const shareableText = `Artalyze #${puzzleNumber} ${correctCount}/${imagePairs.length}\n${formattedGuesses}\n${paintings}\n\nCheck it out here:\nhttps://artalyze.app`;
   
-    // Attempt native sharing first, fallback to clipboard copy
     if (navigator.share) {
       navigator
         .share({
@@ -223,11 +211,10 @@ const StatsModal = ({
         .catch((error) => console.error("Failed to copy:", error));
     }
   };
-  
-  
 
   if (!isOpen && !isDismissing) return null;
 
+  // Handle modal dismissal with animation
   const handleDismiss = () => {
     setIsDismissing(true);
     setTimeout(() => {
@@ -236,10 +223,12 @@ const StatsModal = ({
     }, 400);
   };
 
+  // Track touch start position for swipe detection
   const handleTouchStart = (e) => {
     touchStartY.current = e.touches[0].clientY;
   };
 
+  // Handle swipe down to dismiss modal
   const handleTouchMove = (e) => {
     const touchEndY = e.touches[0].clientY;
     if (touchStartY.current && touchEndY - touchStartY.current > 50) {
@@ -249,7 +238,6 @@ const StatsModal = ({
 
   // Ensure mistakeDistribution always has valid data
   const maxValue = Math.max(1, ...Object.values(stats.mistakeDistribution || {}));
-
 
   return (
     <div

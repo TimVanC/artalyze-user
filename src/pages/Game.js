@@ -610,8 +610,8 @@ const Game = () => {
       document.removeEventListener("wheel", disableZoom);
       document.removeEventListener("keydown", disableZoom);
       document.removeEventListener("gesturestart", disableTouchZoom);
-      document.removeEventListener("gesturechange", disableTouchZoom);
-    };
+      document.removeEventListener("gesturechange", handleZoomReset);
+    };      
   }, []);
 
   // Persist isGameComplete state across refreshes

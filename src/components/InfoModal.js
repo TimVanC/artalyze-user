@@ -4,7 +4,6 @@ import './InfoModal.css';
 import humanExample from '../assets/images/human-example.png';
 import aiExample from '../assets/images/ai-example.png';
 
-
 const InfoModal = ({ isOpen, onClose }) => {
   const [isDismissing, setIsDismissing] = useState(false);
   const touchStartY = useRef(null);
@@ -12,22 +11,25 @@ const InfoModal = ({ isOpen, onClose }) => {
 
   if (!isOpen && !isDismissing) return null;
 
+  // Handle modal dismissal with animation
   const handleDismiss = () => {
     setIsDismissing(true);
     setTimeout(() => {
-      setIsDismissing(false); // Reset state
-      onClose(); // Trigger modal close
-    }, 400); // Match the CSS animation duration
+      setIsDismissing(false);
+      onClose();
+    }, 400);
   };
 
+  // Track touch start position for swipe detection
   const handleTouchStart = (e) => {
     touchStartY.current = e.touches[0].clientY;
   };
 
+  // Handle swipe down to dismiss modal
   const handleTouchMove = (e) => {
     const touchEndY = e.touches[0].clientY;
     if (touchStartY.current && touchEndY - touchStartY.current > 50) {
-      handleDismiss(); // Trigger slide-down animation when swipe is detected
+      handleDismiss();
     }
   };
 

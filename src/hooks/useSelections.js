@@ -76,6 +76,7 @@ const useSelections = (userId, isLoggedIn) => {
     if (isLoggedIn) {
       fetchSelections();
     } else {
+      // Load guest user's game progress from localStorage
       const savedSelections = localStorage.getItem('selections');
       const savedAttempts = localStorage.getItem('attempts');
       const savedCompletedSelections = localStorage.getItem('completedSelections');
@@ -110,11 +111,11 @@ const useSelections = (userId, isLoggedIn) => {
     }
   }, [userId, isLoggedIn]);
 
-  // Update selections locally and sync with the backend
+  // Save game progress locally and sync with backend if logged in
   const updateSelections = (updatedSelections) => {
     const today = getTodayInEST();
     if (JSON.stringify(updatedSelections) === JSON.stringify(selections)) {
-      console.log("Selections are already up-to-date. Skipping update.");
+      console.log("Game progress is already up-to-date. Skipping update.");
       return;
     }
 
@@ -130,8 +131,8 @@ const useSelections = (userId, isLoggedIn) => {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         })
-        .then(() => console.log("Selections updated successfully in backend."))
-        .catch((err) => console.error("Error updating selections:", err));
+        .then(() => console.log("Game progress saved to backend."))
+        .catch((err) => console.error("Error saving game progress:", err));
     } else {
       localStorage.setItem("selections", JSON.stringify(updatedSelections));
       localStorage.setItem("lastSelectionMadeDate", today);

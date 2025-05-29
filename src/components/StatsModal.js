@@ -43,7 +43,7 @@ const StatsModal = ({
   const shareWarningTimeoutRef = useRef(null);
   const { darkMode } = useDarkMode();
 
-  // Fetch stats when modal opens
+  // Load user stats when the modal opens
   useEffect(() => {
     const fetchAndValidateStats = async () => {
       try {
@@ -60,10 +60,10 @@ const StatsModal = ({
           headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
         });
 
-        const text = await response.text(); // Get raw response
+        const text = await response.text();
 
         try {
-          const updatedStats = JSON.parse(text); // Parse as JSON
+          const updatedStats = JSON.parse(text);
           console.log("Fetched stats from backend:", updatedStats);
           setStats(updatedStats);
           setAnimatedBars(updatedStats.mistakeDistribution || {});
@@ -82,6 +82,7 @@ const StatsModal = ({
     }
   }, [isOpen, isLoggedIn, userId]);
 
+  // Clean up share warning timeout on unmount
   useEffect(() => {
     return () => {
       if (shareWarningTimeoutRef.current) {
@@ -90,10 +91,10 @@ const StatsModal = ({
     };
   }, []);
 
-
+  // Share historical stats with friends
   const handleHistoricalStatsShare = () => {
     const shareableText = `
-    🎨 Artalyze Stats 🎨
+    Artalyze Stats
     
     Games Played: ${stats.gamesPlayed}
     Win Rate: ${stats.winPercentage}%
@@ -126,6 +127,7 @@ const StatsModal = ({
     }
   };
 
+  // Share today's puzzle results
   const handleCompletionShare = () => {
     // Ensure completedSelections, attempts, and imagePairs are available
     if (!completedSelections.length || !imagePairs.length) {
@@ -187,7 +189,7 @@ const StatsModal = ({
       alert("No data available to share today's puzzle!");
       return;
     }
-
+  
     const puzzleNumber = calculatePuzzleNumber();
 
     // Calculate the correct count from the final attempt
@@ -229,6 +231,7 @@ const StatsModal = ({
 
   if (!isOpen && !isDismissing) return null;
 
+  // Handle modal dismissal with animation
   const handleDismiss = () => {
     setIsDismissing(true);
     setTimeout(() => {
@@ -237,10 +240,12 @@ const StatsModal = ({
     }, 400);
   };
 
+  // Track touch start position for swipe detection
   const handleTouchStart = (e) => {
     touchStartY.current = e.touches[0].clientY;
   };
 
+  // Handle swipe down to dismiss modal
   const handleTouchMove = (e) => {
     const touchEndY = e.touches[0].clientY;
     if (touchStartY.current && touchEndY - touchStartY.current > 50) {
@@ -250,7 +255,6 @@ const StatsModal = ({
 
   // Ensure mistakeDistribution always has valid data
   const maxValue = Math.max(1, ...Object.values(stats.mistakeDistribution || {}));
-
 
   return (
     <div

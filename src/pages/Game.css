@@ -370,8 +370,9 @@ h1 {
   align-items: center;
 }
 
-/* Enlarged Image Styling */
-.enlarged-image {
+/* Updated enlarged image styling */
+.enlarged-image,
+.zoomable {
   max-width: 95vw;
   max-height: 95vh;
   width: auto;
@@ -379,12 +380,29 @@ h1 {
   object-fit: contain;
   border-radius: 8px;
   transform-origin: center;
+  touch-action: pinch-zoom;
 }
 
-/* Zoomable image class */
-.zoomable {
-  touch-action: pinch-zoom;
+/* Ensure consistent behavior for all enlarged images */
+.enlarged-image-container img {
+  max-width: 95vw;
+  max-height: 95vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
   transform-origin: center;
+  touch-action: pinch-zoom;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .enlarged-image-container img,
+  .enlarged-image,
+  .zoomable {
+    max-width: 98vw;
+    max-height: 98vh;
+  }
 }
 
 /* Navigation arrows */

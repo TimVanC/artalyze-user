@@ -1523,24 +1523,28 @@ const Game = () => {
                     draggable="false"
                   />
                 </div>
-                <div className="swiper-button-prev" onClick={(e) => {
-                  e.stopPropagation();
-                  const currentPair = imagePairs[currentIndex];
-                  if (currentPair) {
-                    const currentImageIndex = currentPair.images.indexOf(enlargedImage);
-                    const newImageIndex = currentImageIndex === 0 ? 1 : 0;
-                    setEnlargedImage(currentPair.images[newImageIndex]);
-                  }
-                }}>&#8592;</div>
-                <div className="swiper-button-next" onClick={(e) => {
-                  e.stopPropagation();
-                  const currentPair = imagePairs[currentIndex];
-                  if (currentPair) {
-                    const currentImageIndex = currentPair.images.indexOf(enlargedImage);
-                    const newImageIndex = currentImageIndex === 0 ? 1 : 0;
-                    setEnlargedImage(currentPair.images[newImageIndex]);
-                  }
-                }}>&#8594;</div>
+                {enlargedImageMode === "game-screen" && (
+                  <>
+                    <div className="swiper-button-prev" onClick={(e) => {
+                      e.stopPropagation();
+                      const currentPair = imagePairs[currentIndex];
+                      if (currentPair) {
+                        const currentImageIndex = currentPair.images.indexOf(enlargedImage);
+                        const newImageIndex = currentImageIndex === 0 ? 1 : 0;
+                        setEnlargedImage(currentPair.images[newImageIndex]);
+                      }
+                    }}>&#8592;</div>
+                    <div className="swiper-button-next" onClick={(e) => {
+                      e.stopPropagation();
+                      const currentPair = imagePairs[currentIndex];
+                      if (currentPair) {
+                        const currentImageIndex = currentPair.images.indexOf(enlargedImage);
+                        const newImageIndex = currentImageIndex === 0 ? 1 : 0;
+                        setEnlargedImage(currentPair.images[newImageIndex]);
+                      }
+                    }}>&#8594;</div>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -1684,24 +1688,6 @@ const Game = () => {
 
         </div>
       )}
-
-      {enlargedImage && (
-        <div className="enlarge-modal" onClick={closeEnlargedImage}>
-          <div className="enlarged-image-container">
-            <img
-              src={enlargedImage}
-              alt="Enlarged view"
-              className="zoomable" /* ✅ Add this class */
-              onClick={(e) => e.stopPropagation()} // Prevents modal from closing
-              onContextMenu={(e) => e.preventDefault()} // Disable right-click
-              onTouchStart={(e) => e.stopPropagation()} // Stop event bubbling
-              onMouseDown={(e) => e.preventDefault()} // Prevent dragging
-              draggable="false"
-            />
-          </div>
-        </div>
-      )}
-
 
     </div>
   );

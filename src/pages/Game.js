@@ -430,7 +430,7 @@ const Game = () => {
       const puzzleResponse = await axiosInstance.get("/game/daily-puzzle");
       console.log("📦 Puzzle Response:", puzzleResponse.data);
 
-      if (puzzleResponse.data?.puzzles?.length > 0) {
+      if (puzzleResponse.data?.imagePairs?.length > 0) {
         const getRandomizedPairs = (pairs) => {
           console.log("🎲 Randomizing pairs:", pairs);
           return pairs.map((pair) => ({
@@ -467,10 +467,10 @@ const Game = () => {
           return JSON.parse(storedPairs);
         };
 
-        const pairs = initializeImagePairs(puzzleResponse.data.puzzles);
+        const pairs = initializeImagePairs(puzzleResponse.data.imagePairs);
         console.log("🖼️ Setting imagePairs:", pairs);
         setImagePairs(pairs);
-        localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.puzzles));
+        localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
       } else {
         console.warn("⚠️ No image pairs available for today.");
         setImagePairs([]);

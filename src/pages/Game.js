@@ -442,34 +442,11 @@ const Game = () => {
           }));
         };
 
-        const initializeImagePairs = (imagePairsData) => {
-          console.log("🎯 Initializing image pairs with data:", imagePairsData);
-          const today = getTodayInEST();
-          const lastUpdatedDate = localStorage.getItem("lastUpdatedDate");
-
-          if (lastUpdatedDate !== today) {
-            console.log("🌅 New day detected! Resetting randomizedImagePairs.");
-            localStorage.removeItem("randomizedImagePairs");
-            localStorage.setItem("lastUpdatedDate", today);
-          }
-
-          let storedPairs = localStorage.getItem("randomizedImagePairs");
-
-          if (!storedPairs || lastUpdatedDate !== today) {
-            console.log("🎲 Fetching and randomizing new image pairs.");
-            const randomizedPairs = getRandomizedPairs(imagePairsData);
-            console.log("🎲 Randomized pairs:", randomizedPairs);
-            localStorage.setItem("randomizedImagePairs", JSON.stringify(randomizedPairs));
-            return randomizedPairs;
-          }
-
-          console.log("🔄 Using cached image pairs from localStorage.");
-          return JSON.parse(storedPairs);
-        };
-
-        const pairs = initializeImagePairs(puzzleResponse.data.imagePairs);
-        console.log("🖼️ Setting imagePairs:", pairs);
-        setImagePairs(pairs);
+        // Always use fresh data, don't rely on cache
+        console.log("🎲 Fetching and randomizing new image pairs.");
+        const randomizedPairs = getRandomizedPairs(puzzleResponse.data.imagePairs);
+        console.log("🎲 Randomized pairs:", randomizedPairs);
+        setImagePairs(randomizedPairs);
         localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
       } else {
         console.warn("⚠️ No image pairs available for today.");

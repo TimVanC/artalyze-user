@@ -430,8 +430,9 @@ const Game = () => {
       const puzzleResponse = await axiosInstance.get("/game/daily-puzzle");
       console.log("📦 Puzzle Response:", puzzleResponse.data);
 
-      if (puzzleResponse.data?.imagePairs?.length > 0) {
+      if (puzzleResponse.data?.puzzles?.length > 0) {
         const getRandomizedPairs = (pairs) => {
+          console.log("🎲 Randomizing pairs:", pairs);
           return pairs.map((pair) => ({
             human: pair.humanImageURL,
             ai: pair.aiImageURL,
@@ -442,10 +443,10 @@ const Game = () => {
         };
 
         const initializeImagePairs = (imagePairsData) => {
+          console.log("🎯 Initializing image pairs with data:", imagePairsData);
           const today = getTodayInEST();
           const lastUpdatedDate = localStorage.getItem("lastUpdatedDate");
 
-          // ✅ Reset only if a new day is detected
           if (lastUpdatedDate !== today) {
             console.log("🌅 New day detected! Resetting randomizedImagePairs.");
             localStorage.removeItem("randomizedImagePairs");
@@ -454,10 +455,10 @@ const Game = () => {
 
           let storedPairs = localStorage.getItem("randomizedImagePairs");
 
-          // ✅ Always fetch new image pairs if storedPairs is missing
           if (!storedPairs || lastUpdatedDate !== today) {
             console.log("🎲 Fetching and randomizing new image pairs.");
             const randomizedPairs = getRandomizedPairs(imagePairsData);
+            console.log("🎲 Randomized pairs:", randomizedPairs);
             localStorage.setItem("randomizedImagePairs", JSON.stringify(randomizedPairs));
             return randomizedPairs;
           }
@@ -466,10 +467,10 @@ const Game = () => {
           return JSON.parse(storedPairs);
         };
 
-        const pairs = initializeImagePairs(puzzleResponse.data.imagePairs);
+        const pairs = initializeImagePairs(puzzleResponse.data.puzzles);
         console.log("🖼️ Setting imagePairs:", pairs);
         setImagePairs(pairs);
-        localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.imagePairs));
+        localStorage.setItem("completedPairs", JSON.stringify(puzzleResponse.data.puzzles));
       } else {
         console.warn("⚠️ No image pairs available for today.");
         setImagePairs([]);
@@ -1403,57 +1404,62 @@ const Game = () => {
           {/* Image Pairs */}
           {imagePairs && imagePairs.length > 0 ? (
             <>
+              {console.log("🎨 Rendering Swiper with imagePairs:", imagePairs)}
               <Swiper
                 loop={true}
-                onSlideChange={handleSwipe} // ✅ Now using handleSwipe
+                onSlideChange={handleSwipe}
                 onSwiper={(swiper) => {
+                  console.log("🎯 Swiper initialized with ref:", swiper);
                   swiperRef.current = swiper;
                   swiper.slideToLoop(0);
                 }}
               >
-                {imagePairs.map((pair, index) => (
-                  <SwiperSlide key={index}>
-                    <div className="image-pair-container">
-                      {pair.images.map((image, idx) => (
-                        <div
-                          key={idx}
-                          className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
-                        >
-                          {imageLoading[`${index}-${idx}`] && <div className="image-loader"></div>}
-                          <img
-                            src={image}
-                            alt={`Painting ${idx + 1}`}
-                            onClick={(e) => {
-                              const currentTime = new Date().getTime();
-                              const timeSinceLastTap = currentTime - lastTapTime.current;
+                {imagePairs.map((pair, index) => {
+                  console.log(`🖼️ Rendering pair ${index}:`, pair);
+                  return (
+                    <SwiperSlide key={index}>
+                      <div className="image-pair-container">
+                        {pair.images.map((image, idx) => (
+                          <div
+                            key={idx}
+                            className={`image-container ${selections[index]?.selected === image ? "selected" : ""}`}
+                          >
+                            {imageLoading[`${index}-${idx}`] && <div className="image-loader"></div>}
+                            <img
+                              src={image}
+                              alt={`Painting ${idx + 1}`}
+                              onClick={(e) => {
+                                const currentTime = new Date().getTime();
+                                const timeSinceLastTap = currentTime - lastTapTime.current;
 
-                              if (timeSinceLastTap < 300) { // ✅ Double-tap detected
-                                clearTimeout(singleTapTimeout.current); // ✅ Cancel single tap selection
-                                if (!enlargedImage) { // ✅ Ensure enlargement only happens once
-                                  setEnlargedImage(null); // Ensure previous one is cleared
-                                  setTimeout(() => {
-                                    setEnlargedImage(image);
-                                    setEnlargedImageMode("game-screen");
-                                  }, 10); // Small delay prevents duplicate stacking
+                                if (timeSinceLastTap < 300) {
+                                  clearTimeout(singleTapTimeout.current);
+                                  if (!enlargedImage) {
+                                    setEnlargedImage(null);
+                                    setTimeout(() => {
+                                      setEnlargedImage(image);
+                                      setEnlargedImageMode("game-screen");
+                                    }, 10);
+                                  }
+                                } else {
+                                  singleTapTimeout.current = setTimeout(() => {
+                                    handleSelection(image, image === pair.human);
+                                  }, 220);
                                 }
-                              } else {
-                                singleTapTimeout.current = setTimeout(() => {
-                                  handleSelection(image, image === pair.human); // ✅ Select only if no double-tap
-                                }, 220);
-                              }
 
-                              lastTapTime.current = currentTime;
-                            }}
-                            draggable="false"
-                            onLoad={() => handleImageLoad(index, idx)}
-                            onError={() => handleImageError(index, idx)}
-                            style={{ visibility: imageLoading[`${index}-${idx}`] ? "hidden" : "visible" }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </SwiperSlide>
-                ))}
+                                lastTapTime.current = currentTime;
+                              }}
+                              draggable="false"
+                              onLoad={() => handleImageLoad(index, idx)}
+                              onError={() => handleImageError(index, idx)}
+                              style={{ visibility: imageLoading[`${index}-${idx}`] ? "hidden" : "visible" }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </SwiperSlide>
+                  );
+                })}
               </Swiper>
             </>
           ) : (
@@ -1489,25 +1495,28 @@ const Game = () => {
             </button>
 
             {/* Navigation Buttons Centered */}
-            <div className="navigation-buttons">
+            <div className="nav-buttons">
+              {console.log("🎯 Rendering navigation buttons for pairs:", imagePairs)}
               {imagePairs.map((_, index) => (
                 <button
                   key={index}
                   className={`nav-button ${currentIndex === index ? 'active' : ''} ${selections[index]?.selected ? 'selected' : ''}`}
                   onClick={() => {
+                    console.log(`🔄 Navigating to pair ${index}`);
                     setCurrentIndex(index);
                     swiperRef.current.slideToLoop(index);
 
-                    // ✅ Track navigation button clicks in Google Analytics
+                    // Track navigation button clicks in Google Analytics
                     ReactGA.event({
                       category: "Navigation",
                       action: "Nav Button Clicked",
                       label: `User navigated to image pair ${index + 1}`,
-                      value: index + 1, // Track which image pair they navigated to
+                      value: index + 1,
                     });
                   }}
-                  aria-label={`Go to image pair ${index + 1}`} /* Accessibility */
+                  aria-label={`Go to image pair ${index + 1}`}
                 >
+                  {index + 1}
                 </button>
               ))}
             </div>

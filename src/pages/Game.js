@@ -1510,41 +1510,38 @@ const Game = () => {
           {/* Enlarged Image Modal */}
           {enlargedImage && (
             <div className="enlarge-modal" onClick={closeEnlargedImage}>
-              <div className="swiper-container">
-                <Swiper
-                  loop={true}
-                  initialSlide={enlargedImageIndex}
-                  onSlideChange={(swiper) => setEnlargedImageIndex(swiper.realIndex)}
-                  navigation={{
-                    prevEl: ".swiper-button-prev",
-                    nextEl: ".swiper-button-next",
-                  }}
-                  slidesPerView={1}
-                  spaceBetween={10}
-                >
-                  {imagePairs &&
-                    imagePairs.map((pair, index) => (
-                      <SwiperSlide key={index}>
-                        <div className="enlarged-image-container">
-                          <div className="zoom-wrapper">
-                            <img
-                              src={enlargedImage}
-                              alt="Enlarged view"
-                              className="enlarged-image zoomable" /* ✅ Correct class */
-                              onClick={(e) => e.stopPropagation()} // Prevents modal from closing
-                              onContextMenu={(e) => e.preventDefault()} // Disable right-click
-                              onTouchStart={(e) => e.stopPropagation()} // Stop event bubbling
-                              onMouseDown={(e) => e.preventDefault()} // Prevent dragging
-                              draggable="false"
-                            />
-                          </div>
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                </Swiper>
+              <div className="enlarged-image-container" onClick={(e) => e.stopPropagation()}>
+                <div className="zoom-wrapper">
+                  <img
+                    src={enlargedImage}
+                    alt="Enlarged view"
+                    className="enlarged-image zoomable"
+                    onClick={(e) => e.stopPropagation()}
+                    onContextMenu={(e) => e.preventDefault()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.preventDefault()}
+                    draggable="false"
+                  />
+                </div>
+                <div className="swiper-button-prev" onClick={(e) => {
+                  e.stopPropagation();
+                  const currentPair = imagePairs[currentIndex];
+                  if (currentPair) {
+                    const currentImageIndex = currentPair.images.indexOf(enlargedImage);
+                    const newImageIndex = currentImageIndex === 0 ? 1 : 0;
+                    setEnlargedImage(currentPair.images[newImageIndex]);
+                  }
+                }}>&#8592;</div>
+                <div className="swiper-button-next" onClick={(e) => {
+                  e.stopPropagation();
+                  const currentPair = imagePairs[currentIndex];
+                  if (currentPair) {
+                    const currentImageIndex = currentPair.images.indexOf(enlargedImage);
+                    const newImageIndex = currentImageIndex === 0 ? 1 : 0;
+                    setEnlargedImage(currentPair.images[newImageIndex]);
+                  }
+                }}>&#8594;</div>
               </div>
-              <div className="swiper-button-prev">&#8592;</div>
-              <div className="swiper-button-next">&#8594;</div>
             </div>
           )}
 
